@@ -170,7 +170,9 @@ export default function DeckPage() {
             <p className="lead mt-5">
               ของย่อหน้าในหนังสือ
               <br />
-              ตรวจย้อนกลับถึง<strong>วินาทีที่ท่านพูด</strong>ได้
+              <strong>อ้างถ้อยคำที่มีอยู่จริงในเสียง</strong>
+              <br />
+              และกดกลับไปฟังได้
             </p>
           </div>
         </div>
@@ -492,7 +494,7 @@ export default function DeckPage() {
             ["16", "ความสามารถที่ทำงานได้จริง"],
             ["6", "API ที่เขียนและทดสอบแล้ว"],
             ["3.4 วิ", "ถอดเสียง 40 วินาที (เดิม 236 วิ)"],
-            ["100%", "ย่อหน้าที่ตรวจย้อนกลับได้"],
+            ["100%", "ย่อหน้าที่อ้างถ้อยคำต้นฉบับ"],
           ].map(([a, b]) => (
             <div key={b} className="rounded-2xl border border-white/12 bg-white/5 p-7">
               <p className="font-serif text-[46px] leading-none text-gold-300">{a}</p>

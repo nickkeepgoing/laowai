@@ -427,7 +427,7 @@ app/
 lib/
 ├── types.ts          🔒 สัญญากลาง
 ├── verify.ts         ❤️ หัวใจ — ตรวจว่า AI ไม่ได้แต่งเกินต้นฉบับ
-├── gemini.ts         เรียก Gemini 2 ครั้งต่อ 1 หัวข้อ
+├── gemini.ts         เรียก Gemini 2 แบบ (วิเคราะห์/เรียบเรียง) — 1 บท N คลิป = N+1 ครั้ง
 ├── prompts.ts        prompt + response schema (แยกเพื่อทดสอบได้โดยไม่ผ่าน API)
 ├── recorder.ts       MediaRecorder + คิว IndexedDB
 └── store.ts          Supabase หรือ memory สลับเองตาม env

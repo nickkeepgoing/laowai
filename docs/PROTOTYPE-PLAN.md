@@ -150,7 +150,7 @@ export const verifyChapter = (ps: Paragraph[], byId: Record<string, Claim>) =>
 - Claim ที่ `verified:false` → **ทิ้ง** ไม่ส่งเข้า compose และต้อง**นับให้ผู้ใช้เห็น** ("ทิ้งไป 2 เพราะตรวจไม่ผ่าน") นี่คือจุดขายตอน demo
 - Gemini ต้องถูกสั่งให้คืน `quote` แบบ **คัดลอกคำต่อคำ ห้ามเกลา** ไม่งั้น verify ตกหมด → ใส่ใน prompt ย้ำ 2 ครั้ง + ใช้ `responseMimeType: "application/json"` + response schema
 
-**เรียก Gemini 2 ครั้งเท่านั้น**
+**เรียก Gemini 2 แบบเท่านั้น** (1 บทที่มี N คลิป = N+1 ครั้ง)
 1. `audio → { transcript, claims[], nextQuestions[] }` (ไม่แยก STT ออกมา)
 2. `claims[] → { paragraphs[] }` พร้อมให้มันเช็กเองว่าประโยคไหนเกิน → ใส่ `flags`
 
