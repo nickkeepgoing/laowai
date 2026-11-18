@@ -1,0 +1,245 @@
+/**
+ * หนังสือชีวิต — เครื่องอ่านแบบเปิดทีละหน้า
+ *
+ * ทำไมต้องเป็นหนังสือจริง ไม่ใช่หน้าเลื่อนยาว:
+ * ของเดิมเป็น PDF เรียงลงมา ซึ่งอ่านแล้วรู้สึกเหมือนเอกสาร
+ * แต่สิ่งที่เราขายคือ "ของที่ระลึกของครอบครัว" ความรู้สึกตอนเปิดจึงเป็นส่วนหนึ่งของสินค้า
+ *
+ * ⚠️ ทุกอย่างในไฟล์นี้เป็นของ "หน้าจอ" เท่านั้น
+ * ตอนสั่งพิมพ์ เครื่องอ่านจะถูกซ่อน แล้วใช้ layout A5 เดิมแทน (ดู page.tsx)
+ */
+
+/* หน้านี้ต้องเต็มจอแบบไม่มีสิ่งรบกวน เหมือนเปิดหนังสือจริง
+ * จึงซ่อนแถบนำทางของเว็บทิ้ง เหมือนที่หน้า /deck ทำ */
+body:has(.book-reader) {
+  padding-top: 0 !important;
+}
+body:has(.book-reader) header {
+  display: none !important;
+}
+
+.bookshelf {
+  /* ไล่เฉดให้เหมือนวางหนังสือบนโต๊ะไม้ใต้ไฟอุ่น ๆ */
+  background:
+    radial-gradient(130% 80% at 50% -10%, rgba(240, 205, 124, 0.22) 0%, transparent 55%),
+    linear-gradient(170deg, #2a2119 0%, #1c1611 55%, #140f0b 100%);
+}
+
+/* ── กรอบหนังสือ ── */
+.book {
+  position: relative;
+  transform-style: preserve-3d;
+  /* perspective มากพอให้พลิกแล้วไม่บิดเบี้ยวจนเวียนหัว */
+  perspective: 2800px;
+}
+
+/* เงาใต้เล่ม ทำให้รู้สึกว่าหนังสือมีน้ำหนักวางอยู่จริง */
+.book::after {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -26px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.55), transparent 72%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* สันหนังสือตรงกลาง — เส้นเดียวที่ทำให้สองหน้ากลายเป็นเล่มเดียว */
+.book__spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 34px;
+  transform: translateX(-50%);
+  z-index: 60;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(90, 70, 48, 0) 0%,
+    rgba(90, 70, 48, 0.1) 22%,
+    rgba(62, 46, 30, 0.3) 48%,
+    rgba(62, 46, 30, 0.32) 52%,
+    rgba(90, 70, 48, 0.1) 78%,
+    rgba(90, 70, 48, 0) 100%
+  );
+}
+.book--single .book__spine,
+.book--closed .book__spine {
+  display: none;
+}
+
+/* หนังสือที่ยังปิดอยู่ = เห็นแค่ปก จึงเลื่อนเล่มให้ปกมาอยู่กลางจอ
+ * ถ้าปล่อยไว้จะเห็นช่องว่างครึ่งซ้ายโล่ง ๆ ซึ่งไม่เหมือนหนังสือปิด */
+.book {
+  transition: transform 620ms cubic-bezier(0.46, 0.03, 0.52, 0.96);
+}
+.book--closed {
+  transform: translateX(-25%);
+}
+/* อ่านจบแล้ว: เหลือหน้าซ้ายหน้าเดียว เลื่อนกลับทางขวาให้อยู่กลางจอ */
+.book--finished {
+  transform: translateX(25%);
+}
+
+/* ── แผ่นกระดาษ 1 แผ่น (หน้า-หลัง) ── */
+.sheet {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 900ms cubic-bezier(0.46, 0.03, 0.52, 0.96);
+  will-change: transform;
+}
+.sheet--flipped {
+  transform: rotateY(-180deg);
+}
+
+.sheet__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  background: #fdfaf3;
+}
+.sheet__face--back {
+  transform: rotateY(180deg);
+}
+
+/* ขอบกระดาษด้านสัน ให้เห็นว่ากระดาษโค้งเข้าไปในสัน */
+.sheet__face--front {
+  box-shadow: inset 14px 0 26px -16px rgba(80, 60, 38, 0.5);
+  border-radius: 0 5px 5px 0;
+}
+.sheet__face--back {
+  box-shadow: inset -14px 0 26px -16px rgba(80, 60, 38, 0.5);
+  border-radius: 5px 0 0 5px;
+}
+
+/* ── เนื้อในหน้า ── */
+.page {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  padding: clamp(26px, 4.4%, 54px);
+  color: #241d14;
+  /* คราบกระดาษจาง ๆ ทำให้ไม่ดูเป็นกระดาษพลาสติก */
+  background-image:
+    radial-gradient(90% 60% at 18% 8%, rgba(201, 149, 58, 0.055) 0%, transparent 60%),
+    radial-gradient(70% 50% at 85% 92%, rgba(140, 104, 58, 0.05) 0%, transparent 62%);
+}
+
+.page__no {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: #a1917a;
+}
+
+/* ── ปก ── */
+.cover {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(240, 205, 124, 0.2) 0%, transparent 58%),
+    linear-gradient(165deg, #3a2b1c 0%, #241a11 60%, #1a120c 100%);
+  color: #f6ecd8;
+}
+.cover__rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(224, 186, 118, 0.75), transparent);
+}
+.cover__title {
+  background: linear-gradient(100deg, #f8e3ad 0%, #e3b254 48%, #f0cd7c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* อักษรตัวแรกของบท — สัญญาณว่า "นี่คือหนังสือ ไม่ใช่หน้าเว็บ" */
+.dropcap::first-letter {
+  float: left;
+  margin: 6px 10px 0 0;
+  font-family: var(--font-serif, serif);
+  font-size: 3.1em;
+  line-height: 0.76;
+  color: #b0822f;
+}
+
+/* ── ปุ่มพลิกหน้า ── */
+.turn-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 46%;
+  z-index: 70;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+.turn-zone--prev {
+  left: 0;
+}
+.turn-zone--next {
+  right: 0;
+}
+
+/* เงาไล่จากขอบเวลาเอาเมาส์ไปใกล้ บอกใบ้ว่าตรงนี้กดได้ */
+.turn-zone--next:hover::after,
+.turn-zone--prev:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 54px;
+  pointer-events: none;
+}
+.turn-zone--next:hover::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(60, 44, 28, 0.17), transparent);
+}
+.turn-zone--prev:hover::after {
+  left: 0;
+  background: linear-gradient(90deg, rgba(60, 44, 28, 0.17), transparent);
+}
+
+/* ── กล่องวัดความสูงสำหรับแบ่งหน้า (ไม่แสดงผล) ── */
+.measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  top: -10000px;
+  left: -10000px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    transition-duration: 1ms;
+  }
+}
+
+/* ร่างสำหรับพิมพ์ — ซ่อนสนิทบนจอ โผล่เฉพาะตอนสั่งพิมพ์ */
+.print-only {
+  display: none;
+}
+
+/* ตอนสั่งพิมพ์ ซ่อนเครื่องอ่านทั้งหมด แล้วใช้ layout A5 เดิม */
+@media print {
+  .bookshelf,
+  .book-reader {
+    display: none !important;
+  }
+  .print-only {
+    display: block;
+    max-width: 148mm;
+    margin: 0 auto;
+  }
+}

@@ -4,15 +4,22 @@ import { SITE_URL } from "@/lib/env";
 import { getChapterByToken, getSession, listClips } from "@/lib/store";
 import { demoChapter, demoClips, demoSession } from "@/lib/demo";
 import { indexClaims, paragraphAudioAnchor } from "@/lib/verify";
-import PrintButton from "./PrintButton";
+import BookReader from "./BookReader";
 
 /**
- * หนังสือชีวิต A5 พร้อมพิมพ์
+ * หนังสือชีวิต — มีสองร่างในหน้าเดียว
+ *
+ *   บนจอ    → <BookReader> เปิดทีละหน้าเหมือนหนังสือจริง กดย่อหน้าฟังเสียงได้
+ *   ตอนพิมพ์ → layout A5 ด้านล่าง ซึ่งซ่อนอยู่บนจอและโผล่เฉพาะตอนสั่งพิมพ์
+ *
+ * ทำไมต้องแยกสองร่าง:
+ * หนังสือที่พลิกได้ทำให้คนรู้สึกว่าได้ของที่ระลึก ไม่ใช่ไฟล์เอกสาร
+ * แต่กระดาษจริงพลิกเองอยู่แล้ว สิ่งที่หน้ากระดาษต้องการคือ QR ข้างย่อหน้า
+ * ยัดทั้งสองอย่างไว้ในโครงเดียวจะได้ของที่ทั้งอ่านไม่สนุกและพิมพ์ออกมาไม่สวย
  *
  * ทำด้วย HTML + @media print ไม่ใช่ react-pdf โดยเจตนา
  * react-pdf ไม่รองรับ complex text shaping ของไทย — สระกับวรรณยุกต์จะซ้อนผิดตำแหน่ง
  * (สื่อ ปู่ ก๊อง) และตัดบรรทัดกลางคำ ส่วนเบราว์เซอร์ทำถูก 100%
- * กด Ctrl+P → Save as PDF ได้เล่มที่สวยกว่าและเร็วกว่า
  *
  * QR ท้ายบท = นาทีทองตอน demo กรรมการสแกนด้วยมือถือตัวเองแล้วได้ยินเสียงจริง
  */
@@ -66,11 +73,34 @@ export default async function BookPage({
 
   const chapterUrl = `${SITE_URL}/clip/${token}`;
 
+  // แผนที่ claim → คลิป ใช้ได้ทั้งฝั่งจอและฝั่งพิมพ์
+  const audioOf = (claimIds: string[]) => {
+    const p = { claimIds } as { claimIds: string[]; id: string; text: string; flags: string[] };
+    const anchor = paragraphAudioAnchor(p, byId);
+    if (!anchor) return null;
+    const clipId = clipOfClaim[anchor.id];
+    const clip = clips.find((c) => c.id === clipId);
+    return clip ? { clipId, audioUrl: clip.audioUrl, startMs: anchor.startMs } : null;
+  };
+
+  const readerParagraphs = chapter.paragraphs.map((p) => {
+    const a = audioOf(p.claimIds);
+    return { id: p.id, text: p.text, audioUrl: a?.audioUrl ?? null, startMs: a?.startMs ?? 0 };
+  });
+
   return (
     <div className="paper min-h-screen">
-      <PrintButton />
+      {/* ── บนจอ: หนังสือที่เปิดได้จริง ── */}
+      <BookReader
+        elderName={elderName}
+        relation={relation}
+        chapterTitle={chapter.title}
+        paragraphs={readerParagraphs}
+        chapterUrl={chapterUrl}
+      />
 
-      <article className="mx-auto max-w-[148mm] px-8 py-14 print:px-0 print:py-0">
+      {/* ── ตอนสั่งพิมพ์: หน้า A5 พร้อม QR ข้างย่อหน้า ── */}
+      <article className="print-only px-8 py-14 print:px-0 print:py-0">
         {/* ── ปก ── */}
         <header className="page-break mb-16 text-center">
           <p className="text-sm tracking-[0.3em] text-[#8a7a63] uppercase">เล่าไว้</p>
