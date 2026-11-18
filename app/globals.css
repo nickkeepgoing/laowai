@@ -75,8 +75,8 @@
   --color-warn-500: #d97706;
   --color-warn-900: #5c3703;
 
-  --font-sans: var(--font-sarabun), system-ui, sans-serif;
-  --font-serif: var(--font-noto-serif-thai), Georgia, serif;
+  --font-sans: var(--font-plex-thai), system-ui, sans-serif;
+  --font-serif: var(--font-trirong), Georgia, serif;
 }
 
 html {
@@ -103,6 +103,26 @@ body {
 
 :where(p, li) {
   line-height: 1.85;
+}
+
+/**
+ * ระยะห่างตัวอักษรของหัวเรื่อง
+ *
+ * ภาษาไทยมีสระบนล่างและวรรณยุกต์ซ้อนกัน บีบตัวอักษรแรงเกินไปจะชนกัน
+ * -0.01em คือจุดที่ยังได้ความแน่นแบบงานออกแบบ โดยสระยังไม่ชน
+ * (Latin บีบได้ถึง -0.03em แต่ไทยทำแบบนั้นไม่ได้)
+ */
+:where(h1, h2, h3) {
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  line-height: 1.18;
+}
+
+/* ตัวเลขเรียงตรงกันทุกหลัก ทำให้ตาราง stat ดูเป็นระเบียบ */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 /**
