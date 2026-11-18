@@ -51,7 +51,7 @@ import {
 /** three.js โหลดเฉพาะฝั่ง browser เพื่อไม่ถ่วงหน้าแรก */
 const MemoryWave = dynamic(() => import("@/components/MemoryWave"), { ssr: false });
 const Book3D = dynamic(() => import("@/components/Book3D"), { ssr: false });
-const GlassCore3D = dynamic(() => import("@/components/GlassCore3D"), { ssr: false });
+const VoiceRecord3D = dynamic(() => import("@/components/VoiceRecord3D"), { ssr: false });
 const Hourglass3D = dynamic(() => import("@/components/Hourglass3D"), { ssr: false });
 
 /** ⚠️ เปลี่ยนเป็น false เมื่อทับ public/demo/clip-1.wav ด้วยเสียงจริงที่ได้รับความยินยอมแล้ว */
@@ -127,7 +127,7 @@ export default function Home() {
        * ผู้ใช้ต้องเลื่อนถึงจะเห็นว่ากดอะไรได้ ซึ่งเสียโอกาสในสิบวินาทีแรก
        * ตอนนี้ min-h คำนวณจากความสูงจอลบ header ให้พอดีหนึ่งหน้าจอ
        */}
-      <section className="relative overflow-hidden px-5 pt-6 pb-12 sm:px-6 sm:pt-8 lg:flex lg:min-h-[calc(100vh-7rem)] lg:items-center lg:pb-8">
+      <section className="relative -mt-22 overflow-hidden px-5 pt-28 pb-12 sm:px-6 sm:pt-30 lg:flex lg:min-h-screen lg:items-center lg:pb-8">
         <div className="hero-field" aria-hidden />
         <div className="aurora" aria-hidden />
         <div className="star-field" aria-hidden />
@@ -228,7 +228,13 @@ export default function Home() {
                 className="elev-4 h-[clamp(26rem,62vh,34rem)] w-full rounded-[2rem] object-cover"
               />
 
-              {/* ป้ายลอย — สื่อว่าเสียงกำลังถูกเก็บอยู่จริง */}
+              {/**
+               * การ์ดลอยรอบรูป — แสดงขั้นตอนจริงของระบบที่กำลังทำงาน
+               * ไม่ใช่ของประดับ: แต่ละใบคือหนึ่งขั้นใน pipeline ที่ผู้ใช้จะเจอจริง
+               * เรียงเวลา animation ตามลำดับที่ข้อมูลไหล เพื่อให้อ่านเป็นเรื่องเดียวกัน
+               */}
+
+              {/* ① กำลังอัด */}
               <figcaption className="absolute -bottom-6 -left-6 flex items-center gap-3 rounded-2xl border border-paper-300 bg-paper-50/95 px-4 py-3 shadow-[0_16px_40px_-18px_rgba(87,70,52,0.5)] backdrop-blur">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold-400 text-earth-900">
                   <Mic size={18} />
@@ -239,15 +245,76 @@ export default function Home() {
                   </span>
                   <span className="mt-1 flex items-center gap-1" aria-hidden>
                     {[10, 18, 26, 14, 22, 12, 20, 16].map((h, i) => (
-                      <span
+                      <motion.span
                         key={i}
                         className="w-1 rounded-full bg-gold-500"
-                        style={{ height: h }}
+                        animate={{ height: [h * 0.4, h, h * 0.55] }}
+                        transition={{
+                          duration: 0.9,
+                          repeat: Infinity,
+                          delay: i * 0.08,
+                          ease: "easeInOut",
+                        }}
                       />
                     ))}
                   </span>
                 </span>
               </figcaption>
+
+              {/* ② AI ถอดเสียงออกมาเป็นข้อความ */}
+              <motion.div
+                initial={{ opacity: 0, x: -20, y: 10 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ duration: 0.7, delay: 1.1 }}
+                className="absolute top-12 -left-10 hidden max-w-[15rem] rounded-2xl border border-paper-300 bg-paper-50/95 p-3.5 shadow-[0_16px_40px_-18px_rgba(87,70,52,0.45)] backdrop-blur xl:block"
+              >
+                <p className="mb-2 flex items-center gap-1.5 text-xs text-earth-500">
+                  <Sparkles size={12} className="text-gold-500" /> AI ถอดเสียง
+                </p>
+                <p className="text-sm leading-relaxed text-earth-800">
+                  “ยายตื่นตีห้าทุกวันไปช่วยแม่หาบขนมไปขาย”
+                </p>
+              </motion.div>
+
+              {/* ③ ตรวจแล้วว่ามีถ้อยคำนี้ในเสียงจริง */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 1.9 }}
+                className="absolute top-1/2 -right-7 hidden items-center gap-2 rounded-full border border-verified-400/60 bg-paper-50/95 px-4 py-2.5 shadow-[0_14px_34px_-16px_rgba(87,70,52,0.5)] backdrop-blur lg:flex"
+              >
+                <Check size={16} className="text-verified-600" />
+                <span className="text-sm font-medium text-earth-900">ตรวจแล้ว</span>
+                <span className="text-xs text-earth-500">มีในเสียงจริง</span>
+              </motion.div>
+
+              {/* ④ กลายเป็นหน้าหนังสือที่สแกนฟังได้ */}
+              <motion.div
+                initial={{ opacity: 0, y: 24, rotate: 6 }}
+                animate={{ opacity: 1, y: 0, rotate: 4 }}
+                transition={{ duration: 0.8, delay: 2.5 }}
+                className="paper absolute -right-8 -bottom-10 hidden w-40 rounded-2xl border border-[#d9c7ab] p-3 shadow-[0_20px_44px_-18px_rgba(87,70,52,0.55)] lg:block"
+              >
+                <p className="text-[9px] tracking-[0.25em] text-[#8a7a63] uppercase">เล่าไว้</p>
+                <p className="mt-2 font-serif text-[11px] leading-[1.8] text-[#231c14]">
+                  ยายตื่นตีห้าทุกวัน ไปช่วยแม่หาบขนมไปขาย
+                </p>
+                <div className="mt-2 flex items-center gap-2 border-t border-[#d9c7ab] pt-2">
+                  <span className="grid h-7 w-7 grid-cols-3 gap-px" aria-hidden>
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={i % 3 === 0 ? "bg-[#231c14]" : "bg-transparent"}
+                      />
+                    ))}
+                  </span>
+                  <span className="text-[9px] leading-tight text-[#6b5c48]">
+                    สแกนฟัง
+                    <br />
+                    เสียงจริง
+                  </span>
+                </div>
+              </motion.div>
             </motion.figure>
           </div>
         </div>
@@ -410,7 +477,7 @@ export default function Home() {
             </Reveal>
 
             <div className="relative h-[24rem]">
-              <GlassCore3D className="absolute inset-0" />
+              <VoiceRecord3D className="absolute inset-0" />
 
               {/* ตัวเลขลอยรอบแก่น — ทำเป็น HTML ให้คมและอ่านง่าย */}
               {[
