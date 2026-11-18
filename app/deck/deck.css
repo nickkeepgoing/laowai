@@ -1,25 +1,22 @@
 /**
- * Pitch Deck — 1280 x 720 (16:9)
+ * Pitch Deck — 1280 x 720 (16:9) · ออกแบบสำหรับพูด 4 นาที
  *
- * ออกแบบให้ใช้ได้ 2 ทางจากไฟล์เดียว:
- *   1. เปิดดูสดบนเว็บ (กรรมการกดลิงก์ดูได้)
- *   2. สั่งพิมพ์เป็น PDF ด้วย Edge headless สำหรับส่งงาน
+ * 4 นาที = 240 วินาที ÷ 12 สไลด์ = 20 วินาทีต่อใบ
+ * ทุกสไลด์จึงต้องอ่านจบได้ใน 3 วินาที ที่เหลือเป็นเวลาของคนพูด
+ * ถ้าสไลด์ไหนต้องใช้เวลาอ่านมากกว่านั้น แปลว่าสไลด์นั้นแย่งเวลาคนพูด
  *
  * ใช้หน่วย px ตายตัวแทน rem/vh เพราะ PDF ต้องได้ขนาดเท่ากันทุกเครื่อง
- * ไม่ขึ้นกับ font-size ของ root หรือขนาดหน้าต่าง
  */
 
 .deck {
-  --slide-w: 1280px;
-  --slide-h: 720px;
-  background: #e8e2d6;
-  padding: 0;
+  --w: 1280px;
+  --h: 720px;
+  background: #d9d3c6;
 }
 
-/* ล้าง padding ที่ body ตั้งไว้กัน navbar ลอย — deck ไม่มี navbar */
 body:has(.deck) {
   padding-top: 0 !important;
-  background: #e8e2d6;
+  background: #d9d3c6;
 }
 body:has(.deck) header {
   display: none !important;
@@ -27,99 +24,123 @@ body:has(.deck) header {
 
 .slide {
   position: relative;
-  width: var(--slide-w);
-  height: var(--slide-h);
-  margin: 0 auto 28px;
+  width: var(--w);
+  height: var(--h);
+  margin: 0 auto 26px;
   overflow: hidden;
   background: #fffdf9;
-  color: #211a12;
+  color: #1d1710;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 64px 76px;
-  box-shadow: 0 24px 60px -28px rgba(87, 70, 52, 0.5);
+  padding: 72px 88px;
+  box-shadow: 0 26px 64px -30px rgba(70, 56, 40, 0.55);
 }
 
 .slide--dark {
-  background: #211a12;
+  background: #1d1710;
   color: #fdf8ef;
 }
-
 .slide--ink {
-  background: #1a2539;
+  background: #161f30;
   color: #fdf8ef;
 }
-
 .slide--center {
   align-items: center;
   text-align: center;
 }
 
-/* เลขหน้ามุมล่างขวา */
+/* ── แถบบน: ชื่อหมวดของสไลด์ ── */
+.slide__bar {
+  position: absolute;
+  top: 44px;
+  left: 88px;
+  right: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
 .slide__no {
   position: absolute;
-  right: 42px;
-  bottom: 32px;
-  font-size: 14px;
-  letter-spacing: 0.18em;
-  opacity: 0.4;
-}
-
-/* ป้ายหมวดมุมบนซ้าย — ช่วยให้กรรมการรู้ว่ากำลังอยู่ส่วนไหนของ pitch */
-.slide__tag {
-  position: absolute;
-  top: 40px;
-  left: 76px;
+  right: 88px;
+  bottom: 40px;
   font-size: 13px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  opacity: 0.55;
+  letter-spacing: 0.2em;
+  opacity: 0.35;
 }
 
+/* เส้นบาง ๆ ใต้แถบบน ช่วยจัดระเบียบสายตา */
+.slide__rule {
+  position: absolute;
+  top: 74px;
+  left: 88px;
+  right: 88px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.1;
+}
+
+/* ── ตัวอักษร ── */
 .slide h1 {
-  font-size: 76px;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-size: 84px;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
 }
 .slide h2 {
-  font-size: 52px;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-}
-.slide h3 {
-  font-size: 30px;
-  line-height: 1.3;
+  font-size: 58px;
+  line-height: 1.16;
+  letter-spacing: -0.012em;
 }
 .slide p {
-  font-size: 23px;
-  line-height: 1.65;
+  font-size: 24px;
+  line-height: 1.62;
 }
 .slide .lead {
-  font-size: 27px;
-  line-height: 1.6;
+  font-size: 30px;
+  line-height: 1.52;
 }
 .slide .small {
-  font-size: 17px;
-  line-height: 1.6;
-  opacity: 0.72;
+  font-size: 16px;
+  line-height: 1.55;
+  opacity: 0.6;
+}
+.slide .huge {
+  font-size: 108px;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
 }
 
 .gold {
-  background: linear-gradient(100deg, #f8e3ad 0%, #e3b254 48%, #f0cd7c 100%);
+  background: linear-gradient(100deg, #f8e3ad 0%, #e3b254 46%, #f0cd7c 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* แถบสีทองบาง ๆ ใช้นำสายตาไปยังข้อความสำคัญ */
+.accent-bar {
+  width: 56px;
+  height: 5px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #f0cd7c, #c9953a);
 }
 
 .deck-glow {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(
-    120% 80% at 50% -10%,
-    rgba(227, 178, 84, 0.3) 0%,
-    transparent 65%
-  );
+  background: radial-gradient(110% 70% at 50% 0%, rgba(227, 178, 84, 0.26) 0%, transparent 62%);
+}
+
+/* ป้ายคั่นก่อนเข้าสไลด์สำรอง */
+.slide--divider {
+  background: #c9953a;
+  color: #1d1710;
 }
 
 @media print {
