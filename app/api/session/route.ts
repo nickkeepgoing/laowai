@@ -10,6 +10,8 @@
  *   relation     string   เช่น "ยายของนิค"
  *   topic        string   id ของหัวข้อจาก data/questions.json
  *   consentAudio File     เสียงยินยอมของท่าน
+ *   region          string  central|north|northeast|south — ติดป้ายให้ dataset ภาษาถิ่น
+ *   visitFrequency  string  together|weekly|monthly|fewTimesAYear — ข้อมูล persona
  */
 
 import { NextResponse } from "next/server";
@@ -34,8 +36,20 @@ export async function POST(req: Request) {
       );
     }
 
+    const REGIONS = ["central", "north", "northeast", "south"] as const;
+    const FREQ = ["together", "weekly", "monthly", "fewTimesAYear"] as const;
+    const pick = <T extends readonly string[]>(v: unknown, allowed: T) =>
+      allowed.includes(String(v) as T[number]) ? (String(v) as T[number]) : undefined;
+
     const consentAudioUrl = await putAudio(consent, `consent-${Date.now()}.webm`);
-    const session = await createSession({ elderName, relation, topic, consentAudioUrl });
+    const session = await createSession({
+      elderName,
+      relation,
+      topic,
+      consentAudioUrl,
+      region: pick(form.get("region"), REGIONS),
+      visitFrequency: pick(form.get("visitFrequency"), FREQ),
+    });
 
     return NextResponse.json({ session, mode: runtimeMode() });
   } catch (e) {

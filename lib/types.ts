@@ -73,6 +73,18 @@ export type Chapter = {
   shareToken: string;
 };
 
+/** ภาคของผู้เล่า — ใช้ติดป้ายให้ dataset ภาษาถิ่น (ดู Correction) */
+export type Region = "central" | "north" | "northeast" | "south";
+
+/**
+ * ความถี่ที่ลูกหลานได้กลับไปเจอท่าน
+ *
+ * ถามตอนเริ่ม session เพราะ mentor บอกว่า "พอเรามีหน้าลูกค้าชัด
+ * เลยทำให้เรารู้ว่าลูกค้าต้องการอะไร" → เก็บจากผู้ใช้จริงตั้งแต่วันแรก
+ * ดีกว่าเดา persona เอาเองในสไลด์
+ */
+export type VisitFrequency = "together" | "weekly" | "monthly" | "fewTimesAYear";
+
 /** Session = การเก็บเรื่องของผู้สูงอายุ 1 ท่าน */
 export type Session = {
   id: string;
@@ -83,6 +95,34 @@ export type Session = {
   topic: string;
   /** เสียงที่ผู้สูงอายุพูดคำว่ายินยอมด้วยตัวเอง — null = ยังไม่ได้ขอ = ห้ามอัดต่อ */
   consentAudioUrl: string | null;
+  createdAt: string;
+  /** ข้อมูล persona (optional — session เก่าไม่มี) */
+  region?: Region;
+  visitFrequency?: VisitFrequency;
+};
+
+/**
+ * Correction = คู่ข้อความ "AI ถอดผิด → คนแก้ถูก" 1 คู่
+ *
+ * mentor แนะว่าต้องเก็บตัวอย่างคำถิ่น และบอกว่ามนุษย์ต้องเป็นคนแก้
+ * สองอย่างนั้นคืออันเดียวกัน: ทุกครั้งที่ครอบครัวแก้คำ เราได้ข้อมูล 1 คู่
+ * ยิ่งมีครอบครัวใช้มาก dataset ภาษาถิ่นยิ่งโต → เป็น moat ที่คู่แข่งไล่ไม่ทัน
+ *
+ * ⚠️ ความเป็นส่วนตัว: ค่าตั้งต้นเก็บ "เฉพาะคู่ข้อความ + ภาค" เท่านั้น
+ * ไม่เก็บเสียง ไม่เก็บชื่อ ไม่ผูกกลับไปที่คลิป
+ * จะผูก clipId/spanStartMs ได้ต่อเมื่อครอบครัวติ๊กยินยอมแยกต่างหาก
+ * (proposal เราประกาศไว้ว่าไม่เอาเสียงไปฝึกโมเดลโดยไม่มีความยินยอมแยก)
+ */
+export type Correction = {
+  id: string;
+  /** AI ถอดว่าอะไร */
+  asrText: string;
+  /** ครอบครัวแก้เป็นอะไร */
+  humanText: string;
+  region?: Region;
+  /** มีค่าเฉพาะเมื่อ optIn = true */
+  clipId?: string | null;
+  spanStartMs?: number | null;
   createdAt: string;
 };
 

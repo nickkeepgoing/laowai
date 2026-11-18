@@ -1,12 +1,11 @@
 "use client";
 
 /**
- * 🧩 STUB — เจ้าของไฟล์: ศิลป (สาย Face)
- * ⚠️ props ห้ามเปลี่ยน
- *
- * ใช้โชว์ตัวเลขที่เป็นจุดขายบนเวที เช่น
+ * ตัวเลขที่เป็นจุดขายบนเวที
  *   <StatPill label="ย่อหน้าที่มีหลักฐาน" value="12/12" tone="good" />
  *   <StatPill label="Claim ที่ถูกทิ้งเพราะตรวจไม่ผ่าน" value={2} tone="warn" />
+ *
+ * props ห้ามเปลี่ยน
  */
 
 import clsx from "clsx";
@@ -22,12 +21,13 @@ export default function StatPill({ label, value, tone = "neutral" }: StatPillPro
     <span
       className={clsx(
         "inline-flex items-baseline gap-2 rounded-full border px-3 py-1 text-sm",
-        tone === "good" && "border-emerald-300 bg-emerald-50 text-emerald-900",
-        tone === "warn" && "border-amber-300 bg-amber-50 text-amber-900"
+        tone === "neutral" && "border-cream-500/25 bg-ink-800/60 text-cream-300",
+        tone === "good" && "border-verified-400/40 bg-verified-600/15 text-verified-400",
+        tone === "warn" && "border-warn-500/40 bg-warn-900/25 text-warn-200"
       )}
     >
-      <span className="opacity-70">{label}</span>
-      <strong className="tabular-nums">{value}</strong>
+      <span className="opacity-80">{label}</span>
+      <strong className="tabular-nums text-cream-50">{value}</strong>
     </span>
   );
 }

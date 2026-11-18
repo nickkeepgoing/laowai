@@ -1,20 +1,21 @@
 "use client";
 
 /**
- * 🧩 STUB — เจ้าของไฟล์: ศิลป (สาย Face)
+ * เครื่องเล่นเสียงต้นฉบับ + waveform
  *
- * ตอนนี้เป็นเวอร์ชันใช้งานได้จริงแต่ยังไม่สวย ศิลปจะมาเขียนไส้ในใหม่ด้วย wavesurfer.js
+ * นี่คือ component ที่สำคัญที่สุดของโปรเจกต์ เพราะ "กดฟังเสียงจริงได้"
+ * คือสิ่งที่ทำให้หนังสือของเราไม่ใช่แค่ข้อความที่ AI เขียน
  *
- * ⚠️ props และ AudioPlayerHandle ห้ามเปลี่ยนเด็ดขาด
- * เพราะหน้า /interview และ /review ของนิค import ไปใช้อยู่แล้ว
- * ถ้าจะเพิ่ม prop ให้เพิ่มแบบ optional เท่านั้น
+ * ⚠️ props และ AudioPlayerHandle ห้ามเปลี่ยน — หน้า /interview /review /clip /book ใช้อยู่
+ * seek(ms) คือ API ที่หน้า /review ใช้ตอนคลิกย่อหน้าแล้วให้เสียงเล่นที่วินาทีนั้น
  */
 
-import { useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
+import clsx from "clsx";
 
 export type AudioPlayerHandle = {
-  /** เลื่อนไปที่ตำแหน่ง ms แล้วเล่นต่อ — ใช้ตอนคลิกย่อหน้าในหน้า /review */
+  /** เลื่อนไปที่ตำแหน่ง ms แล้วเล่นต่อ */
   seek: (ms: number) => void;
   pause: () => void;
 };
@@ -22,17 +23,20 @@ export type AudioPlayerHandle = {
 export type AudioPlayerProps = {
   src: string;
   clipId: string;
-  /** ถ้าระบุ จะเริ่มเล่นที่ตำแหน่งนี้ */
+  /** เริ่มเล่นที่ตำแหน่งนี้ */
   startMs?: number;
-  /** ถ้าระบุ จะหยุดอัตโนมัติเมื่อเล่นถึงตำแหน่งนี้ (ใช้ฟังเฉพาะช่วงของ claim) */
+  /** หยุดเองเมื่อถึงตำแหน่งนี้ — ใช้ฟังเฉพาะช่วงของ claim */
   endMs?: number;
-  /** โหมดเล็ก ใช้ฝังในย่อหน้า */
   compact?: boolean;
+  /** ป้ายกำกับให้ screen reader และผู้ใช้เข้าใจว่ากำลังฟังเสียงอะไร */
+  label?: string;
   ref?: React.Ref<AudioPlayerHandle>;
 };
 
+const BARS = 56;
+
 const fmt = (s: number) =>
-  `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}` : "0:00";
 
 export default function AudioPlayer({
   src,
@@ -40,26 +44,58 @@ export default function AudioPlayer({
   startMs,
   endMs,
   compact = false,
+  label,
   ref,
 }: AudioPlayerProps) {
   const el = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [t, setT] = useState(0);
   const [dur, setDur] = useState(0);
+  const [peaks, setPeaks] = useState<number[] | null>(null);
+
+  /**
+   * ถอดคลื่นเสียงออกมาเป็นแท่งครั้งเดียวตอนโหลด
+   * ใช้ AudioContext ของเบราว์เซอร์เอง ไม่ต้องพึ่ง lib ภายนอก
+   * ถ้าถอดไม่ได้ (บาง codec / ไฟล์ใหญ่) ก็แสดงแท่งสม่ำเสมอแทน ไม่พัง
+   */
+  useEffect(() => {
+    let dead = false;
+    (async () => {
+      try {
+        const buf = await (await fetch(src)).arrayBuffer();
+        const ctx = new AudioContext();
+        const audio = await ctx.decodeAudioData(buf);
+        void ctx.close();
+        const data = audio.getChannelData(0);
+        const per = Math.floor(data.length / BARS) || 1;
+        const out: number[] = [];
+        for (let i = 0; i < BARS; i++) {
+          let peak = 0;
+          for (let j = 0; j < per; j += 16) peak = Math.max(peak, Math.abs(data[i * per + j] || 0));
+          out.push(peak);
+        }
+        const max = Math.max(...out, 0.01);
+        if (!dead) setPeaks(out.map((v) => Math.max(0.08, v / max)));
+      } catch {
+        if (!dead) setPeaks(Array.from({ length: BARS }, () => 0.35));
+      }
+    })();
+    return () => {
+      dead = true;
+    };
+  }, [src]);
 
   useImperativeHandle(ref, () => ({
-    seek(ms: number) {
+    seek(ms) {
       const a = el.current;
       if (!a) return;
       a.currentTime = ms / 1000;
       void a.play();
     },
-    pause() {
-      el.current?.pause();
-    },
+    pause: () => el.current?.pause(),
   }));
 
-  // หยุดเองเมื่อเล่นเลยช่วงของ claim ที่กำหนด
+  // หยุดเองเมื่อเล่นเลยช่วงของ claim
   useEffect(() => {
     const a = el.current;
     if (!a || endMs == null) return;
@@ -70,48 +106,77 @@ export default function AudioPlayer({
     return () => a.removeEventListener("timeupdate", onTime);
   }, [endMs]);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     const a = el.current;
     if (!a) return;
     if (a.paused) {
       if (startMs != null && a.currentTime * 1000 < startMs) a.currentTime = startMs / 1000;
       void a.play();
-    } else {
-      a.pause();
-    }
+    } else a.pause();
+  }, [startMs]);
+
+  const scrub = (e: React.MouseEvent<HTMLDivElement>) => {
+    const a = el.current;
+    if (!a || !dur) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    a.currentTime = ((e.clientX - r.left) / r.width) * dur;
   };
+
+  const progress = dur ? t / dur : 0;
 
   return (
     <div
       data-clip-id={clipId}
-      className={
-        compact
-          ? "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm"
-          : "flex items-center gap-3 rounded-xl border p-3"
-      }
+      className={clsx(
+        "flex items-center gap-3 rounded-xl border border-cream-500/20 bg-ink-800/60",
+        compact ? "px-2.5 py-1.5" : "p-3"
+      )}
     >
       <button
         type="button"
         onClick={toggle}
-        aria-label={playing ? "หยุดเสียง" : "ฟังเสียงต้นฉบับ"}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border"
+        aria-label={playing ? "หยุด" : label ? `ฟังเสียงต้นฉบับ: ${label}` : "ฟังเสียงต้นฉบับ"}
+        className={clsx(
+          "grid shrink-0 place-items-center rounded-full bg-ember-400 text-ink-950 transition hover:bg-ember-300",
+          compact ? "h-7 w-7" : "h-10 w-10"
+        )}
       >
-        {playing ? <Pause size={16} /> : <Play size={16} />}
+        {playing ? <Pause size={compact ? 13 : 17} /> : <Play size={compact ? 13 : 17} />}
       </button>
 
-      {/* TODO(ศิลป): แทนแถบนี้ด้วย waveform จริงจาก wavesurfer.js */}
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/10">
-        <div
-          className="h-full rounded-full bg-current transition-[width] duration-100"
-          style={{ width: dur ? `${(t / dur) * 100}%` : "0%" }}
-        />
+      <div
+        onClick={scrub}
+        role="slider"
+        aria-label="ตำแหน่งการเล่น"
+        aria-valuenow={Math.round(progress * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        tabIndex={0}
+        className={clsx(
+          "flex flex-1 cursor-pointer items-center gap-[2px]",
+          compact ? "h-6" : "h-10"
+        )}
+      >
+        {(peaks ?? Array.from({ length: BARS }, () => 0.3)).map((p, i) => (
+          <span
+            key={i}
+            className={clsx(
+              "flex-1 rounded-full transition-colors",
+              i / BARS <= progress ? "bg-ember-400" : "bg-cream-500/30"
+            )}
+            style={{ height: `${Math.round(p * 100)}%`, minHeight: 2 }}
+          />
+        ))}
       </div>
 
-      {!compact && (
-        <span className="shrink-0 tabular-nums text-xs opacity-60">
-          {fmt(t)} / {fmt(dur)}
-        </span>
-      )}
+      <span
+        className={clsx(
+          "shrink-0 tabular-nums text-cream-300",
+          compact ? "text-[11px]" : "text-xs"
+        )}
+      >
+        {fmt(t)} / {fmt(dur)}
+      </span>
 
       <audio
         ref={el}

@@ -33,17 +33,13 @@ npm run dev                     # http://localhost:3000
 
 ---
 
-## แบ่งงาน — ห้ามข้ามเส้น
+## แบ่งงาน
 
-ทั้งสองคนเขียนพร้อมกันบน `main` ได้ เพราะไม่มีไฟล์ไหนทับกัน
-`git pull --rebase` ก่อน push ทุกครั้ง
+**อัปเดต (Day 1 ช่วงบ่าย): ยกเลิกกฎแบ่งไฟล์แล้ว**
+เดิมแบ่งเป็นสาย Engine (นิค) กับสาย Face (ศิลป) เพื่อให้เขียนขนานกันได้
+ตอนนี้ทีมตัดสินใจรวมเป็นสายเดียว นิค + Claude ทำทั้งหมดรวมหน้าของศิลปด้วย
 
-| Path | เจ้าของ |
-|---|---|
-| `lib/types.ts` | 🔒 **สัญญากลาง** — แก้ได้เมื่อตกลงกันแล้วเท่านั้น |
-| `data/demo/**`, `data/questions.json` | 🔒 ข้อมูลกลาง |
-| `lib/**` (นอกจาก types) · `app/api/**` · `app/interview/**` · `app/review/**` · `supabase/**` · `package.json` | **นิค** (Engine) |
-| `app/page.tsx` · `app/book/**` · `app/clip/**` · `components/**` · `app/globals.css` · `public/fonts/**` | **ศิลป** (Face) |
+⚠️ ถ้าใครเคย clone ไปเขียนค้างไว้ ให้  ก่อนแตะไฟล์ใด ๆ
 
 📄 แผนเต็ม → [`docs/PROTOTYPE-PLAN.md`](docs/PROTOTYPE-PLAN.md)
 📄 บรีฟของศิลป (ก๊อปไปวางใน Claude Code) → [`docs/BRIEF-SILP.md`](docs/BRIEF-SILP.md)

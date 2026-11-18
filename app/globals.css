@@ -1,26 +1,115 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/**
+ * เล่าไว้ — design token
+ *
+ * แนวทาง: มืด อบอุ่น สุภาพ ไม่ใช่ "แอป AI" สีน้ำเงินเย็น
+ * เพราะเรื่องที่จับคือความทรงจำกับความสูญเสีย
+ *
+ * สีเหลือง (warn) สงวนไว้สำหรับ "ประโยคที่ระบบจับได้ว่า AI เขียนเกินต้นฉบับ"
+ * เท่านั้น ห้ามเอาไปใช้ตกแต่งอย่างอื่น เพราะมันต้องสะดุดตาจากหลังห้อง
+ */
+
+@theme {
+  /* ดินเผา/กระดาษเก่า */
+  --color-ink-950: #14100d;
+  --color-ink-900: #1c1713;
+  --color-ink-800: #2a231d;
+  --color-ink-700: #3b322a;
+  --color-ink-600: #574a3f;
+
+  --color-cream-50: #fbf7f0;
+  --color-cream-100: #f3ece0;
+  --color-cream-300: #d9cdb9;
+  --color-cream-500: #a89880;
+
+  /* accent — ทองอบอุ่น ใช้กับ CTA และตัวเลขสำคัญ */
+  --color-ember-300: #f0c178;
+  --color-ember-400: #e5a74b;
+  --color-ember-500: #d18f2e;
+
+  /* ✅ ตรวจผ่าน */
+  --color-verified-400: #7fc6a4;
+  --color-verified-600: #2f7d5a;
+
+  /* ⚠️ สงวนไว้สำหรับไฮไลต์ประโยคที่ต้องตรวจเท่านั้น */
+  --color-warn-200: #fde68a;
+  --color-warn-500: #d97706;
+  --color-warn-900: #6b3e05;
+
+  --font-sans: var(--font-sarabun), system-ui, sans-serif;
+  --font-serif: var(--font-noto-serif-thai), Georgia, serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink-950);
+  color: var(--color-cream-100);
+  font-family: var(--font-sans);
+  /* ภาษาไทยไม่มีช่องว่างระหว่างคำ ต้องสั่งให้เบราว์เซอร์ตัดคำตามพจนานุกรม */
+  line-break: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* ผู้สูงอายุเป็นคนอ่านด้วย ตัวหนังสือจึงใหญ่กว่าเว็บทั่วไปหนึ่งขั้น */
+:where(p, li) {
+  line-height: 1.85;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ember-400);
+  outline-offset: 2px;
+}
+
+/* ───────────────────────── หน้าหนังสือสำหรับพิมพ์ ─────────────────────────
+ * ทำด้วย HTML + @media print ไม่ใช่ react-pdf
+ * เพราะ react-pdf ไม่รองรับ complex text shaping ของไทย
+ * สระกับวรรณยุกต์จะซ้อนผิดตำแหน่ง (สื่อ ปู่ ก๊อง) และตัดบรรทัดกลางคำ
+ * เบราว์เซอร์ทำถูก 100% → Ctrl+P → Save as PDF ได้เล่มสวยกว่า
+ */
+.paper {
+  background: #fdfbf6;
+  color: #231c14;
+  color-scheme: light;
+}
+
+@page {
+  size: A5;
+  margin: 18mm 16mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .page-break {
+    break-after: page;
+  }
+  /* ห้ามให้ย่อหน้าขาดกลางหน้า — หนังสือที่ระลึกต้องอ่านต่อเนื่อง */
+  .book-body p {
+    break-inside: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+  a[href]::after {
+    content: "";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

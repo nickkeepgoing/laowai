@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * 🧩 STUB — เจ้าของไฟล์: ศิลป (สาย Face)
- * ⚠️ props ห้ามเปลี่ยน — หน้า /review ใช้อยู่
+ * ไฮไลต์ประโยคที่ระบบจับได้ว่า AI เขียนเกินจากเสียงต้นฉบับ
  *
- * level="warn" คือของเด็ดที่สุดตอน demo:
- * มันคือประโยคที่ "ระบบจับ AI ตัวเองได้" ว่าเขียนเกินจากเสียงต้นฉบับ
- * อย่าทำให้มันจืด ต้องเห็นชัดจากหลังห้อง
+ * ⚠️ นี่คือของเด็ดที่สุดตอน demo — มันคือหลักฐานว่าระบบ "จับ AI ตัวเองได้"
+ * ซึ่งเป็นสิ่งที่ทีมอื่นไม่มี ฉะนั้นต้องเห็นชัดจากหลังห้อง อย่าทำให้จืด
+ *
+ * props ห้ามเปลี่ยน — หน้า /review และ landing ใช้อยู่
  */
 
 import clsx from "clsx";
@@ -14,7 +14,7 @@ import clsx from "clsx";
 export type HighlightProps = {
   level: "warn" | "ok";
   children: React.ReactNode;
-  /** ข้อความอธิบายว่าทำไมถึงถูกไฮไลต์ (แสดงเป็น tooltip) */
+  /** เหตุผลที่ถูกไฮไลต์ แสดงเป็น tooltip */
   reason?: string;
 };
 
@@ -24,10 +24,10 @@ export default function Highlight({ level, children, reason }: HighlightProps) {
       title={reason}
       data-level={level}
       className={clsx(
-        "rounded px-1 py-0.5 decoration-dotted underline-offset-4",
+        "rounded px-1 py-0.5",
         level === "warn"
-          ? "bg-amber-200/80 text-amber-950 underline"
-          : "bg-emerald-100 text-emerald-950"
+          ? "bg-warn-200 font-medium text-warn-900 underline decoration-warn-500 decoration-wavy decoration-2 underline-offset-4"
+          : "bg-verified-400/25 text-cream-50"
       )}
     >
       {children}

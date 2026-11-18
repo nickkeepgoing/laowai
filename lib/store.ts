@@ -9,7 +9,7 @@
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Chapter, Clip, Session } from "./types";
+import type { Chapter, Clip, Correction, Session } from "./types";
 import { AUDIO_BUCKET, SUPABASE_ANON_KEY, SUPABASE_URL, hasSupabase } from "./env";
 
 let _sb: SupabaseClient | null = null;
@@ -20,9 +20,19 @@ export function sb(): SupabaseClient | null {
 }
 
 /* ── in-memory fallback (ใช้ globalThis เพื่อให้รอด hot reload ของ dev server) ── */
-type Mem = { sessions: Session[]; clips: Clip[]; chapters: Chapter[] };
+type Mem = {
+  sessions: Session[];
+  clips: Clip[];
+  chapters: Chapter[];
+  corrections: Correction[];
+};
 const g = globalThis as unknown as { __laowai?: Mem };
-const mem: Mem = (g.__laowai ??= { sessions: [], clips: [], chapters: [] });
+const mem: Mem = (g.__laowai ??= {
+  sessions: [],
+  clips: [],
+  chapters: [],
+  corrections: [],
+});
 
 const rid = () => Math.random().toString(36).slice(2, 10);
 export const newToken = () =>
@@ -51,7 +61,11 @@ export async function putAudio(file: Blob, name: string): Promise<string> {
 /* ── sessions ── */
 
 export async function createSession(
-  input: Pick<Session, "elderName" | "relation" | "topic"> & { consentAudioUrl?: string | null }
+  input: Pick<Session, "elderName" | "relation" | "topic"> & {
+    consentAudioUrl?: string | null;
+    region?: Session["region"];
+    visitFrequency?: Session["visitFrequency"];
+  }
 ): Promise<Session> {
   const row: Session = {
     id: rid(),
@@ -60,6 +74,8 @@ export async function createSession(
     topic: input.topic,
     consentAudioUrl: input.consentAudioUrl ?? null,
     createdAt: new Date().toISOString(),
+    region: input.region,
+    visitFrequency: input.visitFrequency,
   };
   const client = sb();
   if (!client) {
@@ -73,6 +89,8 @@ export async function createSession(
       relation: row.relation,
       topic: row.topic,
       consent_audio_url: row.consentAudioUrl,
+      region: row.region ?? null,
+      visit_frequency: row.visitFrequency ?? null,
     })
     .select()
     .single();
@@ -92,7 +110,71 @@ export async function getSession(id: string): Promise<Session | null> {
     topic: data.topic,
     consentAudioUrl: data.consent_audio_url,
     createdAt: data.created_at,
+    region: data.region ?? undefined,
+    visitFrequency: data.visit_frequency ?? undefined,
   };
+}
+
+/* ── corrections (Dialect Correction Flywheel) ──
+ * ⚠️ ค่าตั้งต้นเก็บเฉพาะคู่ข้อความ + ภาค
+ * clipId/spanStartMs จะถูกเก็บต่อเมื่อครอบครัวติ๊กยินยอมแยกต่างหาก
+ */
+
+export async function saveCorrection(input: {
+  asrText: string;
+  humanText: string;
+  region?: Session["region"];
+  /** ส่งมาเฉพาะเมื่อ opt-in */
+  clipId?: string | null;
+  spanStartMs?: number | null;
+}): Promise<Correction> {
+  const row: Correction = {
+    id: rid(),
+    asrText: input.asrText,
+    humanText: input.humanText,
+    region: input.region,
+    clipId: input.clipId ?? null,
+    spanStartMs: input.spanStartMs ?? null,
+    createdAt: new Date().toISOString(),
+  };
+  const client = sb();
+  if (!client) {
+    mem.corrections.push(row);
+    return row;
+  }
+  const { data, error } = await client
+    .from("corrections")
+    .insert({
+      asr_text: row.asrText,
+      human_text: row.humanText,
+      region: row.region ?? null,
+      clip_id: row.clipId,
+      span_start_ms: row.spanStartMs,
+    })
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return { ...row, id: data.id, createdAt: data.created_at };
+}
+
+/** จำนวนคู่ข้อมูลใน dataset — ตัวเลขนี้เอาไปโชว์บนเวทีได้ว่า flywheel เริ่มหมุนแล้ว */
+export async function countCorrections(): Promise<number> {
+  const client = sb();
+  if (!client) return mem.corrections.length;
+  const { count } = await client.from("corrections").select("id", { count: "exact", head: true });
+  return count ?? 0;
+}
+
+/** ปุ่มลืมต้องลืมจริง — ในโหมด Supabase มี on delete cascade ให้แล้ว */
+export async function deleteCorrectionsOfClip(clipId: string): Promise<number> {
+  const client = sb();
+  if (!client) {
+    const before = mem.corrections.length;
+    mem.corrections = mem.corrections.filter((c) => c.clipId !== clipId);
+    return before - mem.corrections.length;
+  }
+  const { data } = await client.from("corrections").delete().eq("clip_id", clipId).select("id");
+  return data?.length ?? 0;
 }
 
 /* ── clips ── */
