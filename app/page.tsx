@@ -40,8 +40,11 @@ import { BookQrScene } from "@/components/illustrations";
 import { Card } from "@/components/ui";
 import { demoChapter, demoClips } from "@/lib/demo";
 
-/** three.js ชิ้นที่สอง โหลดเฉพาะตอน scroll ถึง เพื่อไม่ถ่วงหน้าแรก */
+import { DialectMap, TraceabilityProof, VoicePipeline } from "@/components/explainers";
+
+/** three.js โหลดเฉพาะฝั่ง browser เพื่อไม่ถ่วงหน้าแรก */
 const MemoryWave = dynamic(() => import("@/components/MemoryWave"), { ssr: false });
+const Book3D = dynamic(() => import("@/components/Book3D"), { ssr: false });
 
 /** ⚠️ เปลี่ยนเป็น false เมื่อทับ public/demo/clip-1.wav ด้วยเสียงจริงที่ได้รับความยินยอมแล้ว */
 const PLACEHOLDER_AUDIO = true;
@@ -284,6 +287,25 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ══════════════ เสียงเดินทางยังไง ══════════════ */}
+      <section className="border-y border-paper-300 bg-paper-50">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6">
+          <Reveal>
+            <h2 className="text-center font-serif text-4xl text-earth-900">
+              เสียงของท่านเดินทางยังไง
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-earth-700">
+              ตั้งแต่วินาทีที่ท่านเริ่มเล่า จนถึงวันที่หลานสแกน QR ในหนังสือ
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <div className="mt-12">
+              <VoicePipeline />
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ══════════════ ออกแบบมาเพื่อผู้สูงอายุ ══════════════ */}
       <section className="border-y border-paper-300 bg-paper-200/60">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:px-6">
@@ -406,6 +428,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ══════════════ แผนที่ภาษาถิ่น ══════════════ */}
+      <section className="mx-auto max-w-5xl px-5 py-20 sm:px-6">
+        <Reveal>
+          <h2 className="font-serif text-4xl text-earth-900">
+            ภาษาถิ่นคือปัญหาที่แก้ด้วยเงินอย่างเดียวไม่ได้
+          </h2>
+          <p className="mt-4 max-w-2xl text-lg text-earth-700">
+            ต้องใช้คนไทยจำนวนมากช่วยกันสอนทีละคำ — ซึ่งเกิดขึ้นเองทุกครั้งที่ครอบครัวแก้ข้อความ
+          </p>
+        </Reveal>
+        <Reveal delay={0.15}>
+          <div className="mt-12">
+            <DialectMap />
+          </div>
+        </Reveal>
+      </section>
+
       {/* ══════════════ ทุกย่อหน้าพิสูจน์ได้ ══════════════ */}
       <section className="mx-auto max-w-4xl px-5 py-20 sm:px-6">
         <Reveal>
@@ -436,7 +475,13 @@ export default function Home() {
           </Reveal>
         )}
 
-        <div className="mt-8 grid gap-5 sm:grid-cols-3">
+        <Reveal delay={0.2}>
+          <div className="mt-10">
+            <TraceabilityProof />
+          </div>
+        </Reveal>
+
+        <div className="mt-10 grid gap-5 sm:grid-cols-3">
           {[
             { t: "อ้างถ้อยคำต้นฉบับ", d: "ถ้าหาถ้อยคำนั้นไม่เจอในเสียง ระบบทิ้งทันที ไม่เอาเข้าหนังสือ" },
             { t: "กดฟังเทียบได้", d: "คลิกย่อหน้าแล้วเสียงจริงเล่นที่วินาทีนั้นพอดี" },
@@ -475,17 +520,26 @@ export default function Home() {
           </Reveal>
 
           <Reveal delay={0.15}>
-            <div className="paper ring-glow mx-auto max-w-sm rounded-3xl p-8 text-center">
-              <p className="text-[10px] tracking-[0.3em] text-[#8a7a63] uppercase">เล่าไว้</p>
-              <h3 className="mt-6 font-serif text-3xl text-[#231c14]">ยายสมจิต</h3>
-              <div className="mx-auto my-4 h-px w-12 bg-[#c9b89c]" />
-              <p className="font-serif text-lg text-[#3d3124]">วัยเด็กริมคลองบางปะกง</p>
-              <div className="mt-7 flex justify-center">
-                <QRBox
-                  value={origin ? `${origin}/clip/${demoChapter.shareToken}` : "https://laowai-th.vercel.app"}
-                  size={120}
-                  caption="สแกนเพื่อฟังเสียงจริง"
-                />
+            <div className="relative">
+              {/* หนังสือ 3D ที่มีเสียงลอยออกมาจากหน้ากระดาษ */}
+              <Book3D className="h-80 w-full" />
+
+              {/* QR จริงที่สแกนได้ วางคู่กับหนังสือ 3D */}
+              <div className="paper ring-glow mx-auto -mt-6 max-w-xs rounded-3xl p-6 text-center">
+                <p className="text-[10px] tracking-[0.3em] text-[#8a7a63] uppercase">
+                  ลองสแกนด้วยมือถือตอนนี้
+                </p>
+                <div className="mt-4 flex justify-center">
+                  <QRBox
+                    value={
+                      origin
+                        ? `${origin}/clip/${demoChapter.shareToken}`
+                        : "https://laowai-th.vercel.app"
+                    }
+                    size={118}
+                    caption="เสียงจริงจากบทตัวอย่าง"
+                  />
+                </div>
               </div>
             </div>
           </Reveal>
@@ -605,6 +659,11 @@ export default function Home() {
                     "Storyworth (สหรัฐฯ)",
                     "ให้ผู้สูงอายุพิมพ์ตอบเอง เป็นภาษาอังกฤษ และไม่มีเสียง",
                     "ใช้เสียงเป็นหลัก ภาระอยู่ที่ลูกหลาน ท่านแค่เล่า",
+                  ],
+                  [
+                    "Remento (สหรัฐฯ)",
+                    "ใกล้เราที่สุด มี QR ฟังเสียงทุกหน้าเหมือนกัน แต่รองรับเฉพาะภาษาอังกฤษ ไม่รองรับภาษาถิ่น และผู้ใช้ตรวจย้อนกลับไม่ได้ว่าประโยคไหนมาจากเสียงช่วงใด",
+                    "รองรับไทยและภาษาถิ่น ทุกย่อหน้าตรวจย้อนกลับได้ถึงวินาที ใช้ดิจิทัลฟรี และต่อยอดเป็นหนังสืออนุสรณ์ตามธรรมเนียมไทย",
                   ],
                   [
                     "ChatGPT + อัดเอง",
