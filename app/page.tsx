@@ -52,6 +52,7 @@ import {
 const MemoryWave = dynamic(() => import("@/components/MemoryWave"), { ssr: false });
 const Book3D = dynamic(() => import("@/components/Book3D"), { ssr: false });
 const GlassCore3D = dynamic(() => import("@/components/GlassCore3D"), { ssr: false });
+const Hourglass3D = dynamic(() => import("@/components/Hourglass3D"), { ssr: false });
 
 /** ⚠️ เปลี่ยนเป็น false เมื่อทับ public/demo/clip-1.wav ด้วยเสียงจริงที่ได้รับความยินยอมแล้ว */
 const PLACEHOLDER_AUDIO = true;
@@ -126,7 +127,7 @@ export default function Home() {
        * ผู้ใช้ต้องเลื่อนถึงจะเห็นว่ากดอะไรได้ ซึ่งเสียโอกาสในสิบวินาทีแรก
        * ตอนนี้ min-h คำนวณจากความสูงจอลบ header ให้พอดีหนึ่งหน้าจอ
        */}
-      <section className="relative overflow-hidden px-5 pt-6 pb-12 sm:px-6 sm:pt-8 lg:flex lg:min-h-[calc(100vh-4.5rem)] lg:items-center lg:pb-8">
+      <section className="relative overflow-hidden px-5 pt-6 pb-12 sm:px-6 sm:pt-8 lg:flex lg:min-h-[calc(100vh-7rem)] lg:items-center lg:pb-8">
         <div className="hero-field" aria-hidden />
         <div className="aurora" aria-hidden />
         <div className="star-field" aria-hidden />
@@ -253,7 +254,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ 3 ขั้นตอน ══════════════ */}
-      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-6">
+      <section id="how" className="mx-auto max-w-6xl px-5 py-20 sm:px-6">
         <Reveal>
           <h2 className="text-center font-serif text-4xl text-earth-900">
             ใช้งานง่ายพอที่จะทำวันนี้เลย
@@ -508,11 +509,16 @@ export default function Home() {
       </section>
 
       {/* ══════════════ ตัวเลข ══════════════ */}
-      <section className="mx-auto max-w-5xl px-5 py-20 sm:px-6">
+      <section className="relative mx-auto max-w-5xl overflow-hidden px-5 py-20 sm:px-6">
+        {/* นาฬิกาทรายอนุภาค — เวลาที่เหลือกับผู้สูงอายุ คือแกนของทั้งโปรเจกต์ */}
+        <Hourglass3D className="pointer-events-none absolute -top-4 right-0 h-80 w-72 opacity-70 lg:right-8" />
         <Reveal>
-          <h2 className="text-center font-serif text-3xl text-earth-900">
+          <h2 className="relative max-w-xl font-serif text-3xl text-earth-900 sm:text-4xl">
             ทำไมเรื่องนี้ต้องรีบ
           </h2>
+          <p className="relative mt-4 max-w-lg text-lg text-earth-700">
+            ทุกวันที่ผ่านไป มีเรื่องที่ไม่มีใครได้ฟังอีกแล้ว
+          </p>
         </Reveal>
         <div className="mt-12 grid gap-10 sm:grid-cols-3">
           {[
@@ -594,7 +600,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ ทุกย่อหน้าพิสูจน์ได้ ══════════════ */}
-      <section className="mx-auto max-w-4xl px-5 py-20 sm:px-6">
+      <section id="proof" className="mx-auto max-w-4xl px-5 py-20 sm:px-6">
         <Reveal>
           <h2 className="font-serif text-4xl text-earth-900">ทุกย่อหน้าพิสูจน์ได้</h2>
           <p className="mt-4 text-lg text-earth-700">
@@ -862,7 +868,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ โมเดลธุรกิจ ══════════════ */}
-      <section className="border-y border-paper-300 bg-paper-200/60">
+      <section id="pricing" className="border-y border-paper-300 bg-paper-200/60">
         <div className="mx-auto max-w-5xl px-5 py-20 sm:px-6">
           <Reveal>
             <h2 className="font-serif text-4xl text-earth-900">ใช้ฟรี จ่ายเมื่ออยากได้เล่ม</h2>
@@ -1081,7 +1087,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ FAQ ══════════════ */}
-      <section className="border-t border-paper-300 bg-paper-200/60">
+      <section id="faq" className="border-t border-paper-300 bg-paper-200/60">
         <div className="mx-auto max-w-3xl px-5 py-20 sm:px-6">
           <Reveal>
             <h2 className="font-serif text-3xl text-earth-900">คำถามที่ครอบครัวถามบ่อย</h2>

@@ -1,19 +1,28 @@
 /**
  * โลโก้ "เล่าไว้"
  *
- * แนวคิด: คลื่นเสียง 4 แท่งที่ตั้งอยู่บนสันหนังสือ
- * = เสียงที่ถูกเก็บไว้เป็นเล่ม ซึ่งคือทั้งโปรเจกต์ในภาพเดียว
+ * ทำไมเปลี่ยนจากสี่เหลี่ยมมืดเป็นตราวงกลม:
+ * แบบเดิมเป็นสี่เหลี่ยมมนพื้นเข้มซึ่งเป็นภาษาของ "ไอคอนแอป"
+ * ชนกับเว็บที่เป็นกระดาษอบอุ่นและชนกับตัวสินค้าที่เป็นหนังสือเก็บสะสม
  *
- * แท่งกลางเป็นทอง = เสียงของท่านคือสิ่งมีค่าที่สุดในนั้น
- * ออกแบบให้อ่านออกตั้งแต่ขนาด 20px เพื่อใช้เป็น favicon และมุมสไลด์ได้
+ * แบบใหม่คือตราประทับวงกลม เหมือนตราที่ประทับบนหนังสือหรือจดหมายเก่า
+ * ข้างในเป็นคลื่นเสียงวางบนเส้นหน้ากระดาษ = เสียงที่ถูกเก็บไว้บนหน้าหนังสือ
+ *
+ * อ่านออกตั้งแต่ 20px จึงใช้เป็น favicon และมุมสไลด์ได้
  */
 export default function Logo({
-  size = 32,
+  size = 36,
   withWordmark = false,
+  tone = "light",
 }: {
   size?: number;
   withWordmark?: boolean;
+  /** "light" = ใช้บนพื้นสว่าง · "dark" = ใช้บนพื้นเข้ม */
+  tone?: "light" | "dark";
 }) {
+  const ink = tone === "dark" ? "#fdf8ef" : "#211a12";
+  const sub = tone === "dark" ? "rgba(253,248,239,0.55)" : "#83705a";
+
   const mark = (
     <svg
       width={size}
@@ -25,40 +34,34 @@ export default function Logo({
       className="shrink-0"
     >
       <defs>
-        <linearGradient id="lw-bg" x1="0" y1="0" x2="48" y2="48">
-          <stop offset="0%" stopColor="#1b2740" />
-          <stop offset="100%" stopColor="#080c18" />
-        </linearGradient>
-        <linearGradient id="lw-gold" x1="24" y1="10" x2="24" y2="32">
-          <stop offset="0%" stopColor="#f8e3ad" />
-          <stop offset="100%" stopColor="#e3b254" />
+        <linearGradient id="lw-g" x1="12" y1="12" x2="36" y2="36">
+          <stop offset="0%" stopColor="#f0cd7c" />
+          <stop offset="55%" stopColor="#e3b254" />
+          <stop offset="100%" stopColor="#c9953a" />
         </linearGradient>
       </defs>
 
-      <rect width="48" height="48" rx="13" fill="url(#lw-bg)" />
-      <rect
-        width="47"
-        height="47"
-        x="0.5"
-        y="0.5"
-        rx="12.5"
-        stroke="#ffffff"
-        strokeOpacity="0.1"
-      />
+      {/* วงแหวนนอก — ตราประทับ */}
+      <circle cx="24" cy="24" r="22" stroke="url(#lw-g)" strokeWidth="2.2" />
+      {/* วงในบาง ๆ ให้ความรู้สึกเป็นตราจริง ไม่ใช่วงกลมเปล่า */}
+      <circle cx="24" cy="24" r="18.5" stroke="url(#lw-g)" strokeWidth="0.8" opacity="0.5" />
 
-      {/* คลื่นเสียง — แท่งกลางสูงสุดและเป็นทอง */}
-      <rect x="11" y="19" width="4" height="10" rx="2" fill="#8fb8ff" opacity="0.75" />
-      <rect x="18" y="14" width="4" height="20" rx="2" fill="#b9c4d8" />
-      <rect x="25" y="9" width="4" height="30" rx="2" fill="url(#lw-gold)" />
-      <rect x="32" y="17" width="4" height="14" rx="2" fill="#8fb8ff" opacity="0.75" />
+      {/* คลื่นเสียง 5 แท่ง แท่งกลางสูงสุด */}
+      <g strokeLinecap="round">
+        <path d="M14 24.5v-3" stroke={ink} strokeWidth="2.6" opacity="0.45" />
+        <path d="M19 27v-8" stroke={ink} strokeWidth="2.6" opacity="0.7" />
+        <path d="M24 30.5v-15" stroke="url(#lw-g)" strokeWidth="3" />
+        <path d="M29 27v-8" stroke={ink} strokeWidth="2.6" opacity="0.7" />
+        <path d="M34 24.5v-3" stroke={ink} strokeWidth="2.6" opacity="0.45" />
+      </g>
 
-      {/* สันหนังสือที่รองคลื่นเสียงไว้ */}
+      {/* เส้นหน้ากระดาษที่คลื่นเสียงวางอยู่ */}
       <path
-        d="M9 38.5h30"
-        stroke="url(#lw-gold)"
-        strokeWidth="2.5"
+        d="M13 34.5c4.2-2.2 7.6-2.2 11 0 3.4 2.2 6.8 2.2 11 0"
+        stroke="url(#lw-g)"
+        strokeWidth="2"
         strokeLinecap="round"
-        opacity="0.9"
+        fill="none"
       />
     </svg>
   );
@@ -69,8 +72,16 @@ export default function Logo({
     <span className="inline-flex items-center gap-2.5">
       {mark}
       <span className="flex flex-col leading-none">
-        <span className="font-serif text-lg tracking-wide text-earth-900">เล่าไว้</span>
-        <span className="mt-0.5 text-[9px] tracking-[0.22em] text-earth-500 uppercase">
+        <span
+          className="font-serif text-[1.35rem] tracking-[0.02em]"
+          style={{ color: ink }}
+        >
+          เล่าไว้
+        </span>
+        <span
+          className="mt-[3px] text-[9px] tracking-[0.3em] uppercase"
+          style={{ color: sub }}
+        >
           LaoWai
         </span>
       </span>

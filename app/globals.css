@@ -79,6 +79,10 @@
   --font-serif: var(--font-trirong), Georgia, serif;
 }
 
+section[id] {
+  scroll-margin-top: 6.5rem;
+}
+
 html {
   color-scheme: light;
   scroll-behavior: smooth;
@@ -91,6 +95,8 @@ html {
 }
 
 body {
+  /* แถบนำทางเป็นแบบลอย (fixed) จึงต้องกันที่ด้านบนให้เนื้อหา */
+  padding-top: 5.5rem;
   background: var(--color-paper-100);
   color: var(--color-earth-800);
   font-family: var(--font-sans);
@@ -323,6 +329,7 @@ h1 {
 @media print {
   html,
   body {
+    padding-top: 0 !important;
     background: #fff !important;
     color: #000 !important;
   }
