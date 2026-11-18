@@ -97,6 +97,16 @@ section[id] {
 }
 
 html {
+  /**
+   * ⚠️ ต้องกัน scroll แนวนอนที่ระดับ html ไม่ใช่ที่ <main>
+   *
+   * ถ้าใส่ overflow-x:hidden ไว้ที่ <main> ตาม CSS spec เบราว์เซอร์จะบังคับให้
+   * overflow-y กลายเป็น auto ด้วย <main> จึงกลายเป็น กรอบตัด กลางหน้า
+   * แล้วส่วนของ hero ที่ถูกดึงขึ้นไปเหนือขอบ main ด้วย negative margin จะโดนตัดหายไป
+   * ผลคือเห็นเป็นเส้นตรงพาดใต้ navbar และ navbar ดูเหมือนไม่ได้ลอยอยู่เหนือ hero
+   * นี่คือต้นเหตุจริงของบั๊กนั้น ไม่ใช่เรื่องสีหรือ gradient
+   */
+  overflow-x: hidden;
   color-scheme: light;
   scroll-behavior: smooth;
   /**
@@ -182,15 +192,23 @@ h1 {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(
-      120% 76% at 50% -8%,
-      rgba(240, 205, 124, 0.5) 0%,
-      rgba(227, 178, 84, 0.22) 30%,
-      rgba(246, 238, 224, 0.5) 55%,
-      transparent 78%
-    ),
-    linear-gradient(180deg, #fffdf9 0%, #fdf8ef 45%, rgba(253, 248, 239, 0) 100%);
+  /**
+   * ⚠️ ชั้นเดียวเท่านั้น
+   *
+   * เดิมซ้อน linear-gradient สีขาวไว้ใต้ radial สีทอง
+   * ขอบบนจึงเป็นสีขาวแล้วไล่ลงมาเป็นครีม ทำให้เกิดขอบที่ตาจับได้
+   * เห็นเป็นเส้นพาดใต้ navbar แม้โครงสร้างจะถูกต้องแล้ว
+   *
+   * ตอนนี้ใช้ radial ชั้นเดียวไล่จากทองอ่อนไปโปร่งใส
+   * โดยปล่อยให้สีพื้นของ body เป็นฐาน จึงไม่มีจุดที่สีกระโดด
+   */
+  background: radial-gradient(
+    135% 85% at 50% -12%,
+    rgba(240, 205, 124, 0.42) 0%,
+    rgba(227, 178, 84, 0.2) 28%,
+    rgba(227, 178, 84, 0.08) 48%,
+    transparent 72%
+  );
 }
 
 .aurora {

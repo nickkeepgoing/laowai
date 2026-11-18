@@ -118,7 +118,7 @@ export default function Home() {
   useEffect(() => setOrigin(window.location.origin), []);
 
   return (
-    <main className="overflow-x-hidden">
+    <main>
       {/* ══════════════ HERO ══════════════ */}
       {/**
        * hero ถูกบีบให้จบในจอเดียว
@@ -127,7 +127,7 @@ export default function Home() {
        * ผู้ใช้ต้องเลื่อนถึงจะเห็นว่ากดอะไรได้ ซึ่งเสียโอกาสในสิบวินาทีแรก
        * ตอนนี้ min-h คำนวณจากความสูงจอลบ header ให้พอดีหนึ่งหน้าจอ
        */}
-      <section className="relative -mt-22 overflow-hidden px-5 pt-28 pb-12 sm:px-6 sm:pt-30 lg:flex lg:min-h-screen lg:items-center lg:pb-8">
+      <section className="relative -mt-22 overflow-hidden px-5 pt-26 pb-12 sm:px-6 lg:flex lg:min-h-screen lg:items-center lg:pt-24 lg:pb-8">
         <div className="hero-field" aria-hidden />
         <div className="aurora" aria-hidden />
         <div className="star-field" aria-hidden />
@@ -212,7 +212,7 @@ export default function Home() {
            * บนพื้นสว่างมันจางจนอ่านเป็น "ฝุ่น" ไม่ได้สื่ออะไร และแย่งที่ภาพคนจริง
            * ย้ายไปอยู่ section "ไม่ทำ deadbot" ซึ่งอนุภาคที่สลายตัวมีความหมายจริง
            */}
-          <div className="relative hidden lg:block">
+          <div className="relative hidden lg:-mt-36 lg:block">
             <motion.figure
               initial={{ opacity: 0, scale: 0.96, y: 18 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -225,7 +225,7 @@ export default function Home() {
                 alt="คุณยายกับหลานชายยืนคุยกันหน้าบ้านในแสงเย็น"
                 width={1000}
                 height={1500}
-                className="elev-4 h-[clamp(26rem,62vh,34rem)] w-full rounded-[2rem] object-cover"
+                className="elev-4 h-[clamp(28rem,74vh,40rem)] w-full rounded-[2rem] object-cover"
               />
 
               {/**
