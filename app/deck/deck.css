@@ -1,0 +1,144 @@
+/**
+ * Pitch Deck — 1280 x 720 (16:9)
+ *
+ * ออกแบบให้ใช้ได้ 2 ทางจากไฟล์เดียว:
+ *   1. เปิดดูสดบนเว็บ (กรรมการกดลิงก์ดูได้)
+ *   2. สั่งพิมพ์เป็น PDF ด้วย Edge headless สำหรับส่งงาน
+ *
+ * ใช้หน่วย px ตายตัวแทน rem/vh เพราะ PDF ต้องได้ขนาดเท่ากันทุกเครื่อง
+ * ไม่ขึ้นกับ font-size ของ root หรือขนาดหน้าต่าง
+ */
+
+.deck {
+  --slide-w: 1280px;
+  --slide-h: 720px;
+  background: #e8e2d6;
+  padding: 0;
+}
+
+/* ล้าง padding ที่ body ตั้งไว้กัน navbar ลอย — deck ไม่มี navbar */
+body:has(.deck) {
+  padding-top: 0 !important;
+  background: #e8e2d6;
+}
+body:has(.deck) header {
+  display: none !important;
+}
+
+.slide {
+  position: relative;
+  width: var(--slide-w);
+  height: var(--slide-h);
+  margin: 0 auto 28px;
+  overflow: hidden;
+  background: #fffdf9;
+  color: #211a12;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 76px;
+  box-shadow: 0 24px 60px -28px rgba(87, 70, 52, 0.5);
+}
+
+.slide--dark {
+  background: #211a12;
+  color: #fdf8ef;
+}
+
+.slide--ink {
+  background: #1a2539;
+  color: #fdf8ef;
+}
+
+.slide--center {
+  align-items: center;
+  text-align: center;
+}
+
+/* เลขหน้ามุมล่างขวา */
+.slide__no {
+  position: absolute;
+  right: 42px;
+  bottom: 32px;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  opacity: 0.4;
+}
+
+/* ป้ายหมวดมุมบนซ้าย — ช่วยให้กรรมการรู้ว่ากำลังอยู่ส่วนไหนของ pitch */
+.slide__tag {
+  position: absolute;
+  top: 40px;
+  left: 76px;
+  font-size: 13px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.slide h1 {
+  font-size: 76px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.slide h2 {
+  font-size: 52px;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+.slide h3 {
+  font-size: 30px;
+  line-height: 1.3;
+}
+.slide p {
+  font-size: 23px;
+  line-height: 1.65;
+}
+.slide .lead {
+  font-size: 27px;
+  line-height: 1.6;
+}
+.slide .small {
+  font-size: 17px;
+  line-height: 1.6;
+  opacity: 0.72;
+}
+
+.gold {
+  background: linear-gradient(100deg, #f8e3ad 0%, #e3b254 48%, #f0cd7c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.deck-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 80% at 50% -10%,
+    rgba(227, 178, 84, 0.3) 0%,
+    transparent 65%
+  );
+}
+
+@media print {
+  @page {
+    size: 1280px 720px;
+    margin: 0;
+  }
+  body:has(.deck),
+  .deck {
+    background: #fff !important;
+  }
+  .slide {
+    margin: 0 !important;
+    box-shadow: none !important;
+    break-after: page;
+    page-break-after: always;
+  }
+  .slide:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}
