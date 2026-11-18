@@ -66,6 +66,19 @@
   --color-gold-400: #e3b254;
   --color-gold-500: #c9953a;
 
+  /**
+   * ── สีสำหรับปุ่มหลัก ──
+   *
+   * เดิมปุ่มใช้สีน้ำตาลเข้มเหมือนตัวอักษร ทำให้ทั้งหน้าเป็นโทนน้ำตาลล้วนและทึบ
+   * ใช้น้ำเงินหมึกแทน ซึ่งเป็นสีคู่ตรงข้ามของทอง จึงทำให้ปุ่มเด่นขึ้นจากพื้นกระดาษ
+   * และเป็นน้ำเงินเข้มแบบหมึกเขียนจดหมาย ไม่ใช่น้ำเงินสดแบบเว็บ AI ทั่วไป
+   *
+   * ทอง = สีประจำแบรนด์ · น้ำเงินหมึก = สีของการกระทำ
+   */
+  --color-ink-700: #27354f;
+  --color-ink-800: #1a2539;
+  --color-ink-900: #121a2a;
+
   /* ── ตรวจผ่าน ── */
   --color-verified-400: #5fd6a4;
   --color-verified-600: #1f8a63;
@@ -187,30 +200,47 @@ h1 {
   position: absolute;
   border-radius: 9999px;
 }
-/* จุดศูนย์กลางต้องอยู่ในกรอบที่มองเห็น ไม่งั้น overflow:hidden ตัดแกนแสงทิ้ง */
+/**
+ * ⚠️ ดวงแสงต้องอยู่ในกรอบทั้งดวง ห้ามล้นขึ้นไปเหนือขอบบน
+ *
+ * เดิมวางไว้ที่ top ติดลบ แล้ว .aurora มี overflow:hidden
+ * ดวงแสงที่เบลอจึงถูกตัดแบนที่ขอบบน กลายเป็นเส้นตรงพาดใต้ navbar
+ * (เส้นนี้คือบั๊กที่เห็นในหน้าเว็บ ไม่ใช่เงาหรือขอบของ element ใด)
+ *
+ * ตอนนี้ย้ายมาเริ่มที่ top:0 แล้วเลื่อนจุดสว่างลงมาด้วยตำแหน่งใน gradient แทน
+ * จึงไม่มีอะไรถูกตัด และแสงไล่จางลงอย่างต่อเนื่อง
+ */
 .aurora::before {
-  width: 76rem;
-  height: 38rem;
-  top: -14rem;
+  width: 100%;
+  height: 34rem;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
+  border-radius: 0;
   background: radial-gradient(
-    ellipse at center,
-    rgba(248, 227, 173, 0.85) 0%,
-    rgba(227, 178, 84, 0.35) 34%,
-    transparent 70%
+    60% 70% at 50% 14%,
+    rgba(248, 227, 173, 0.78) 0%,
+    rgba(240, 205, 124, 0.42) 32%,
+    rgba(227, 178, 84, 0.16) 55%,
+    transparent 76%
   );
-  filter: blur(80px);
+  filter: blur(60px);
 }
+
 /* น้ำเงินจาง ๆ ถ่วงไม่ให้ทองล้นจนเหลือง */
 .aurora::after {
-  width: 40rem;
-  height: 24rem;
-  top: -4rem;
+  width: 70%;
+  height: 26rem;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, rgba(91, 141, 251, 0.26) 0%, transparent 68%);
-  filter: blur(90px);
+  border-radius: 0;
+  background: radial-gradient(
+    50% 60% at 50% 26%,
+    rgba(91, 141, 251, 0.22) 0%,
+    transparent 70%
+  );
+  filter: blur(70px);
 }
 
 .star-field {

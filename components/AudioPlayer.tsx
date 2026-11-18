@@ -159,7 +159,7 @@ export default function AudioPlayer({
         onClick={toggle}
         aria-label={playing ? "หยุด" : label ? `ฟังเสียงต้นฉบับ: ${label}` : "ฟังเสียงต้นฉบับ"}
         className={clsx(
-          "grid shrink-0 place-items-center rounded-full bg-earth-900 text-paper-50 transition hover:bg-earth-800",
+          "grid shrink-0 place-items-center rounded-full bg-ink-800 text-paper-50 transition hover:bg-ink-700",
           compact ? "h-7 w-7" : "h-10 w-10"
         )}
       >

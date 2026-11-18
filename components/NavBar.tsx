@@ -82,7 +82,7 @@ export default function NavBar({
               </Link>
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-earth-900 px-4 font-medium text-paper-50 transition hover:bg-earth-800 sm:px-5"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-800 px-4 font-medium text-paper-50 transition hover:bg-ink-700 sm:px-5"
               >
                 <Mic size={17} />
                 <span className="hidden sm:inline">เริ่มสัมภาษณ์</span>
@@ -122,7 +122,7 @@ export default function NavBar({
               </Link>
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-earth-900 px-5 font-medium text-paper-50 transition hover:bg-earth-800"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-800 px-5 font-medium text-paper-50 transition hover:bg-ink-700"
               >
                 <Mic size={17} />
                 เริ่มเลย

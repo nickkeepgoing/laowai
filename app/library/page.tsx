@@ -115,7 +115,7 @@ export default async function DashboardPage() {
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
               href="/interview/new"
-              className="inline-flex min-h-14 items-center gap-2 rounded-2xl bg-earth-900 px-8 text-lg font-medium text-paper-50 shadow-[0_10px_30px_-12px_rgba(33,26,18,0.7)] transition hover:bg-earth-800"
+              className="inline-flex min-h-14 items-center gap-2 rounded-2xl bg-ink-800 px-8 text-lg font-medium text-paper-50 shadow-[0_10px_30px_-12px_rgba(33,26,18,0.7)] transition hover:bg-ink-700"
             >
               <Mic size={20} /> เริ่มเรื่องแรก
             </Link>
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/interview/new"
-          className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-earth-900 px-6 font-medium text-paper-50 transition hover:bg-earth-800"
+          className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-ink-800 px-6 font-medium text-paper-50 transition hover:bg-ink-700"
         >
           <Plus size={18} /> เล่าเรื่องใหม่
         </Link>
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
               </div>
               <Link
                 href={`/review/${chapters.find((c) => !c.approved)!.id}`}
-                className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-2xl bg-earth-900 px-6 font-medium text-paper-50 transition hover:bg-earth-800"
+                className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-2xl bg-ink-800 px-6 font-medium text-paper-50 transition hover:bg-ink-700"
               >
                 ตรวจเลย <ArrowRight size={17} />
               </Link>

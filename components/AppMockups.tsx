@@ -69,7 +69,7 @@ export function InterviewMockup() {
       </div>
 
       <div className="mt-3 flex items-center gap-2 rounded-xl border border-paper-300 bg-paper-50 p-3">
-        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-earth-900 text-paper-50">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink-800 text-paper-50">
           <Mic size={13} />
         </span>
         <span className="flex flex-1 items-end gap-[2px]" aria-hidden>
@@ -141,7 +141,7 @@ export function ReviewMockup() {
       </div>
 
       <div className="mt-3 flex gap-2">
-        <span className="rounded-lg bg-earth-900 px-3 py-1.5 text-paper-50">
+        <span className="rounded-lg bg-ink-800 px-3 py-1.5 text-paper-50">
           ตรวจแล้ว ยืนยัน
         </span>
         <span className="rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-red-700">

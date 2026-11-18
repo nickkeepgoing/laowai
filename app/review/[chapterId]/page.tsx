@@ -20,7 +20,7 @@ export default async function ReviewPage({
         </p>
         <Link
           href="/interview/new"
-          className="mt-6 inline-block rounded-xl bg-earth-900 px-5 py-2.5 font-medium text-paper-50"
+          className="mt-6 inline-block rounded-xl bg-ink-800 px-5 py-2.5 font-medium text-paper-50"
         >
           เริ่มใหม่
         </Link>

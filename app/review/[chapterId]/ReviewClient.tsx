@@ -346,7 +346,7 @@ export default function ReviewClient({
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <a
               href={`/book/${chapter.shareToken}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-earth-900 px-6 py-3.5 text-lg font-medium text-paper-50 hover:bg-gold-300"
+              className="inline-flex items-center gap-2 rounded-xl bg-ink-800 px-6 py-3.5 text-lg font-medium text-paper-50 hover:bg-gold-300"
             >
               <BookOpen size={18} /> เปิดหนังสือ
             </a>

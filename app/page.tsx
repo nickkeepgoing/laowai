@@ -176,7 +176,7 @@ export default function Home() {
             >
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-13 items-center gap-2.5 rounded-2xl bg-earth-900 px-6 py-3 font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-earth-800"
+                className="inline-flex min-h-13 items-center gap-2.5 rounded-2xl bg-ink-800 px-6 py-3 font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-ink-700"
               >
                 <Mic size={19} /> เริ่มเก็บเรื่องของท่าน
               </Link>
@@ -734,7 +734,7 @@ export default function Home() {
             </p>
             <Link
               href="/book/demo-token-7f3a9c2e"
-              className="mt-8 inline-flex min-h-14 items-center gap-2 rounded-2xl bg-earth-900 px-7 text-lg font-medium text-paper-50 transition hover:bg-earth-800"
+              className="mt-8 inline-flex min-h-14 items-center gap-2 rounded-2xl bg-ink-800 px-7 text-lg font-medium text-paper-50 transition hover:bg-ink-700"
             >
               <BookOpen size={19} /> เปิดดูตัวอย่างเล่มจริง
             </Link>
@@ -863,7 +863,7 @@ export default function Home() {
                   {["วิธี", "ช่องว่างที่ยังไม่มีใครแก้", "เล่าไว้แก้ยังไง"].map((h, i) => (
                     <th
                       key={h}
-                      className={`bg-earth-900 px-5 py-4 text-paper-50 ${
+                      className={`bg-ink-800 px-5 py-4 text-paper-50 ${
                         i === 0 ? "rounded-tl-2xl" : ""
                       } ${i === 2 ? "rounded-tr-2xl" : ""}`}
                     >
@@ -1211,7 +1211,7 @@ export default function Home() {
           </p>
           <Link
             href="/interview/new"
-            className="mt-9 inline-flex min-h-14 items-center gap-2.5 rounded-2xl bg-earth-900 px-8 text-lg font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-earth-800"
+            className="mt-9 inline-flex min-h-14 items-center gap-2.5 rounded-2xl bg-ink-800 px-8 text-lg font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-ink-700"
           >
             เริ่มวันนี้ <ArrowRight size={19} />
           </Link>
@@ -1244,7 +1244,7 @@ function StepRecord() {
           style={{ height: `${h}%`, opacity: 0.45 + (h / 100) * 0.55 }}
         />
       ))}
-      <span className="ml-3 grid h-11 w-11 place-items-center rounded-full bg-earth-900 text-paper-50">
+      <span className="ml-3 grid h-11 w-11 place-items-center rounded-full bg-ink-800 text-paper-50">
         <Mic size={18} />
       </span>
     </div>

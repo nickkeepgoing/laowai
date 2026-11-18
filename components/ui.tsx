@@ -29,7 +29,7 @@ export function Button({
         size === "md" && "min-h-12 px-5 py-2.5",
         size === "lg" && "min-h-14 px-7 py-3.5 text-lg",
         variant === "primary" &&
-          "bg-earth-900 text-paper-50 shadow-[0_8px_24px_-10px_rgba(33,26,18,0.6)] hover:bg-earth-800",
+          "bg-ink-800 text-paper-50 shadow-[0_8px_24px_-10px_rgba(33,26,18,0.6)] hover:bg-ink-700",
         variant === "ghost" &&
           "border border-paper-400 bg-paper-50 text-earth-800 hover:border-gold-400 hover:bg-paper-100",
         variant === "danger" &&
