@@ -41,10 +41,17 @@ import { Card } from "@/components/ui";
 import { demoChapter, demoClips } from "@/lib/demo";
 
 import { DialectMap, TraceabilityProof, VoicePipeline } from "@/components/explainers";
+import {
+  BookMockup,
+  BrowserFrame,
+  InterviewMockup,
+  ReviewMockup,
+} from "@/components/AppMockups";
 
 /** three.js โหลดเฉพาะฝั่ง browser เพื่อไม่ถ่วงหน้าแรก */
 const MemoryWave = dynamic(() => import("@/components/MemoryWave"), { ssr: false });
 const Book3D = dynamic(() => import("@/components/Book3D"), { ssr: false });
+const GlassCore3D = dynamic(() => import("@/components/GlassCore3D"), { ssr: false });
 
 /** ⚠️ เปลี่ยนเป็น false เมื่อทับ public/demo/clip-1.wav ด้วยเสียงจริงที่ได้รับความยินยอมแล้ว */
 const PLACEHOLDER_AUDIO = true;
@@ -284,6 +291,138 @@ export default function Home() {
               </Card>
             </Reveal>
           ))}
+        </div>
+      </section>
+
+      {/* ══════════════ ของจริงที่ใช้ได้แล้ว — section ที่มืดเพื่อตัดกับทั้งหน้า ══════════════ */}
+      <section className="relative overflow-hidden bg-earth-900">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              "radial-gradient(90% 60% at 50% 0%, rgba(201,149,58,0.3) 0%, transparent 60%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-6xl px-5 pt-20 pb-28 sm:px-6">
+          <Reveal>
+            <p className="text-center text-sm tracking-[0.2em] text-gold-300 uppercase">
+              ใช้งานได้จริงแล้ววันนี้
+            </p>
+            <h2 className="mx-auto mt-5 max-w-3xl text-center font-serif text-4xl leading-tight text-paper-50 sm:text-5xl">
+              ไม่ใช่ภาพในสไลด์
+              <br />
+              นี่คือหน้าจอจริงของระบบ
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-center text-lg text-paper-300">
+              ทั้งสามหน้าด้านล่างทำงานอยู่จริง กดเข้าไปลองเองได้ตอนนี้
+            </p>
+          </Reveal>
+
+          {/* กรอบเบราว์เซอร์เอียงซ้อนกัน — ให้ความลึกแทนการวางเรียงแบน ๆ */}
+          <div className="relative mt-16 grid gap-8 lg:grid-cols-3 lg:gap-5">
+            <Reveal>
+              <div className="tilt-left elev-4 rounded-2xl lg:mt-10">
+                <BrowserFrame url="laowai-th.vercel.app/interview">
+                  <InterviewMockup />
+                </BrowserFrame>
+              </div>
+              <p className="mt-6 text-center text-paper-300 lg:text-left">
+                <span className="block font-medium text-paper-50">หน้าสัมภาษณ์</span>
+                อัดทีละคำถาม เห็นขนาดไฟล์สด และ AI เสนอคำถามต่อ
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.12}>
+              <div className="tilt-flat elev-4 rounded-2xl lg:-mt-4">
+                <BrowserFrame url="laowai-th.vercel.app/review">
+                  <ReviewMockup />
+                </BrowserFrame>
+              </div>
+              <p className="mt-6 text-center text-paper-300">
+                <span className="block font-medium text-paper-50">หน้าตรวจ</span>
+                ระบบจับได้เองว่า AI เขียนเกิน แล้วไฮไลต์ให้คนตัดสิน
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.24}>
+              <div className="tilt-right elev-4 rounded-2xl lg:mt-10">
+                <BrowserFrame url="laowai-th.vercel.app/book">
+                  <BookMockup />
+                </BrowserFrame>
+              </div>
+              <p className="mt-6 text-center text-paper-300 lg:text-right">
+                <span className="block font-medium text-paper-50">หน้าหนังสือ</span>
+                A5 พร้อมพิมพ์ ทุกย่อหน้ามี QR ฟังเสียงจริง
+              </p>
+            </Reveal>
+          </div>
+
+          <Reveal delay={0.35}>
+            <div className="mt-14 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/interview/new"
+                className="inline-flex min-h-14 items-center gap-2 rounded-2xl bg-gold-400 px-7 text-lg font-medium text-earth-900 transition hover:bg-gold-300"
+              >
+                <Mic size={19} /> ลองใช้เองตอนนี้
+              </Link>
+              <Link
+                href="/book/demo-token-7f3a9c2e"
+                className="inline-flex min-h-14 items-center gap-2 rounded-2xl border border-paper-50/30 px-7 text-lg text-paper-50 transition hover:bg-paper-50/10"
+              >
+                <BookOpen size={18} /> เปิดหนังสือตัวอย่าง
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ══════════════ แก่นแก้ว + ตัวเลข ══════════════ */}
+      <section className="paper-grain relative overflow-hidden border-b border-paper-300">
+        <div className="relative mx-auto max-w-5xl px-5 py-20 sm:px-6">
+          <div className="relative grid items-center gap-10 lg:grid-cols-2">
+            <Reveal>
+              <h2 className="font-serif text-4xl leading-tight text-earth-900">
+                สิ่งที่เราเก็บ
+                <br />
+                ไม่มีใครผลิตขึ้นใหม่ได้
+              </h2>
+              <p className="mt-5 text-lg leading-relaxed text-earth-700">
+                โมเดลสร้างข้อความได้ สร้างภาพได้ สร้างเสียงเลียนแบบได้
+                แต่สิ่งที่สร้างขึ้นใหม่ไม่ได้คือ
+                <strong className="text-earth-900">
+                  ช่วงเวลาที่คนคนหนึ่งเล่าเรื่องของตัวเองให้ลูกหลานฟัง
+                </strong>
+              </p>
+              <p className="mt-4 text-lg leading-relaxed text-earth-700">
+                เราจึงไม่พยายามสร้างมันขึ้นมา เราแค่ทำให้มันไม่หาย
+              </p>
+            </Reveal>
+
+            <div className="relative h-[24rem]">
+              <GlassCore3D className="absolute inset-0" />
+
+              {/* ตัวเลขลอยรอบแก่น — ทำเป็น HTML ให้คมและอ่านง่าย */}
+              {[
+                { t: "16.8 ล้าน", s: "ผู้สูงอายุไทย", pos: "top-2 left-0" },
+                { t: "100%", s: "ย่อหน้าที่ตรวจย้อนกลับได้", pos: "top-24 right-0" },
+                { t: "0.7 MB", s: "เสียง 3 นาที", pos: "bottom-24 left-0" },
+                { t: "0 เสียง", s: "ที่เราสังเคราะห์ขึ้น", pos: "bottom-4 right-2" },
+              ].map((p, i) => (
+                <motion.span
+                  key={p.t}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.3 + i * 0.12 }}
+                  className={`absolute ${p.pos} card-soft elev-2 rounded-2xl px-4 py-2.5`}
+                >
+                  <span className="block font-serif text-xl text-earth-900">{p.t}</span>
+                  <span className="block text-sm text-earth-500">{p.s}</span>
+                </motion.span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
