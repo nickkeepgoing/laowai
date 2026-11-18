@@ -44,8 +44,8 @@ export default async function ClipPage({
     return (
       <main className="grid min-h-screen place-items-center px-6 text-center">
         <div>
-          <h1 className="font-serif text-2xl text-mist-50">ลิงก์นี้ใช้ไม่ได้แล้ว</h1>
-          <p className="mt-3 text-mist-300">
+          <h1 className="font-serif text-2xl text-earth-900">ลิงก์นี้ใช้ไม่ได้แล้ว</h1>
+          <p className="mt-3 text-earth-700">
             ครอบครัวสามารถเพิกถอนลิงก์ได้ทุกเมื่อ เพื่อให้เสียงของท่านอยู่ในมือครอบครัวเสมอ
           </p>
         </div>

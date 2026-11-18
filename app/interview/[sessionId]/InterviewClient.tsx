@@ -162,10 +162,10 @@ export default function InterviewClient({
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <header className="mb-7 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm text-mist-500">
+          <p className="text-sm text-earth-500">
             {topic.icon} {topic.title}
           </p>
-          <h1 className="font-serif text-2xl text-mist-50">
+          <h1 className="font-serif text-2xl text-earth-900">
             กำลังฟัง{session.elderName}เล่า
           </h1>
         </div>
@@ -188,10 +188,10 @@ export default function InterviewClient({
 
       {/* ── คำถาม ── */}
       <Card>
-        <p className="mb-1.5 text-sm text-mist-500">
+        <p className="mb-1.5 text-sm text-earth-500">
           คำถามที่ {qIndex + 1} จาก {topic.questions.length} — อ่านให้ท่านฟังแล้วกดอัด
         </p>
-        <p className="font-serif text-2xl leading-relaxed text-mist-50">{question}</p>
+        <p className="font-serif text-2xl leading-relaxed text-earth-900">{question}</p>
 
         <div className="mt-5 flex flex-wrap gap-2">
           {topic.questions.map((q, i) => (
@@ -204,7 +204,7 @@ export default function InterviewClient({
               }}
               title={q.text}
               className={`h-2.5 w-2.5 rounded-full transition ${
-                i === qIndex && !customQ ? "bg-gold-400" : "bg-mist-500/30 hover:bg-mist-500/60"
+                i === qIndex && !customQ ? "bg-gold-400" : "bg-paper-300 hover:bg-paper-300"
               }`}
               aria-label={`ไปคำถามที่ ${i + 1}`}
             />
@@ -218,12 +218,12 @@ export default function InterviewClient({
           <>
             <LiveWaveform level={rec.level} active />
             <div className="mb-4 flex items-center justify-center gap-4 text-sm">
-              <span className="tabular-nums text-mist-50">{fmtDuration(rec.ms)}</span>
-              <span className="text-mist-500">·</span>
+              <span className="tabular-nums text-earth-900">{fmtDuration(rec.ms)}</span>
+              <span className="text-earth-500">·</span>
               {/* ตัวเลขนี้คือคำตอบของคำถาม mentor เรื่องเน็ตกับแบต */}
-              <span className="tabular-nums text-mist-300">ประมาณ {fmtBytes(liveBytes)}</span>
-              <span className="text-mist-500">·</span>
-              <span className="text-mist-500">
+              <span className="tabular-nums text-earth-700">ประมาณ {fmtBytes(liveBytes)}</span>
+              <span className="text-earth-500">·</span>
+              <span className="text-earth-500">
                 หยุดเองที่ {fmtDuration(MAX_CLIP_MS)}
               </span>
             </div>
@@ -241,7 +241,7 @@ export default function InterviewClient({
                 <Mic size={18} /> กดอัดคำตอบ
               </Button>
             )}
-            <label className="cursor-pointer text-sm text-mist-300 underline decoration-mist-500/40 hover:text-mist-50">
+            <label className="cursor-pointer text-sm text-earth-700 underline decoration-paper-400 hover:text-earth-900">
               หรืออัปโหลดไฟล์เสียง
               <input
                 type="file"
@@ -250,7 +250,7 @@ export default function InterviewClient({
                 onChange={(e) => e.target.files?.[0] && rec.useFile(e.target.files[0])}
               />
             </label>
-            <p className="max-w-md text-center text-xs text-mist-500">
+            <p className="max-w-md text-center text-xs text-earth-500">
               อัดทีละคำถาม ไม่ต้องเปิดแอปทิ้งไว้ — เสียง 3 นาทีใช้เน็ตประมาณ 0.7 MB
               และจะอัปโหลดหลังกดหยุดเท่านั้น
             </p>
@@ -275,7 +275,7 @@ export default function InterviewClient({
                   </>
                 )}
               </Button>
-              <span className="text-sm text-mist-300">
+              <span className="text-sm text-earth-700">
                 {rec.blob ? fmtBytes(rec.blob.size) : ""}
               </span>
               <Button variant="quiet" size="sm" onClick={rec.reset} disabled={analyzing}>
@@ -306,14 +306,14 @@ export default function InterviewClient({
       {/* ── ผลจาก AI ── */}
       {lastClip && (
         <Card className="mt-5">
-          <h2 className="mb-3 text-sm text-mist-500">
+          <h2 className="mb-3 text-sm text-earth-500">
             สิ่งที่ AI ได้ยินจากคำตอบล่าสุด
           </h2>
-          <p className="mb-5 rounded-xl border border-mist-500/15 bg-night-800/50 p-4 leading-relaxed text-mist-100">
+          <p className="mb-5 rounded-xl border border-paper-300 bg-paper-200 p-4 leading-relaxed text-earth-800">
             {lastClip.transcript}
           </p>
 
-          <h3 className="mb-2 text-sm text-mist-500">
+          <h3 className="mb-2 text-sm text-earth-500">
             ข้อมูลที่ดึงได้ — ทุกข้อตรวจแล้วว่ามีถ้อยคำนี้ในเสียงจริง
           </h3>
           <ul className="space-y-2">
@@ -329,8 +329,8 @@ export default function InterviewClient({
                     aria-label="ตรวจแล้ว"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-mist-50">{c.summary}</p>
-                    <p className="mt-1 text-sm text-mist-300">“{c.quote}”</p>
+                    <p className="text-earth-900">{c.summary}</p>
+                    <p className="mt-1 text-sm text-earth-700">“{c.quote}”</p>
                   </div>
                 </div>
               </li>
@@ -347,7 +347,7 @@ export default function InterviewClient({
 
           {lastClip.nextQuestions.length > 0 && (
             <>
-              <h3 className="mt-6 mb-2 text-sm text-mist-500">
+              <h3 className="mt-6 mb-2 text-sm text-earth-500">
                 AI เสนอคำถามต่อ — กดเลือกข้อที่อยากถาม
               </h3>
               <div className="flex flex-col gap-2">
@@ -356,7 +356,7 @@ export default function InterviewClient({
                     key={i}
                     type="button"
                     onClick={() => setCustomQ(q)}
-                    className="rounded-xl border border-mist-500/20 bg-night-800/40 px-4 py-3 text-left text-mist-100 transition hover:border-gold-400/60 hover:bg-night-800"
+                    className="rounded-xl border border-paper-300 bg-paper-200 px-4 py-3 text-left text-earth-800 transition hover:border-gold-400/60 hover:bg-paper-200"
                   >
                     {q}
                   </button>
@@ -381,7 +381,7 @@ export default function InterviewClient({
               </>
             )}
           </Button>
-          <span className="text-sm text-mist-500">
+          <span className="text-sm text-earth-500">
             จากเรื่องที่เก็บไว้ {clips.length} เรื่อง · ครอบครัวจะได้ตรวจก่อนพิมพ์
           </span>
         </div>

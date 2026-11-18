@@ -15,6 +15,30 @@
  */
 
 @theme {
+  /**
+   * ── โทนสว่าง: โทนหลักของเว็บ ──
+   *
+   * ทำไมไม่ใช้พื้นดำตาม reference:
+   * reference ทุกอันเป็นเว็บ B2B ขายซอฟต์แวร์ให้คนไอที แต่คนที่นั่งดูจอนี้จริง ๆ
+   * คือผู้สูงอายุกับลูกหลาน พื้นดำตัวเล็กคอนทราสต์ต่ำคือสิ่งที่แย่ที่สุดต่อสายตาวัย 70+
+   * (WCAG แนะนำคอนทราสต์ ≥ 4.5:1 และผู้สูงอายุต้องการมากกว่านั้น)
+   *
+   * เราจึงใช้โทนกระดาษอบอุ่น + ทอง ซึ่งนอกจากอ่านง่ายแล้ว
+   * ยังเข้ากับเนื้อหาเรื่องหนังสือและความทรงจำ และต่างจากทุกทีมในงานที่ใช้พื้นดำ
+   */
+  --color-paper-50: #fffdf9;
+  --color-paper-100: #fdf8ef;
+  --color-paper-200: #f6eee0;
+  --color-paper-300: #ebdfcb;
+  --color-paper-400: #d9c7ab;
+
+  /* ตัวอักษรบนพื้นสว่าง — น้ำตาลเข้มอ่านสบายกว่าดำสนิท */
+  --color-earth-900: #211a12;
+  --color-earth-800: #3a2e20;
+  --color-earth-700: #574634;
+  --color-earth-500: #83705a;
+  --color-earth-400: #a08d76;
+
   /* ── พื้น ── */
   --color-night-950: #05070f;
   --color-night-900: #080c18;
@@ -56,13 +80,19 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
   scroll-behavior: smooth;
+  /**
+   * ตัวอักษรฐาน 17px ไม่ใช่ 16px
+   * ผู้ใช้ปลายทางคือคนอายุ 65+ ที่สายตายาว ขยับขึ้นหนึ่งขั้นทั้งเว็บ
+   * ถูกกว่าการไล่ปรับทีละหน้าและทำให้ไม่มีมุมไหนหลุด
+   */
+  font-size: 17px;
 }
 
 body {
-  background: var(--color-night-950);
-  color: var(--color-mist-100);
+  background: var(--color-paper-100);
+  color: var(--color-earth-800);
   font-family: var(--font-sans);
   /* ภาษาไทยไม่มีช่องว่างระหว่างคำ ต้องให้เบราว์เซอร์ตัดคำตามพจนานุกรม */
   line-break: normal;
@@ -71,9 +101,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ผู้สูงอายุเป็นคนอ่านด้วย ตัวหนังสือจึงใหญ่กว่าเว็บทั่วไปหนึ่งขั้น */
 :where(p, li) {
   line-height: 1.85;
+}
+
+/**
+ * พื้นที่ที่ผู้สูงอายุต้องมองและกดเอง
+ * ตัวใหญ่ขึ้น ปุ่มสูงขึ้น ตามแนวทาง accessibility สำหรับผู้สูงวัย
+ * (เป้ากดอย่างน้อย 44x44px และตัวหนังสืออย่างน้อย 18px)
+ */
+.elder-scale {
+  font-size: 1.12em;
+}
+.elder-scale :where(button, a[role="button"]) {
+  min-height: 52px;
 }
 
 :focus-visible {
@@ -88,12 +129,10 @@ body {
 }
 
 /**
- * ── พื้นหลัง hero ──
+ * ── พื้นหลัง hero (โทนสว่าง) ──
  *
- * ประกอบ 3 ชั้น เพราะชั้นเดียวจะได้ gradient แบน ๆ ที่ดูถูก:
- *   1. hero-field  ผืนน้ำเงินกว้างไล่จางลงล่าง  ← ให้ "ความเป็นผืนสี"
- *   2. aurora      จุดเรืองแสงเบลอ              ← ให้ "ความลึก"
- *   3. star-field  จุดเล็ก ๆ จาง ๆ               ← ให้ "เนื้อ" ไม่ให้ดูเป็นพลาสติก
+ * 3 ชั้น: ผืนแสงอบอุ่น + ดวงเรืองแสง + ฝุ่นแสงจาง ๆ
+ * ให้ความรู้สึกเหมือนแสงเช้าในบ้าน ไม่ใช่ gradient ของเว็บ AI
  */
 .hero-field {
   position: absolute;
@@ -101,33 +140,15 @@ body {
   pointer-events: none;
   background:
     radial-gradient(
-      120% 70% at 50% -10%,
-      rgba(91, 141, 251, 0.45) 0%,
-      rgba(53, 102, 239, 0.26) 32%,
-      rgba(36, 73, 196, 0.1) 55%,
+      120% 76% at 50% -8%,
+      rgba(240, 205, 124, 0.5) 0%,
+      rgba(227, 178, 84, 0.22) 30%,
+      rgba(246, 238, 224, 0.5) 55%,
       transparent 78%
     ),
-    linear-gradient(180deg, rgba(27, 39, 64, 0.9) 0%, rgba(5, 7, 15, 0) 70%);
+    linear-gradient(180deg, #fffdf9 0%, #fdf8ef 45%, rgba(253, 248, 239, 0) 100%);
 }
 
-.star-field {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.5;
-  background-image:
-    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255, 255, 255, 0.45), transparent),
-    radial-gradient(1.5px 1.5px at 78% 12%, rgba(255, 255, 255, 0.35), transparent),
-    radial-gradient(1px 1px at 33% 42%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1px 1px at 62% 33%, rgba(248, 227, 173, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 88% 46%, rgba(255, 255, 255, 0.28), transparent),
-    radial-gradient(1px 1px at 22% 62%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 52% 8%, rgba(255, 255, 255, 0.35), transparent),
-    radial-gradient(1px 1px at 92% 22%, rgba(248, 227, 173, 0.4), transparent);
-  mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
-}
-
-/* ── aurora หลัง hero — เลียนความลึกของแสงเหนือ ไม่ใช่ gradient แบน ── */
 .aurora {
   position: absolute;
   inset: 0;
@@ -139,53 +160,61 @@ body {
   content: "";
   position: absolute;
   border-radius: 9999px;
-  filter: blur(110px);
 }
-/**
- * ⚠️ จุดศูนย์กลางของแสงต้องอยู่ "ในกรอบที่มองเห็น" ไม่ใช่เหนือขอบบน
- *
- * เคยตั้ง top:-22rem กับ height:44rem ทำให้จุดสว่างสุดไปตกที่ y=0 พอดี
- * แล้วโดน overflow:hidden ของ section ตัดครึ่งบนทิ้ง เหลือแต่ขอบจาง ๆ
- * ตอนนี้ดันศูนย์กลางลงมาอยู่ราว 80px ใต้ขอบบน จึงเห็นแกนของแสงจริง
- */
+/* จุดศูนย์กลางต้องอยู่ในกรอบที่มองเห็น ไม่งั้น overflow:hidden ตัดแกนแสงทิ้ง */
 .aurora::before {
-  width: 80rem;
-  height: 40rem;
-  top: -15rem;
+  width: 76rem;
+  height: 38rem;
+  top: -14rem;
   left: 50%;
   transform: translateX(-50%);
   background: radial-gradient(
     ellipse at center,
-    rgba(91, 141, 251, 0.95) 0%,
-    rgba(53, 102, 239, 0.55) 30%,
-    rgba(36, 73, 196, 0.22) 52%,
-    transparent 72%
-  );
-  filter: blur(90px);
-}
-
-/* ไฮไลต์ทองซ้อนบนน้ำเงิน = ลายเซ็นของแบรนด์ที่ทีมอื่นไม่มี */
-.aurora::after {
-  width: 38rem;
-  height: 24rem;
-  top: -7rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgba(248, 227, 173, 0.42) 0%,
-    rgba(227, 178, 84, 0.16) 45%,
+    rgba(248, 227, 173, 0.85) 0%,
+    rgba(227, 178, 84, 0.35) 34%,
     transparent 70%
   );
   filter: blur(80px);
 }
+/* น้ำเงินจาง ๆ ถ่วงไม่ให้ทองล้นจนเหลือง */
+.aurora::after {
+  width: 40rem;
+  height: 24rem;
+  top: -4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(91, 141, 251, 0.26) 0%, transparent 68%);
+  filter: blur(90px);
+}
 
-/* ขอบเรืองแสงบาง ๆ ใช้กับการ์ดสำคัญ */
+.star-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(2px 2px at 14% 22%, rgba(227, 178, 84, 0.55), transparent),
+    radial-gradient(1.5px 1.5px at 78% 16%, rgba(201, 149, 58, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 34% 48%, rgba(227, 178, 84, 0.35), transparent),
+    radial-gradient(2px 2px at 64% 36%, rgba(91, 141, 251, 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 90% 44%, rgba(227, 178, 84, 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 22% 64%, rgba(201, 149, 58, 0.28), transparent);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 75%);
+}
+
+/* เงานุ่มสำหรับการ์ดบนพื้นกระดาษ — ไม่ใช้เงาดำแข็ง ๆ */
+.card-soft {
+  background: #fffdf9;
+  border: 1px solid rgba(217, 199, 171, 0.5);
+  box-shadow:
+    0 1px 2px rgba(33, 26, 18, 0.04),
+    0 12px 32px -12px rgba(87, 70, 52, 0.18);
+}
+
 .ring-glow {
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.07),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 24px 60px -24px rgba(53, 102, 239, 0.45);
+    0 1px 2px rgba(33, 26, 18, 0.05),
+    0 24px 60px -26px rgba(201, 149, 58, 0.55);
 }
 
 .text-gradient-gold {

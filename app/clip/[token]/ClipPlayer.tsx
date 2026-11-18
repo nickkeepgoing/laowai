@@ -32,12 +32,12 @@ export default function ClipPlayer({
   return (
     <main className="mx-auto max-w-md px-5 py-10">
       <header className="text-center">
-        <p className="text-xs tracking-[0.25em] text-mist-500 uppercase">เล่าไว้</p>
-        <h1 className="mt-4 font-serif text-3xl text-mist-50">{elderName}</h1>
-        {relation && <p className="mt-1 text-mist-300">{relation}</p>}
-        <div className="mx-auto my-6 h-px w-12 bg-mist-500/30" />
-        <h2 className="font-serif text-lg text-mist-100">{chapterTitle}</h2>
-        <p className="mt-3 text-sm leading-relaxed text-mist-500">
+        <p className="text-xs tracking-[0.25em] text-earth-500 uppercase">เล่าไว้</p>
+        <h1 className="mt-4 font-serif text-3xl text-earth-900">{elderName}</h1>
+        {relation && <p className="mt-1 text-earth-700">{relation}</p>}
+        <div className="mx-auto my-6 h-px w-12 bg-paper-300" />
+        <h2 className="font-serif text-lg text-earth-800">{chapterTitle}</h2>
+        <p className="mt-3 text-sm leading-relaxed text-earth-500">
           นี่คือเสียงจริงของท่าน ไม่ได้สังเคราะห์ขึ้น
         </p>
       </header>
@@ -46,9 +46,9 @@ export default function ClipPlayer({
         {clips.map((clip, i) => (
           <section
             key={clip.id}
-            className="rounded-2xl border border-mist-500/15 bg-night-900/70 p-4"
+            className="rounded-2xl border border-paper-300 bg-paper-50 p-4"
           >
-            <p className="mb-3 text-mist-100">{clip.question}</p>
+            <p className="mb-3 text-earth-800">{clip.question}</p>
 
             <AudioPlayer
               ref={i === 0 ? first : undefined}
@@ -61,7 +61,7 @@ export default function ClipPlayer({
             <button
               type="button"
               onClick={() => setOpen(open === clip.id ? null : clip.id)}
-              className="mt-3 inline-flex items-center gap-1 text-sm text-mist-500 hover:text-mist-300"
+              className="mt-3 inline-flex items-center gap-1 text-sm text-earth-500 hover:text-earth-700"
             >
               <ChevronDown
                 size={14}
@@ -71,13 +71,13 @@ export default function ClipPlayer({
             </button>
 
             {open === clip.id && (
-              <p className="mt-3 text-sm leading-[1.9] text-mist-300">{clip.transcript}</p>
+              <p className="mt-3 text-sm leading-[1.9] text-earth-700">{clip.transcript}</p>
             )}
           </section>
         ))}
       </div>
 
-      <p className="mt-10 text-center text-xs leading-relaxed text-mist-500">
+      <p className="mt-10 text-center text-xs leading-relaxed text-earth-500">
         ครอบครัวเป็นเจ้าของเสียงนี้ และเพิกถอนลิงก์นี้ได้ทุกเมื่อ
       </p>
     </main>

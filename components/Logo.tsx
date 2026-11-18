@@ -69,8 +69,8 @@ export default function Logo({
     <span className="inline-flex items-center gap-2.5">
       {mark}
       <span className="flex flex-col leading-none">
-        <span className="font-serif text-lg tracking-wide text-mist-50">เล่าไว้</span>
-        <span className="mt-0.5 text-[9px] tracking-[0.22em] text-mist-500 uppercase">
+        <span className="font-serif text-lg tracking-wide text-earth-900">เล่าไว้</span>
+        <span className="mt-0.5 text-[9px] tracking-[0.22em] text-earth-500 uppercase">
           LaoWai
         </span>
       </span>

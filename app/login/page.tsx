@@ -25,18 +25,18 @@ export default async function LoginPage({
       <div className="relative w-full max-w-md">
         <Link
           href="/"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm text-mist-300 hover:text-mist-50"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm text-earth-700 hover:text-earth-900"
         >
           <ArrowLeft size={15} /> กลับหน้าแรก
         </Link>
 
-        <div className="ring-glow rounded-3xl border border-white/10 bg-night-900/80 p-8 backdrop-blur-xl">
+        <div className="ring-glow rounded-3xl border border-paper-300 bg-paper-50 p-8 backdrop-blur-xl">
           <Logo size={44} />
 
-          <h1 className="mt-6 font-serif text-3xl text-mist-50">
+          <h1 className="mt-6 font-serif text-3xl text-earth-900">
             เข้าสู่คลังความทรงจำ
           </h1>
-          <p className="mt-2.5 leading-relaxed text-mist-300">
+          <p className="mt-2.5 leading-relaxed text-earth-700">
             เรื่องเล่าของครอบครัวเป็นของครอบครัว
             เราจึงให้เข้าถึงได้เฉพาะคนที่คุณอนุญาตเท่านั้น
           </p>
@@ -56,9 +56,9 @@ export default async function LoginPage({
           {sent ? (
             <div className="mt-7 rounded-2xl border border-verified-400/30 bg-verified-600/10 p-5 text-center">
               <Mail size={24} className="mx-auto text-verified-400" />
-              <p className="mt-3 font-medium text-mist-50">ส่งลิงก์เข้าสู่ระบบแล้ว</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-mist-300">
-                เปิดอีเมล <strong className="text-mist-100">{sent}</strong> แล้วกดลิงก์ในนั้น
+              <p className="mt-3 font-medium text-earth-900">ส่งลิงก์เข้าสู่ระบบแล้ว</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-earth-700">
+                เปิดอีเมล <strong className="text-earth-800">{sent}</strong> แล้วกดลิงก์ในนั้น
                 <br />
                 ลิงก์ใช้ได้ครั้งเดียวและหมดอายุใน 1 ชั่วโมง
               </p>
@@ -70,7 +70,7 @@ export default async function LoginPage({
                 <input type="hidden" name="next" value={target} />
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-3 rounded-xl bg-white px-5 py-3.5 font-medium text-night-950 transition hover:bg-mist-100"
+                  className="flex w-full items-center justify-center gap-3 rounded-xl bg-white px-5 py-3.5 font-medium text-paper-50 transition hover:bg-paper-200"
                 >
                   <GoogleMark />
                   เข้าสู่ระบบด้วย Google
@@ -78,9 +78,9 @@ export default async function LoginPage({
               </form>
 
               <div className="my-6 flex items-center gap-4">
-                <span className="h-px flex-1 bg-white/10" />
-                <span className="text-xs text-mist-500">หรือใช้อีเมล</span>
-                <span className="h-px flex-1 bg-white/10" />
+                <span className="h-px flex-1 bg-paper-200" />
+                <span className="text-xs text-earth-500">หรือใช้อีเมล</span>
+                <span className="h-px flex-1 bg-paper-200" />
               </div>
 
               <form action="/auth/signin" method="post" className="space-y-3">
@@ -90,11 +90,11 @@ export default async function LoginPage({
                   name="email"
                   required
                   placeholder="you@example.com"
-                  className="w-full rounded-xl border border-white/15 bg-night-850 px-4 py-3 text-mist-50 placeholder:text-mist-500 focus:border-gold-400 focus:outline-none"
+                  className="w-full rounded-xl border border-paper-300 bg-paper-200 px-4 py-3 text-earth-900 placeholder:text-earth-500 focus:border-gold-400 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="w-full rounded-xl border border-white/15 px-5 py-3 font-medium text-mist-100 transition hover:border-gold-400/60 hover:bg-night-800"
+                  className="w-full rounded-xl border border-paper-300 px-5 py-3 font-medium text-earth-800 transition hover:border-gold-400/60 hover:bg-paper-200"
                 >
                   ส่งลิงก์เข้าสู่ระบบให้ทางอีเมล
                 </button>
@@ -102,14 +102,14 @@ export default async function LoginPage({
             </>
           )}
 
-          <p className="mt-7 flex items-start gap-2 text-xs leading-relaxed text-mist-500">
+          <p className="mt-7 flex items-start gap-2 text-xs leading-relaxed text-earth-500">
             <ShieldCheck size={14} className="mt-0.5 shrink-0 text-verified-400" />
             เราไม่ขอสิทธิ์เข้าถึงอีเมลหรือไฟล์ของคุณ ใช้เพียงเพื่อยืนยันว่าเป็นคุณ
             และผูกคลังความทรงจำเข้ากับบัญชีของคุณเท่านั้น
           </p>
         </div>
 
-        <p className="mt-6 text-center text-sm text-mist-500">
+        <p className="mt-6 text-center text-sm text-earth-500">
           อยากลองก่อน?{" "}
           <Link href="/book/demo-token-7f3a9c2e" className="text-gold-300 hover:text-gold-200">
             ดูตัวอย่างหนังสือ
