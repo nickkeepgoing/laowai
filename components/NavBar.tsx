@@ -49,8 +49,8 @@ export default function NavBar({
         className={clsx(
           "pointer-events-auto mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border transition-all duration-300",
           scrolled
-            ? "border-paper-300 bg-paper-50/92 px-3 py-2 shadow-[0_10px_30px_-14px_rgba(87,70,52,0.45)] backdrop-blur-xl sm:px-4"
-            : "border-paper-300/60 bg-paper-50/70 px-3 py-2.5 backdrop-blur-md sm:px-5 sm:py-3"
+            ? "border-paper-300 bg-paper-50/95 px-3 py-2 shadow-[0_12px_34px_-14px_rgba(87,70,52,0.5)] backdrop-blur-xl sm:px-4"
+            : "border-paper-300 bg-paper-50/88 px-3 py-2.5 shadow-[0_8px_26px_-16px_rgba(87,70,52,0.4)] backdrop-blur-xl sm:px-5 sm:py-3"
         )}
       >
         <Link href="/" className="transition hover:opacity-80">
