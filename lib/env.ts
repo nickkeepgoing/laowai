@@ -9,8 +9,18 @@
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim() || "";
 export const GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
 
-export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || "";
-export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || "";
+export const SUPABASE_URL =
+  (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)?.trim() || "";
+
+/**
+ * anon key อยู่ฝั่ง server เท่านั้น ไม่ต้องใช้ NEXT_PUBLIC_
+ *
+ * เราแตะ Supabase จาก app/api/** เท่านั้น ส่วนหน้าเว็บคุยกับ API ผ่าน fetch
+ * เพราะฉะนั้นไม่มีเหตุผลให้ key หลุดไปอยู่ใน bundle ของเบราว์เซอร์
+ * (ยังรองรับชื่อเดิมที่มี NEXT_PUBLIC_ ไว้ด้วย เผื่อใครยังใช้ .env.local เก่า)
+ */
+export const SUPABASE_ANON_KEY =
+  (process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)?.trim() || "";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000";
