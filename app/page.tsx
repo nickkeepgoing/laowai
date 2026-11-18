@@ -119,18 +119,25 @@ export default function Home() {
   return (
     <main className="overflow-x-hidden">
       {/* ══════════════ HERO ══════════════ */}
-      <section className="relative overflow-hidden px-5 pt-12 pb-20 sm:px-6 sm:pt-20">
+      {/**
+       * hero ถูกบีบให้จบในจอเดียว
+       *
+       * ปัญหาเดิม: ระยะห่างกับขนาดตัวอักษรใหญ่เกิน ทำให้ปุ่มกับที่เล่นเสียงตกจอ
+       * ผู้ใช้ต้องเลื่อนถึงจะเห็นว่ากดอะไรได้ ซึ่งเสียโอกาสในสิบวินาทีแรก
+       * ตอนนี้ min-h คำนวณจากความสูงจอลบ header ให้พอดีหนึ่งหน้าจอ
+       */}
+      <section className="relative overflow-hidden px-5 pt-6 pb-12 sm:px-6 sm:pt-8 lg:flex lg:min-h-[calc(100vh-4.5rem)] lg:items-center lg:pb-8">
         <div className="hero-field" aria-hidden />
         <div className="aurora" aria-hidden />
         <div className="star-field" aria-hidden />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-8 lg:grid-cols-[1.04fr_0.96fr] lg:gap-12">
           <div>
             <motion.span
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 rounded-full border border-gold-400/50 bg-paper-50/80 px-4 py-2 text-sm text-earth-700 backdrop-blur"
+              className="inline-flex items-center gap-2 rounded-full border border-gold-400/50 bg-paper-50/80 px-4 py-1.5 text-sm text-earth-700 backdrop-blur"
             >
               <Heart size={15} className="text-gold-500" />
               สำหรับลูกหลานที่อยากฟังเรื่องของท่าน ก่อนจะสาย
@@ -140,7 +147,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.08 }}
-              className="mt-7 font-serif text-[2.7rem] leading-[1.18] text-earth-900 sm:text-[3.6rem] sm:leading-[1.12]"
+              className="mt-5 font-serif text-[2.1rem] leading-[1.2] text-earth-900 sm:text-[2.6rem] xl:text-[3rem] xl:leading-[1.14]"
             >
               ปู่ย่าตายายของคุณ
               <br />
@@ -153,7 +160,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.25 }}
-              className="mt-6 max-w-lg text-xl leading-relaxed text-earth-700"
+              className="mt-4 max-w-lg text-lg leading-relaxed text-earth-700"
             >
               นั่งข้างท่าน กดอัด แล้วให้เราช่วยตั้งคำถามต่อ
               จบออกมาเป็นหนังสือชีวิตที่ทุกย่อหน้า
@@ -164,19 +171,19 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.38 }}
-              className="mt-9 flex flex-wrap items-center gap-4"
+              className="mt-6 flex flex-wrap items-center gap-3"
             >
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-14 items-center gap-2.5 rounded-2xl bg-earth-900 px-8 text-lg font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-earth-800"
+                className="inline-flex min-h-13 items-center gap-2.5 rounded-2xl bg-earth-900 px-6 py-3 font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-earth-800"
               >
-                <Mic size={20} /> เริ่มเก็บเรื่องของท่าน
+                <Mic size={19} /> เริ่มเก็บเรื่องของท่าน
               </Link>
               <Link
                 href="/book/demo-token-7f3a9c2e"
-                className="inline-flex min-h-14 items-center gap-2.5 rounded-2xl border border-paper-400 bg-paper-50 px-7 text-lg text-earth-800 transition hover:border-gold-400"
+                className="inline-flex min-h-13 items-center gap-2.5 rounded-2xl border border-paper-400 bg-paper-50 px-5 py-3 text-earth-800 transition hover:border-gold-400"
               >
-                <BookOpen size={19} /> ดูตัวอย่างหนังสือ
+                <BookOpen size={18} /> ดูตัวอย่างหนังสือ
               </Link>
             </motion.div>
 
@@ -184,25 +191,27 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="mt-8 rounded-3xl border border-paper-300 bg-paper-50/80 p-4 backdrop-blur"
+              className="elev-2 mt-6 max-w-lg rounded-2xl border border-paper-300 bg-paper-50/90 p-3.5 backdrop-blur"
             >
-              <p className="mb-3 flex items-center gap-2 text-sm text-earth-600">
-                <Volume2 size={16} className="text-gold-500" />
+              <p className="mb-2.5 flex items-center gap-2 text-sm text-earth-600">
+                <Volume2 size={15} className="text-gold-500" />
                 กดฟังตัวอย่าง — นี่คือสิ่งที่เรากำลังเก็บรักษา
               </p>
               <AudioPlayer src={hero.audioUrl} clipId="hero" label="ตัวอย่างเสียงผู้เล่า" />
               {PLACEHOLDER_AUDIO && (
-                <p className="mt-2.5 text-xs text-earth-400">
-                  ไฟล์ตัวอย่างสำหรับทดสอบระบบ — จะแทนด้วยเสียงจริงที่ได้รับความยินยอมแล้ว
+                <p className="mt-2 text-xs text-earth-400">
+                  ไฟล์ตัวอย่างสำหรับทดสอบระบบ — จะแทนด้วยเสียงจริงที่ได้รับความยินยอม
                 </p>
               )}
             </motion.div>
           </div>
 
-          {/* ภาพจริง + 3D ซ้อนกัน: คนจริงให้ความรู้สึก ส่วนอนุภาคสื่อถึงเสียงที่ถูกเก็บไว้ */}
+          {/**
+           * เอา particle orb ออกจาก hero
+           * บนพื้นสว่างมันจางจนอ่านเป็น "ฝุ่น" ไม่ได้สื่ออะไร และแย่งที่ภาพคนจริง
+           * ย้ายไปอยู่ section "ไม่ทำ deadbot" ซึ่งอนุภาคที่สลายตัวมีความหมายจริง
+           */}
           <div className="relative hidden lg:block">
-            <VoiceOrbMount className="absolute -top-12 -right-6 h-[26rem] w-[26rem] opacity-80" />
-
             <motion.figure
               initial={{ opacity: 0, scale: 0.96, y: 18 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -215,7 +224,7 @@ export default function Home() {
                 alt="คุณยายกับหลานชายยืนคุยกันหน้าบ้านในแสงเย็น"
                 width={1000}
                 height={1500}
-                className="h-[30rem] w-full rounded-[2rem] object-cover shadow-[0_30px_70px_-30px_rgba(87,70,52,0.7)]"
+                className="elev-4 h-[clamp(26rem,62vh,34rem)] w-full rounded-[2rem] object-cover"
               />
 
               {/* ป้ายลอย — สื่อว่าเสียงกำลังถูกเก็บอยู่จริง */}
@@ -686,9 +695,12 @@ export default function Home() {
       </section>
 
       {/* ══════════════ ไม่ทำ deadbot ══════════════ */}
-      <section className="mx-auto max-w-3xl px-5 py-20 text-center sm:px-6">
+      <section className="relative mx-auto max-w-3xl px-5 py-20 text-center sm:px-6">
+        {/* อนุภาคที่รวมตัวแล้วสลาย = เสียงที่สร้างขึ้นใหม่ไม่ได้ — ตรงนี้มันมีความหมายจริง */}
+        <VoiceOrbMount className="pointer-events-none absolute inset-x-0 top-6 mx-auto h-72 w-72 opacity-45" />
+
         <Reveal>
-          <h2 className="font-serif text-4xl leading-tight text-earth-900">
+          <h2 className="relative font-serif text-4xl leading-tight text-earth-900">
             เราไม่สร้าง AI ที่เลียนแบบคนที่จากไป
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-earth-700">
