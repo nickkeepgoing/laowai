@@ -271,15 +271,25 @@ export function TraceabilityProof() {
       <div className="rounded-2xl border-2 border-earth-900/12 bg-paper-100 p-6 elev-2">
         <StepHead n="02" label="ด่านตรวจหลักฐาน" />
 
-        {/* ปล่อยให้ตัดบรรทัดได้บนมือถือ — ถ้าใช้ nowrap + overflow-x บรรทัดจะโดนตัดกลางคำ
-            แล้วดูเหมือนหน้าเว็บพัง ทั้งที่แค่ scroll ได้ */}
-        <code className="block rounded-xl bg-earth-900 px-4 py-3 font-mono text-xs leading-relaxed break-words text-paper-200 sm:text-[13px]">
-          <span className="text-gold-300">normalizeThai</span>(transcript).
-          <span className="text-verified-400">includes</span>(quote)
-        </code>
-        <p className="mt-3 text-sm text-earth-700">
-          เทียบถ้อยคำแบบคำต่อคำ — ไม่ได้ถาม AI ว่าถูกไหม
-        </p>
+        {/* ⚠️ ห้ามเอาโค้ดจริงมาโชว์ตรงนี้
+            คนอ่านหน้านี้คือลูกหลานกับผู้สูงอายุ ไม่ใช่โปรแกรมเมอร์
+            โค้ดไม่ได้ทำให้เขาเข้าใจขึ้น มีแต่ทำให้รู้สึกว่านี่ไม่ใช่ของสำหรับเขา
+            จึงอธิบายด้วยสิ่งที่ทุกคนเคยทำมาก่อน: การกดค้นหาคำ */}
+        <div className="flex items-start gap-4 rounded-xl border border-paper-300 bg-paper-50 p-4">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold-200/60 text-earth-800">
+            <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden>
+              <circle cx="8.5" cy="8.5" r="5.6" stroke="currentColor" strokeWidth="1.9" />
+              <path d="M12.8 12.8L17 17" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+            </svg>
+          </span>
+          <p className="leading-relaxed text-earth-800">
+            ระบบ<strong className="text-earth-900">ค้นหาถ้อยคำนั้นในเสียงต้นฉบับ</strong>{" "}
+            เหมือนเวลาเรากดค้นหาคำในหนังสือ — เจอคือผ่าน ไม่เจอคือตก
+            <span className="mt-1.5 block text-sm text-earth-500">
+              เป็นการเทียบตัวอักษรตรง ๆ ไม่ได้ถาม AI ว่าตัวเองถูกไหม
+            </span>
+          </p>
+        </div>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {/* ผ่าน */}
