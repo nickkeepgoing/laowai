@@ -148,7 +148,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.08 }}
-              className="mt-5 font-serif text-[2.1rem] leading-[1.2] text-earth-900 sm:text-[2.6rem] xl:text-[3rem] xl:leading-[1.14]"
+              className="mt-5 font-serif text-[1.9rem] leading-[1.22] text-earth-900 sm:text-[2.3rem] xl:text-[2.7rem] xl:leading-[1.16]"
             >
               ปู่ย่าตายายของคุณ
               <br />
@@ -161,7 +161,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.25 }}
-              className="mt-4 max-w-lg text-lg leading-relaxed text-earth-700"
+              className="mt-3.5 max-w-md leading-relaxed text-earth-700"
             >
               นั่งข้างท่าน กดอัด แล้วให้เราช่วยตั้งคำถามต่อ
               จบออกมาเป็นหนังสือชีวิตที่ทุกย่อหน้า
@@ -172,17 +172,17 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.38 }}
-              className="mt-6 flex flex-wrap items-center gap-3"
+              className="mt-5 flex flex-wrap items-center gap-2.5"
             >
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-13 items-center gap-2.5 rounded-2xl bg-ink-800 px-6 py-3 font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-ink-700"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-ink-800 px-5 py-2.5 font-medium text-paper-50 shadow-[0_12px_32px_-12px_rgba(33,26,18,0.65)] transition hover:bg-ink-700"
               >
                 <Mic size={19} /> เริ่มเก็บเรื่องของท่าน
               </Link>
               <Link
                 href="/book/demo-token-7f3a9c2e"
-                className="inline-flex min-h-13 items-center gap-2.5 rounded-2xl border border-paper-400 bg-paper-50 px-5 py-3 text-earth-800 transition hover:border-gold-400"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-paper-400 bg-paper-50 px-4 py-2.5 text-earth-800 transition hover:border-gold-400"
               >
                 <BookOpen size={18} /> ดูตัวอย่างหนังสือ
               </Link>
@@ -192,7 +192,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="elev-2 mt-6 max-w-lg rounded-2xl border border-paper-300 bg-paper-50/90 p-3.5 backdrop-blur"
+              className="elev-2 mt-5 max-w-md rounded-2xl border border-paper-300 bg-paper-50/90 p-3.5 backdrop-blur"
             >
               <p className="mb-2.5 flex items-center gap-2 text-sm text-earth-600">
                 <Volume2 size={15} className="text-gold-500" />
@@ -212,7 +212,7 @@ export default function Home() {
            * บนพื้นสว่างมันจางจนอ่านเป็น "ฝุ่น" ไม่ได้สื่ออะไร และแย่งที่ภาพคนจริง
            * ย้ายไปอยู่ section "ไม่ทำ deadbot" ซึ่งอนุภาคที่สลายตัวมีความหมายจริง
            */}
-          <div className="relative hidden lg:-mt-36 lg:block">
+          <div className="relative hidden lg:-mt-4 lg:block">
             <motion.figure
               initial={{ opacity: 0, scale: 0.96, y: 18 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -225,7 +225,7 @@ export default function Home() {
                 alt="คุณยายกับหลานชายยืนคุยกันหน้าบ้านในแสงเย็น"
                 width={1000}
                 height={1500}
-                className="elev-4 h-[clamp(28rem,74vh,40rem)] w-full rounded-[2rem] object-cover"
+                className="elev-4 h-[clamp(24rem,58vh,31rem)] w-full rounded-[2rem] object-cover"
               />
 
               {/**

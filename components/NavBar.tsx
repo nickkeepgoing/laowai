@@ -49,12 +49,12 @@ export default function NavBar({
         className={clsx(
           "pointer-events-auto mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border transition-all duration-300",
           scrolled
-            ? "border-paper-300 bg-paper-50/95 px-3 py-2 shadow-[0_12px_34px_-14px_rgba(87,70,52,0.5)] backdrop-blur-xl sm:px-4"
-            : "border-paper-300 bg-paper-50/88 px-3 py-2.5 shadow-[0_8px_26px_-16px_rgba(87,70,52,0.4)] backdrop-blur-xl sm:px-5 sm:py-3"
+            ? "border-paper-300 bg-paper-50/95 px-2.5 py-1.5 shadow-[0_10px_28px_-14px_rgba(87,70,52,0.45)] backdrop-blur-xl sm:px-3"
+            : "border-paper-300 bg-paper-50/88 px-2.5 py-2 shadow-[0_6px_22px_-16px_rgba(87,70,52,0.35)] backdrop-blur-xl sm:px-4"
         )}
       >
         <Link href="/" className="transition hover:opacity-80">
-          <Logo size={scrolled ? 32 : 36} withWordmark />
+          <Logo size={scrolled ? 28 : 31} withWordmark />
         </Link>
 
         {/* ลิงก์กลาง — ซ่อนบนจอเล็กเพื่อไม่ให้แถบแน่นเกิน */}
@@ -63,7 +63,7 @@ export default function NavBar({
             <Link
               key={l.href}
               href={l.href}
-              className="rounded-full px-4 py-2 text-earth-700 transition hover:bg-paper-200 hover:text-earth-900"
+              className="rounded-full px-3.5 py-1.5 text-sm text-earth-700 transition hover:bg-paper-200 hover:text-earth-900"
             >
               {l.label}
             </Link>
@@ -75,16 +75,16 @@ export default function NavBar({
             <>
               <Link
                 href="/library"
-                className="hidden min-h-11 items-center gap-2 rounded-full px-4 text-earth-700 transition hover:bg-paper-200 sm:inline-flex"
+                className="hidden min-h-9 items-center gap-1.5 rounded-full px-3 text-sm text-earth-700 transition hover:bg-paper-200 sm:inline-flex"
               >
-                <LayoutDashboard size={17} />
+                <LayoutDashboard size={15} />
                 หน้าหลัก
               </Link>
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-800 px-4 font-medium text-paper-50 transition hover:bg-ink-700 sm:px-5"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-ink-800 px-4 text-sm font-medium text-paper-50 transition hover:bg-ink-700"
               >
-                <Mic size={17} />
+                <Mic size={15} />
                 <span className="hidden sm:inline">เริ่มสัมภาษณ์</span>
               </Link>
               <span className="flex items-center gap-1">
@@ -93,10 +93,10 @@ export default function NavBar({
                   <img
                     src={avatar}
                     alt=""
-                    className="h-9 w-9 rounded-full border-2 border-paper-300 object-cover"
+                    className="h-8 w-8 rounded-full border border-paper-300 object-cover"
                   />
                 ) : (
-                  <span className="grid h-9 w-9 place-items-center rounded-full border-2 border-paper-300 bg-gold-200 text-sm font-medium text-earth-800">
+                  <span className="grid h-8 w-8 place-items-center rounded-full border border-paper-300 bg-gold-200 text-sm font-medium text-earth-800">
                     {name.slice(0, 1).toUpperCase() || "?"}
                   </span>
                 )}
@@ -105,9 +105,9 @@ export default function NavBar({
                     type="submit"
                     title="ออกจากระบบ"
                     aria-label="ออกจากระบบ"
-                    className="grid h-9 w-9 place-items-center rounded-full text-earth-500 transition hover:bg-paper-200 hover:text-earth-900"
+                    className="grid h-8 w-8 place-items-center rounded-full text-earth-500 transition hover:bg-paper-200 hover:text-earth-900"
                   >
-                    <LogOut size={16} />
+                    <LogOut size={14} />
                   </button>
                 </form>
               </span>
@@ -116,15 +116,15 @@ export default function NavBar({
             <>
               <Link
                 href="/login"
-                className="hidden min-h-11 items-center rounded-full px-4 text-earth-700 transition hover:bg-paper-200 sm:inline-flex"
+                className="hidden min-h-9 items-center rounded-full px-3 text-sm text-earth-700 transition hover:bg-paper-200 sm:inline-flex"
               >
                 เข้าสู่ระบบ
               </Link>
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-800 px-5 font-medium text-paper-50 transition hover:bg-ink-700"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-ink-800 px-4 text-sm font-medium text-paper-50 transition hover:bg-ink-700"
               >
-                <Mic size={17} />
+                <Mic size={15} />
                 เริ่มเลย
               </Link>
             </>
@@ -135,7 +135,7 @@ export default function NavBar({
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "ปิดเมนู" : "เปิดเมนู"}
             aria-expanded={open}
-            className="grid h-11 w-11 place-items-center rounded-full text-earth-700 transition hover:bg-paper-200 lg:hidden"
+            className="grid h-9 w-9 place-items-center rounded-full text-earth-700 transition hover:bg-paper-200 lg:hidden"
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
