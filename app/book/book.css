@@ -127,7 +127,6 @@ body:has(.book-reader) header {
   display: flex;
   height: 100%;
   flex-direction: column;
-  padding: clamp(26px, 4.4%, 54px);
   color: #241d14;
   /* คราบกระดาษจาง ๆ ทำให้ไม่ดูเป็นกระดาษพลาสติก */
   background-image:
@@ -137,7 +136,7 @@ body:has(.book-reader) header {
 
 .page__no {
   position: absolute;
-  bottom: 16px;
+  bottom: 14px;
   left: 0;
   right: 0;
   text-align: center;

@@ -93,6 +93,45 @@ export default function BookReader({
     return () => window.removeEventListener("resize", fit);
   }, []);
 
+  /* ─────────── สัดส่วนตัวอักษรและขอบกระดาษ ───────────
+   *
+   * ⚠️ ค่าทุกตัวในนี้ต้องถูกใช้ "ทั้งตอนวัดและตอนแสดงผล"
+   *
+   * บั๊กที่เคยเกิด: ตอนแสดงผลใช้ clamp() ที่อิง vw แต่ตอนวัดคำนวณจากความกว้างหน้า
+   * สองค่านี้ไม่เท่ากัน ข้อความจริงจึงสูงกว่าที่วัดไว้ แล้วล้นทะลุขอบล่างไปทับเลขหน้า
+   * ทางแก้คือคำนวณเป็นตัวเลขที่เดียว แล้วส่งเข้าทั้งสองที่ด้วย inline style
+   *
+   * สัดส่วนขอบใช้แบบหนังสือจริง: ล่างมากกว่าบน เพื่อให้มีที่หายใจและวางเลขหน้า
+   */
+  const type = useMemo(() => {
+    const { w, h } = pageSize;
+    // ขั้นต่ำ 15px ไม่ใช่ 13 — หนังสือเล่มนี้มีผู้สูงอายุเป็นคนอ่านด้วย
+    // ยอมให้พลิกหน้าบ่อยขึ้น ดีกว่าให้ท่านต้องเพ่ง
+    const fs = Math.round(Math.min(17, Math.max(15, w * 0.034)) * 10) / 10;
+    const padX = Math.round(Math.min(58, Math.max(24, w * 0.112)));
+    const padTop = Math.round(padX * 1.12);
+    const padBottom = Math.round(padX * 1.55); // เผื่อที่ให้เลขหน้า
+    return {
+      fs,
+      lh: 1.95,
+      /** ระยะห่างระหว่างย่อหน้า — น้อยกว่าของเดิม เพราะมีการย่อหน้าช่วยแบ่งแล้ว */
+      gap: Math.round(fs * 0.62),
+      /** ย่อหน้าแบบหนังสือ: ร่นบรรทัดแรกเข้ามา */
+      indent: Math.round(fs * 1.7),
+      padX,
+      padTop,
+      padBottom,
+      colW: w - padX * 2,
+      /* เผื่อที่ไว้ประมาณหนึ่งบรรทัดครึ่ง ไม่อัดย่อหน้าจนเต็มขอบพอดีเป๊ะ
+       * เพราะการวัดกับการ render คลาดกันได้ระดับเศษพิกเซล
+       * ถ้าเต็มพอดีแล้วคลาดนิดเดียว บรรทัดสุดท้ายจะทะลุลงไปทับเลขหน้า
+       * และหน้าที่แน่นจนชิดขอบล่างก็อ่านแล้วอึดอัดอยู่แล้ว */
+      usableH: h - padTop - padBottom - Math.round(fs * 1.95 * 1.5),
+      /** ความสูงของหัวบทบนหน้าแรกของเนื้อเรื่อง */
+      headH: Math.round(fs * 1.4 + fs * 1.6),
+    };
+  }, [pageSize]);
+
   /* ─────────── แบ่งหน้าโดย "วัดความสูงจริง" ───────────
    * ไม่ใช้การเดาจากจำนวนตัวอักษร เพราะภาษาไทยตัดบรรทัดไม่เท่ากัน
    * ย่อหน้าหนึ่งห้ามถูกผ่าครึ่ง เพราะปุ่มฟังเสียงผูกกับย่อหน้า
@@ -103,18 +142,13 @@ export default function BookReader({
     const kids = Array.from(box.children) as HTMLElement[];
     if (kids.length !== paragraphs.length) return;
 
-    // พื้นที่ข้อความจริง = ความสูงหน้า ลบ padding บน-ล่าง ลบเลขหน้า
-    const pad = Math.min(54, Math.max(26, pageSize.w * 0.1));
-    const usable = pageSize.h - pad * 2 - 26;
-    const firstPageOffset = 74; // หัวบทบนหน้าแรกของเนื้อเรื่อง
-
     const out: ReaderParagraph[][] = [];
     let cur: ReaderParagraph[] = [];
-    let used = firstPageOffset;
+    let used = type.headH; // หน้าแรกของเนื้อเรื่องมีหัวบทกินที่อยู่
 
     kids.forEach((el, i) => {
-      const hgt = el.getBoundingClientRect().height + 18; // 18 = ระยะห่างย่อหน้า
-      if (cur.length > 0 && used + hgt > usable) {
+      const hgt = el.getBoundingClientRect().height + type.gap;
+      if (cur.length > 0 && used + hgt > type.usableH) {
         out.push(cur);
         cur = [];
         used = 0;
@@ -124,7 +158,7 @@ export default function BookReader({
     });
     if (cur.length) out.push(cur);
     setTextPages(out.length ? out : [[]]);
-  }, [paragraphs, pageSize.w, pageSize.h]);
+  }, [paragraphs, type]);
 
   /* ─────────── ประกอบหน้าทั้งเล่ม ─────────── */
   const pages = useMemo<Page[]>(() => {
@@ -222,12 +256,20 @@ export default function BookReader({
     audioRef.current?.pause();
   }, [sheet]);
 
+  /* ขอบกระดาษ — ต้องมาจาก type ชุดเดียวกับที่ใช้ตอนวัดความสูง */
+  const pageStyle: React.CSSProperties = {
+    paddingLeft: type.padX,
+    paddingRight: type.padX,
+    paddingTop: type.padTop,
+    paddingBottom: type.padBottom,
+  };
+
   /* ─────────── ส่วนแสดงผลของหน้าแต่ละชนิด ─────────── */
   const renderPage = (page: Page, index: number) => {
     const no = index + 1;
     if (page.kind === "cover") {
       return (
-        <div className="page cover items-center justify-center text-center">
+        <div className="page cover items-center justify-center text-center" style={pageStyle}>
           <p className="text-[11px] tracking-[0.42em] text-gold-300/70 uppercase">เล่าไว้</p>
           <div className="cover__rule mt-7 w-full" />
           <h1 className="cover__title mt-9 font-serif text-[clamp(28px,6.4vw,44px)] leading-tight">
@@ -247,7 +289,7 @@ export default function BookReader({
 
     if (page.kind === "dedication") {
       return (
-        <div className="page items-center justify-center text-center">
+        <div className="page items-center justify-center text-center" style={pageStyle}>
           <p className="font-serif text-[clamp(16px,3.4vw,22px)] leading-[2] text-[#4a3c2a]">
             วันที่อยากฟัง
             <br />
@@ -266,7 +308,7 @@ export default function BookReader({
 
     if (page.kind === "chapter") {
       return (
-        <div className="page items-center justify-center text-center">
+        <div className="page items-center justify-center text-center" style={pageStyle}>
           <p className="text-[11px] tracking-[0.34em] text-[#a1917a] uppercase">บทที่หนึ่ง</p>
           <h2 className="mt-7 font-serif text-[clamp(22px,4.6vw,32px)] leading-snug text-[#241d14]">
             {chapterTitle}
@@ -280,9 +322,16 @@ export default function BookReader({
 
     if (page.kind === "text") {
       return (
-        <div className="page">
+        <div className="page" style={pageStyle}>
           {page.first && (
-            <h3 className="mb-5 shrink-0 font-serif text-[clamp(15px,2.6vw,19px)] text-[#4a3c2a]">
+            <h3
+              className="shrink-0 font-serif text-[#4a3c2a]"
+              style={{
+                fontSize: type.fs * 1.16,
+                lineHeight: 1.4,
+                marginBottom: type.fs * 1.6,
+              }}
+            >
               {chapterTitle}
             </h3>
           )}
@@ -290,33 +339,49 @@ export default function BookReader({
             {page.items.map((p, i) => {
               const can = Boolean(p.audioUrl);
               const on = playing === p.id;
+              // ย่อหน้าแรกของบทไม่ร่น เพราะมีอักษรตัวโตนำอยู่แล้ว ตามธรรมเนียมหนังสือ
+              const lead = page.first && i === 0;
               return (
-                <div key={p.id} className="group relative mb-[18px]">
+                <div key={p.id} className="group relative" style={{ marginBottom: type.gap }}>
                   <p
                     onClick={() => can && play(p)}
                     className={clsx(
-                      "font-serif text-[clamp(13.5px,2.35vw,16.5px)] leading-[1.95] text-[#241d14] transition",
-                      page.first && i === 0 && "dropcap",
+                      "font-serif text-[#241d14] transition-colors",
+                      lead && "dropcap",
                       can && "cursor-pointer hover:text-[#5b4420]",
                       on && "text-[#5b4420]"
                     )}
+                    style={{
+                      fontSize: type.fs,
+                      lineHeight: type.lh,
+                      textIndent: lead ? 0 : type.indent,
+                      textAlignLast: "left",
+                    }}
                   >
                     {p.text}
                   </p>
+                  {/* ปุ่มฟังเสียงวางไว้ใน "ขอบกระดาษ" ไม่ใช่ในคอลัมน์ข้อความ
+                      เหตุผลสองข้อ: ไม่บังตัวหนังสือ และไม่กินความสูง
+                      ถ้ามันกินความสูง การคำนวณแบ่งหน้าจะคลาดทันที แล้วข้อความจะล้นหน้า */}
                   {can && (
                     <button
                       type="button"
                       onClick={() => play(p)}
                       aria-label={on ? "หยุดเสียง" : "ฟังเสียงของท่านในย่อหน้านี้"}
                       className={clsx(
-                        "mt-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] transition",
+                        "absolute grid place-items-center rounded-full transition",
                         on
-                          ? "bg-[#e9d7ad] text-[#5b4420]"
-                          : "bg-[#f0e7d4] text-[#8a7a63] opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                          ? "bg-[#e3b254] text-[#2c2110] opacity-100"
+                          : "bg-[#eadcc0] text-[#7d6c53] opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                       )}
+                      style={{
+                        left: -Math.round(type.padX * 0.62),
+                        top: Math.round(type.fs * 0.5),
+                        width: Math.round(type.fs * 1.25),
+                        height: Math.round(type.fs * 1.25),
+                      }}
                     >
-                      {on ? <Pause size={11} /> : <Play size={11} />}
-                      {on ? "กำลังเล่น" : "ฟังเสียงท่าน"}
+                      {on ? <Pause size={9} /> : <Play size={9} />}
                     </button>
                   )}
                 </div>
@@ -330,7 +395,7 @@ export default function BookReader({
 
     if (page.kind === "end") {
       return (
-        <div className="page items-center justify-center text-center">
+        <div className="page items-center justify-center text-center" style={pageStyle}>
           <h3 className="font-serif text-[clamp(16px,3.2vw,21px)] text-[#241d14]">
             ฟังเสียงของ{elderName}
           </h3>
@@ -352,7 +417,7 @@ export default function BookReader({
       );
     }
 
-    return <div className="page" />;
+    return <div className="page" style={pageStyle} />;
   };
 
   /* ─────────── ประกอบแผ่นกระดาษ ─────────── */
@@ -376,19 +441,21 @@ export default function BookReader({
     <div className="book-reader bookshelf flex min-h-screen flex-col">
       <audio ref={audioRef} preload="none" className="hidden" />
 
-      {/* กล่องวัดความสูง — ใช้ font-size และความกว้างเดียวกับหน้าจริง */}
+      {/* กล่องวัดความสูง — ต้องเหมือนหน้าจริงทุกค่า ไม่งั้นแบ่งหน้าผิดแล้วข้อความล้น */}
       <div
         ref={measureRef}
         className="measure font-serif"
         style={{
-          width: pageSize.w - Math.min(54, Math.max(26, pageSize.w * 0.1)) * 2,
-          fontSize: `${Math.min(16.5, Math.max(13.5, pageSize.w * 0.0235))}px`,
-          lineHeight: 1.95,
+          width: type.colW,
+          fontSize: type.fs,
+          lineHeight: type.lh,
         }}
         aria-hidden
       >
-        {paragraphs.map((p) => (
-          <p key={p.id}>{p.text}</p>
+        {paragraphs.map((p, i) => (
+          <p key={p.id} style={{ textIndent: i === 0 ? 0 : type.indent }}>
+            {p.text}
+          </p>
         ))}
       </div>
 
@@ -439,7 +506,7 @@ export default function BookReader({
                 >
                   <div className="sheet__face sheet__face--front">{renderPage(s.front, i * perSheet)}</div>
                   <div className="sheet__face sheet__face--back">
-                    {s.back ? renderPage(s.back, i * perSheet + 1) : <div className="page" />}
+                    {s.back ? renderPage(s.back, i * perSheet + 1) : <div className="page" style={pageStyle} />}
                   </div>
                 </div>
               );
