@@ -28,12 +28,10 @@ import {
   Play,
   ShieldCheck,
   Sparkles,
-  Volume2,
-  X,
+  Volume2,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import AudioPlayer from "@/components/AudioPlayer";
-import Highlight from "@/components/Highlight";
 import QRBox from "@/components/QRBox";
 import VoiceOrbMount from "@/components/VoiceOrbMount";
 import { BookQrScene } from "@/components/illustrations";
@@ -113,7 +111,6 @@ const ASR_ERRORS = [
 
 export default function Home() {
   const hero = demoClips[0];
-  const flagged = demoChapter.paragraphs.find((p) => p.flags.length > 0);
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
 
@@ -676,33 +673,15 @@ export default function Home() {
           </p>
         </Reveal>
 
-        {flagged && (
-          <Reveal delay={0.15}>
-            <div className="mt-9 rounded-3xl border-2 border-warn-500/50 bg-warn-200/35 p-7">
-              <p className="mb-4 text-sm font-medium tracking-wide text-warn-900 uppercase">
-                ตัวอย่างจริงจากหน้าตรวจ
-              </p>
-              <p className="font-serif text-xl leading-[1.9] text-earth-900">
-                ยายตื่นตีห้าทุกวันไปช่วยแม่หาบขนมไปขาย เป็นหน้าที่ประจำตั้งแต่ยังเล็ก และ
-                <Highlight level="warn" reason={flagged.flags[0]}>
-                  เป็นช่วงเวลาที่ยายได้อยู่กับแม่มากที่สุดในหนึ่งวัน
-                </Highlight>
-              </p>
-              <p className="mt-5 text-warn-900">
-                ระบบจับได้เองว่าประโยคหลังไม่มีถ้อยคำนี้ในเสียงต้นฉบับ
-                ครอบครัวจะเห็นไฮไลต์นี้และตัดสินใจก่อนพิมพ์
-              </p>
-            </div>
-          </Reveal>
-        )}
-
-        <Reveal delay={0.2}>
-          <div className="mt-10">
+        {/* ตัวอย่างไฮไลต์ "AI เขียนเกิน" ย้ายเข้าไปอยู่ในขั้นที่ 3 ของ <TraceabilityProof>
+            แล้ว ของเดิมโชว์ประโยคเดียวกันสองที่ติดกัน ซึ่งทำให้คนอ่านสองรอบโดยไม่ได้อะไรเพิ่ม */}
+        <Reveal delay={0.15}>
+          <div className="mt-12">
             <TraceabilityProof />
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-3">
+        <div className="mt-14 grid gap-5 sm:grid-cols-3">
           {[
             { t: "อ้างถ้อยคำต้นฉบับ", d: "ถ้าหาถ้อยคำนั้นไม่เจอในเสียง ระบบทิ้งทันที ไม่เอาเข้าหนังสือ" },
             { t: "กดฟังเทียบได้", d: "คลิกย่อหน้าแล้วเสียงจริงเล่นที่วินาทีนั้นพอดี" },

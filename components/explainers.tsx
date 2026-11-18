@@ -9,6 +9,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import Highlight from "./Highlight";
 
 /* ══════════════════════════════════════════════════════════
  * 1. เส้นทางของเสียง — ตั้งแต่ปากคุณยายจนถึง QR ในหนังสือ
@@ -183,64 +184,165 @@ function StageArt({ k, on }: { k: string; on: boolean }) {
 }
 
 /* ══════════════════════════════════════════════════════════
- * 2. หลักฐาน — ลากเส้นจากย่อหน้าในหนังสือกลับไปหาถ้อยคำในเสียง
- *    อธิบาย "ตรวจสอบย้อนกลับได้" ได้เร็วกว่าการอ่านสามย่อหน้า
+ * 2. เส้นทางหลักฐาน — เสียงต้นฉบับ → ด่านตรวจ → ย่อหน้าในหนังสือ
+ *
+ * ทำไมถึงเป็นแนวตั้งทุกขนาดจอ:
+ * ของเดิมวางการ์ดซ้าย-ขวาแล้วใช้ลูกศรที่ rotate-90 บนจอใหญ่
+ * ซึ่งผิดสองชั้น — ทิศกลับด้านกับ layout และ rotate ไม่เปลี่ยนกล่อง
+ * ทำให้เส้นล้นไปทับป้าย "ตรวจด้วยโค้ด"
+ * แนวตั้งอ่านง่ายกว่าบนมือถือ และไม่มีทางเกิดบั๊กทิศทางอีก
+ *
+ * ของเดิมเทียบ "เสียง" กับ "หนังสือ" เฉย ๆ ซึ่งไม่ได้อธิบายอะไรเลย
+ * ของใหม่โชว์ "ด่านตรวจ" ตรงกลาง: ประโยคหนึ่งผ่าน อีกประโยคไม่ผ่าน
+ * นั่นคือกลไกจริงของ verifyClaim() และเป็นสิ่งเดียวที่ต้องจำจากหน้านี้
  * ══════════════════════════════════════════════════════════ */
+
+/** หัวข้อของแต่ละขั้น พร้อมเลขลำดับ ให้สายตารู้ว่ากำลังอ่านขั้นที่เท่าไร */
+function StepHead({ n, label, right }: { n: string; label: string; right?: string }) {
+  return (
+    <div className="mb-4 flex items-center gap-3">
+      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-earth-900 font-mono text-xs text-paper-50">
+        {n}
+      </span>
+      <span className="text-sm font-medium tracking-wide text-earth-500 uppercase">{label}</span>
+      {right && <span className="ml-auto font-mono text-sm text-earth-400">{right}</span>}
+    </div>
+  );
+}
+
+/** ตัวเชื่อมระหว่างขั้น — แนวตั้งล้วน ไม่มีการหมุน จึงไม่มีทางทับกัน */
+function TrailLink({ label }: { label?: string }) {
+  return (
+    <div className="flex flex-col items-center gap-2 py-3" aria-hidden>
+      <span className="h-6 w-px bg-paper-400" />
+      {label && (
+        <span className="rounded-full border border-gold-400 bg-gold-200/50 px-4 py-1.5 text-sm font-medium whitespace-nowrap text-earth-800">
+          {label}
+        </span>
+      )}
+      <span className="h-6 w-px bg-paper-400" />
+      <svg width="13" height="8" viewBox="0 0 13 8" fill="none">
+        <path d="M1 1l5.5 5.5L12 1" stroke="#d9c7ab" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+
+const Check = () => (
+  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden>
+    <path d="M3 8.5l3.5 3.5L13 5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const Warn = () => (
+  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden>
+    <path d="M8 4.5v4.2M8 11.4v.1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+    <circle cx="8" cy="8" r="6.4" stroke="currentColor" strokeWidth="1.8" />
+  </svg>
+);
 
 export function TraceabilityProof() {
   return (
-    <div className="grid items-center gap-5 lg:grid-cols-[1fr_auto_1fr]">
-      {/* ฝั่งเสียง */}
-      <div className="rounded-2xl border border-paper-300 bg-paper-50 p-5">
-        <p className="mb-3 text-sm tracking-wide text-earth-500 uppercase">
-          เสียงต้นฉบับ · นาทีที่ 0:15
-        </p>
-        <p className="leading-[2] text-earth-800">
+    <motion.div
+      className="mx-auto max-w-2xl"
+      initial={{ opacity: 0, y: 14 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* ── ขั้น 1: แหล่งความจริง ───────────────────────────── */}
+      <div className="rounded-2xl border border-paper-300 bg-paper-50 p-6 elev-2">
+        <StepHead n="01" label="เสียงต้นฉบับ" right="0:15" />
+        <p className="leading-[2.1] text-earth-800">
           ตอนเด็ก ๆ ยายอยู่บ้านริมคลอง{" "}
-          <mark className="rounded bg-verified-400/35 px-1 py-0.5 font-medium text-earth-900">
+          <mark className="rounded bg-verified-400/35 px-1.5 py-1 font-medium text-earth-900 decoration-verified-600/50 underline-offset-4">
             ยายตื่นตีห้าทุกวันไปช่วยแม่หาบขนมไปขาย
           </mark>{" "}
           ขนมที่แม่ทำอร่อยที่สุดคือขนมกล้วย
         </p>
+        <p className="mt-4 border-t border-paper-300 pt-4 text-sm text-earth-500">
+          ทุกอย่างหลังจากนี้ต้องพิสูจน์กลับมาที่ข้อความนี้ให้ได้
+        </p>
       </div>
 
-      {/* เส้นเชื่อม */}
-      <div className="flex items-center justify-center lg:flex-col">
-        <svg width="120" height="60" viewBox="0 0 120 60" className="lg:rotate-90" aria-hidden>
-          <motion.path
-            d="M4 30h112"
-            stroke="#c9953a"
-            strokeWidth="2.5"
-            strokeDasharray="7 6"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1 }}
-          />
-          <circle cx="110" cy="30" r="5" fill="#c9953a" />
-        </svg>
-        <span className="rounded-full border border-gold-400 bg-gold-200/40 px-3 py-1 text-sm whitespace-nowrap text-earth-800">
-          ตรวจด้วยโค้ด
-        </span>
+      <TrailLink label="ตรวจด้วยโค้ด" />
+
+      {/* ── ขั้น 2: ด่านตรวจ ─────────────────────────────────── */}
+      <div className="rounded-2xl border-2 border-earth-900/12 bg-paper-100 p-6 elev-2">
+        <StepHead n="02" label="ด่านตรวจหลักฐาน" />
+
+        {/* ปล่อยให้ตัดบรรทัดได้บนมือถือ — ถ้าใช้ nowrap + overflow-x บรรทัดจะโดนตัดกลางคำ
+            แล้วดูเหมือนหน้าเว็บพัง ทั้งที่แค่ scroll ได้ */}
+        <code className="block rounded-xl bg-earth-900 px-4 py-3 font-mono text-xs leading-relaxed break-words text-paper-200 sm:text-[13px]">
+          <span className="text-gold-300">normalizeThai</span>(transcript).
+          <span className="text-verified-400">includes</span>(quote)
+        </code>
+        <p className="mt-3 text-sm text-earth-700">
+          เทียบถ้อยคำแบบคำต่อคำ — ไม่ได้ถาม AI ว่าถูกไหม
+        </p>
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          {/* ผ่าน */}
+          <div className="rounded-xl border border-verified-600/30 bg-verified-400/10 p-4">
+            <div className="mb-3 flex items-center gap-2 text-verified-600">
+              <Check />
+              <span className="text-sm font-semibold">ผ่าน · เข้าหนังสือได้</span>
+            </div>
+            <p className="text-[15px] leading-relaxed text-earth-800">
+              “ยายตื่นตีห้าทุกวันไปช่วยแม่หาบขนมไปขาย”
+            </p>
+            <p className="mt-2.5 text-sm text-earth-500">เจอคำต่อคำในเสียง</p>
+          </div>
+
+          {/* ไม่ผ่าน */}
+          <div className="rounded-xl border border-warn-500/35 bg-warn-200/30 p-4">
+            <div className="mb-3 flex items-center gap-2 text-warn-500">
+              <Warn />
+              <span className="text-sm font-semibold">ไม่ผ่าน · AI เขียนเกิน</span>
+            </div>
+            <p className="text-[15px] leading-relaxed text-earth-800">
+              “เป็นช่วงเวลาที่ยายได้อยู่กับแม่มากที่สุดในหนึ่งวัน”
+            </p>
+            <p className="mt-2.5 text-sm text-warn-900/80">ไม่มีถ้อยคำนี้ในเสียง</p>
+          </div>
+        </div>
       </div>
 
-      {/* ฝั่งหนังสือ */}
-      <div className="paper rounded-2xl border border-[#d9c7ab] p-5">
-        <p className="mb-3 text-sm tracking-wide text-[#8a7a63] uppercase">
-          ย่อหน้าในหนังสือ · บทวัยเด็ก
+      <TrailLink label="คนยืนยันก่อนพิมพ์" />
+
+      {/* ── ขั้น 3: ผลลัพธ์ ──────────────────────────────────── */}
+      <div className="paper rounded-2xl border border-[#d9c7ab] p-6 elev-3">
+        <StepHead n="03" label="ย่อหน้าในหนังสือ" right="บทวัยเด็ก" />
+        <p className="font-serif text-lg leading-[2.1] text-[#231c14]">
+          ยายตื่นตีห้าทุกวันไปช่วยแม่หาบขนมไปขาย เป็นหน้าที่ประจำตั้งแต่ยังเล็ก{" "}
+          {/* ใช้ <Highlight> ตัวเดียวกับหน้า /review เพื่อให้สิ่งที่เห็นบน landing
+              เป็นของจริงชิ้นเดียวกับที่ครอบครัวเจอในแอป ไม่ใช่ภาพจำลอง */}
+          <Highlight
+            level="warn"
+            reason='ประโยคที่ 2 — "เป็นช่วงเวลาที่ยายได้อยู่กับแม่มากที่สุดในหนึ่งวัน" ไม่มีถ้อยคำนี้ในเสียงต้นฉบับ'
+          >
+            เป็นช่วงเวลาที่ยายได้อยู่กับแม่มากที่สุดในหนึ่งวัน
+          </Highlight>
         </p>
-        <p className="font-serif leading-[2] text-[#231c14]">
-          <mark className="rounded bg-[#f8e3ad] px-1 py-0.5 text-[#231c14]">
-            ยายตื่นตีห้าทุกวันไปช่วยแม่หาบขนมไปขาย
-          </mark>{" "}
-          เป็นหน้าที่ประจำตั้งแต่ยังเล็ก
-        </p>
-        <p className="mt-4 text-sm text-[#6b5c48]">
-          ทุกย่อหน้าผูกกลับไปที่วินาทีที่ท่านพูดจริง
-        </p>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2.5 border-t border-[#e6d8c0] pt-4 text-sm">
+          <span className="inline-flex items-center gap-1.5 text-[#1f8a63]">
+            <Check />
+            ประโยคแรกมีหลักฐาน
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[#b45309]">
+            <Warn />
+            ประโยคไฮไลต์รอครอบครัวตัดสิน
+          </span>
+          <span className="ml-auto font-mono text-[#8a7a63]">↩ 0:15</span>
+        </div>
       </div>
-    </div>
+
+      <p className="mt-6 text-center text-earth-700">
+        หนังสือที่พิมพ์ออกมาจึงมีแต่สิ่งที่ท่านพูดจริง —{" "}
+        <strong className="text-earth-900">และสแกน QR กลับไปฟังวินาทีนั้นได้ทุกย่อหน้า</strong>
+      </p>
+    </motion.div>
   );
 }
 
