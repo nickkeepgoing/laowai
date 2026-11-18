@@ -85,6 +85,28 @@ export default function AudioPlayer({
     };
   }, [src]);
 
+  /**
+   * อ่านความยาวจากตัว element โดยตรง ไม่พึ่ง onLoadedMetadata อย่างเดียว
+   *
+   * ถ้าไฟล์เสียงมาจาก cache เบราว์เซอร์จะยิง loadedmetadata ตั้งแต่ก่อน React hydrate
+   * ทำให้ handler ไม่ทัน แล้วเวลาจะค้างที่ 0:00 ส่วนแถบ progress ก็ไม่วิ่ง (เจอจริงตอนเทสต์)
+   */
+  useEffect(() => {
+    const a = el.current;
+    if (!a) return;
+    const sync = () => {
+      if (Number.isFinite(a.duration) && a.duration > 0) setDur(a.duration);
+      setPlaying(!a.paused);
+    };
+    sync();
+    a.addEventListener("durationchange", sync);
+    a.addEventListener("canplay", sync);
+    return () => {
+      a.removeEventListener("durationchange", sync);
+      a.removeEventListener("canplay", sync);
+    };
+  }, [src]);
+
   useImperativeHandle(ref, () => ({
     seek(ms) {
       const a = el.current;

@@ -103,7 +103,7 @@ export default async function BookPage({
                   <div className="mt-1 shrink-0 print:block">
                     <QRBox
                       value={`${chapterUrl}?c=${clipId}&t=${anchor.startMs}`}
-                      size={54}
+                      size={44}
                     />
                   </div>
                 )}

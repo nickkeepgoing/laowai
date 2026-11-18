@@ -52,7 +52,18 @@ function CountUp({ to, suffix = "" }: { to: number; suffix?: string }) {
   );
 }
 
+/**
+ * เปิดเนื้อหาเมื่อ scroll ถึง
+ *
+ * ⚠️ ต้องมี mounted guard: framer-motion ใส่ opacity:0 ลงไปตั้งแต่ตอน SSR
+ * ถ้า hydration ช้าหรือพัง หน้าจะว่างเปล่าทั้งหน้า ซึ่งรับไม่ได้บนเวที
+ * ก่อน mount จึงเรนเดอร์ div ธรรมดาที่มองเห็นได้ไว้ก่อน
+ */
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <div>{children}</div>;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
