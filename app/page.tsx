@@ -225,7 +225,7 @@ export default function Home() {
                 alt="คุณยายกับหลานชายยืนคุยกันหน้าบ้านในแสงเย็น"
                 width={1000}
                 height={1500}
-                className="elev-4 h-[clamp(24rem,58vh,31rem)] w-full rounded-[2rem] object-cover"
+                className="elev-4 h-[clamp(24rem,58vh,31rem)] w-full rounded-[2rem] object-cover object-[50%_16%]"
               />
 
               {/**
