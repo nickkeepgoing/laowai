@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Serif_Thai, Sarabun } from "next/font/google";
+import SiteHeader from "@/components/SiteHeader";
 import "./globals.css";
 
 /**
@@ -31,6 +32,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="th">
       <body className={`${sarabun.variable} ${notoSerifThai.variable} antialiased`}>
+        {/* หน้าหนังสือซ่อน header เองด้วยคลาส no-print ตอนพิมพ์ */}
+        <SiteHeader />
         {children}
       </body>
     </html>

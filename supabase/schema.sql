@@ -132,3 +132,43 @@ create policy clips_anon_upload on storage.objects
 
 -- ปุ่มลืม: ลบคลิป แล้วย่อหน้าที่อ้าง claim ของคลิปนั้นต้องหายตามไปด้วย
 -- (ทำใน /api/forget ฝั่ง app ไม่ใช่ใน SQL เพราะต้องแก้ jsonb ของ paragraphs)
+
+-- ═════════════════════════════════════════════════════════════
+-- v2: บัญชีผู้ใช้ (Supabase Auth)
+--
+-- ทำไมต้องมี: เรื่องเล่าของครอบครัวเป็นของครอบครัว
+-- ก่อนหน้านี้ใครมี key ก็อ่านได้ทุกแถว ซึ่งขัดกับสิ่งที่เราพูดเรื่อง PDPA
+-- ตอนนี้แต่ละ session ผูกกับบัญชี และแก้/ลบได้เฉพาะเจ้าของ
+--
+-- หมายเหตุ: SELECT ยังเปิดอยู่ เพราะ QR ในหนังสือต้องให้คนนอกสแกนฟังได้
+-- ความปลอดภัยของลิงก์มาจาก share_token ที่เดาไม่ได้และเพิกถอนได้
+-- (ข้อจำกัดนี้เขียนไว้ใน README หัวข้อ Current Limitations อย่างตรงไปตรงมา)
+-- ═════════════════════════════════════════════════════════════
+
+alter table sessions add column if not exists user_id uuid references auth.users(id) on delete cascade;
+alter table chapters add column if not exists user_id uuid references auth.users(id) on delete cascade;
+
+create index if not exists sessions_user_idx on sessions(user_id);
+create index if not exists chapters_user_idx on chapters(user_id);
+
+-- เขียนได้เฉพาะเจ้าของ (หรือแถวที่ยังไม่มีเจ้าของ = สร้างตอนยังไม่ล็อกอิน)
+drop policy if exists dev_all on sessions;
+drop policy if exists read_all on sessions;
+drop policy if exists insert_own on sessions;
+drop policy if exists update_own on sessions;
+drop policy if exists delete_own on sessions;
+drop policy if exists dev_all on chapters;
+drop policy if exists read_all on chapters;
+drop policy if exists insert_own on chapters;
+drop policy if exists update_own on chapters;
+drop policy if exists delete_own on chapters;
+
+create policy read_all   on sessions for select using (true);
+create policy insert_own on sessions for insert with check (user_id is null or auth.uid() = user_id);
+create policy update_own on sessions for update using (user_id is null or auth.uid() = user_id);
+create policy delete_own on sessions for delete using (user_id is null or auth.uid() = user_id);
+
+create policy read_all   on chapters for select using (true);
+create policy insert_own on chapters for insert with check (user_id is null or auth.uid() = user_id);
+create policy update_own on chapters for update using (user_id is null or auth.uid() = user_id);
+create policy delete_own on chapters for delete using (user_id is null or auth.uid() = user_id);

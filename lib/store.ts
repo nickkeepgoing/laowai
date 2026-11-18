@@ -8,15 +8,19 @@
  * และถ้าวันแข่ง Supabase ล่ม เราสลับกลับมาโหมด memory ได้ทันทีโดยไม่ต้องแก้โค้ด
  */
 
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Chapter, Clip, Correction, Session } from "./types";
-import { AUDIO_BUCKET, SUPABASE_ANON_KEY, SUPABASE_URL, hasSupabase } from "./env";
+import { AUDIO_BUCKET } from "./env";
+import { currentUser, supabaseServer } from "./supabase/server";
 
-let _sb: SupabaseClient | null = null;
-export function sb(): SupabaseClient | null {
-  if (!hasSupabase()) return null;
-  _sb ??= createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  return _sb;
+/**
+ * client ที่ผูกกับ cookie ของผู้ใช้ที่กำลังเรียกเข้ามา
+ * ทำให้ RLS ที่อิง auth.uid() ทำงานได้จริง แทนที่จะวิ่งด้วย anon แบบไร้ตัวตน
+ */
+const sb = supabaseServer;
+
+/** id ของผู้ใช้ที่ล็อกอินอยู่ — null ได้ เพราะเรายอมให้ลองใช้โดยไม่ล็อกอิน */
+export async function currentUserId(): Promise<string | null> {
+  return (await currentUser())?.id ?? null;
 }
 
 /* ── in-memory fallback (ใช้ globalThis เพื่อให้รอด hot reload ของ dev server) ── */
@@ -45,7 +49,7 @@ export const newToken = () =>
  * ไม่มี Supabase → คืน data URL (ใหญ่แต่ใช้ได้ สำหรับ dev เท่านั้น)
  */
 export async function putAudio(file: Blob, name: string): Promise<string> {
-  const client = sb();
+  const client = await sb();
   if (!client) {
     const b64 = Buffer.from(await file.arrayBuffer()).toString("base64");
     return `data:${file.type || "audio/webm"};base64,${b64}`;
@@ -77,7 +81,7 @@ export async function createSession(
     region: input.region,
     visitFrequency: input.visitFrequency,
   };
-  const client = sb();
+  const client = await sb();
   if (!client) {
     mem.sessions.push(row);
     return row;
@@ -91,6 +95,8 @@ export async function createSession(
       consent_audio_url: row.consentAudioUrl,
       region: row.region ?? null,
       visit_frequency: row.visitFrequency ?? null,
+      // ผูกกับบัญชีที่ล็อกอินอยู่ ถ้าไม่ล็อกอินจะเป็น null (โหมดลองใช้)
+      user_id: await currentUserId(),
     })
     .select()
     .single();
@@ -98,8 +104,41 @@ export async function createSession(
   return { ...row, id: data.id, createdAt: data.created_at };
 }
 
+/** รายการ session ทั้งหมดของผู้ใช้ที่ล็อกอินอยู่ — ใช้ในหน้า /library */
+export async function listSessionsOfUser(userId: string): Promise<Session[]> {
+  const client = await sb();
+  if (!client) return [];
+  const { data } = await client
+    .from("sessions")
+    .select()
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  return (data ?? []).map((d) => ({
+    id: d.id,
+    elderName: d.elder_name,
+    relation: d.relation,
+    topic: d.topic,
+    consentAudioUrl: d.consent_audio_url,
+    createdAt: d.created_at,
+    region: d.region ?? undefined,
+    visitFrequency: d.visit_frequency ?? undefined,
+  }));
+}
+
+/** บททั้งหมดของผู้ใช้ พร้อม token สำหรับเปิดหนังสือ */
+export async function listChaptersOfUser(userId: string): Promise<Chapter[]> {
+  const client = await sb();
+  if (!client) return [];
+  const { data } = await client
+    .from("chapters")
+    .select()
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  return (data ?? []).map(toChapter);
+}
+
 export async function getSession(id: string): Promise<Session | null> {
-  const client = sb();
+  const client = await sb();
   if (!client) return mem.sessions.find((s) => s.id === id) ?? null;
   const { data } = await client.from("sessions").select().eq("id", id).maybeSingle();
   if (!data) return null;
@@ -137,7 +176,7 @@ export async function saveCorrection(input: {
     spanStartMs: input.spanStartMs ?? null,
     createdAt: new Date().toISOString(),
   };
-  const client = sb();
+  const client = await sb();
   if (!client) {
     mem.corrections.push(row);
     return row;
@@ -159,7 +198,7 @@ export async function saveCorrection(input: {
 
 /** จำนวนคู่ข้อมูลใน dataset — ตัวเลขนี้เอาไปโชว์บนเวทีได้ว่า flywheel เริ่มหมุนแล้ว */
 export async function countCorrections(): Promise<number> {
-  const client = sb();
+  const client = await sb();
   if (!client) return mem.corrections.length;
   const { count } = await client.from("corrections").select("id", { count: "exact", head: true });
   return count ?? 0;
@@ -167,7 +206,7 @@ export async function countCorrections(): Promise<number> {
 
 /** ปุ่มลืมต้องลืมจริง — ในโหมด Supabase มี on delete cascade ให้แล้ว */
 export async function deleteCorrectionsOfClip(clipId: string): Promise<number> {
-  const client = sb();
+  const client = await sb();
   if (!client) {
     const before = mem.corrections.length;
     mem.corrections = mem.corrections.filter((c) => c.clipId !== clipId);
@@ -181,7 +220,7 @@ export async function deleteCorrectionsOfClip(clipId: string): Promise<number> {
 
 export async function saveClip(clip: Omit<Clip, "id" | "createdAt">): Promise<Clip> {
   const row: Clip = { ...clip, id: rid(), createdAt: new Date().toISOString() };
-  const client = sb();
+  const client = await sb();
   if (!client) {
     mem.clips.push(row);
     return row;
@@ -216,7 +255,7 @@ const toClip = (d: Record<string, unknown>): Clip => ({
 });
 
 export async function listClips(sessionId: string): Promise<Clip[]> {
-  const client = sb();
+  const client = await sb();
   if (!client) return mem.clips.filter((c) => c.sessionId === sessionId);
   const { data } = await client
     .from("clips")
@@ -227,7 +266,7 @@ export async function listClips(sessionId: string): Promise<Clip[]> {
 }
 
 export async function deleteClip(clipId: string): Promise<void> {
-  const client = sb();
+  const client = await sb();
   if (!client) {
     const i = mem.clips.findIndex((c) => c.id === clipId);
     if (i >= 0) mem.clips.splice(i, 1);
@@ -242,7 +281,7 @@ export async function saveChapter(
   ch: Omit<Chapter, "id" | "shareToken"> & { shareToken?: string }
 ): Promise<Chapter> {
   const row: Chapter = { ...ch, id: rid(), shareToken: ch.shareToken ?? newToken() };
-  const client = sb();
+  const client = await sb();
   if (!client) {
     mem.chapters.push(row);
     return row;
@@ -254,6 +293,7 @@ export async function saveChapter(
       title: ch.title,
       paragraphs: ch.paragraphs,
       approved: ch.approved,
+      user_id: await currentUserId(),
     })
     .select()
     .single();
@@ -271,7 +311,7 @@ const toChapter = (d: Record<string, unknown>): Chapter => ({
 });
 
 export async function getChapterByToken(token: string): Promise<Chapter | null> {
-  const client = sb();
+  const client = await sb();
   if (!client) return mem.chapters.find((c) => c.shareToken === token) ?? null;
   const { data } = await client
     .from("chapters")
@@ -282,7 +322,7 @@ export async function getChapterByToken(token: string): Promise<Chapter | null> 
 }
 
 export async function getChapter(id: string): Promise<Chapter | null> {
-  const client = sb();
+  const client = await sb();
   if (!client) return mem.chapters.find((c) => c.id === id) ?? null;
   const { data } = await client.from("chapters").select().eq("id", id).maybeSingle();
   return data ? toChapter(data) : null;
@@ -292,7 +332,7 @@ export async function updateChapter(
   id: string,
   patch: Partial<Pick<Chapter, "paragraphs" | "approved" | "title">>
 ): Promise<Chapter | null> {
-  const client = sb();
+  const client = await sb();
   if (!client) {
     const c = mem.chapters.find((x) => x.id === id);
     if (!c) return null;

@@ -21,13 +21,13 @@ export default function StatPill({ label, value, tone = "neutral" }: StatPillPro
     <span
       className={clsx(
         "inline-flex items-baseline gap-2 rounded-full border px-3 py-1 text-sm",
-        tone === "neutral" && "border-cream-500/25 bg-ink-800/60 text-cream-300",
+        tone === "neutral" && "border-mist-500/25 bg-night-800/60 text-mist-300",
         tone === "good" && "border-verified-400/40 bg-verified-600/15 text-verified-400",
         tone === "warn" && "border-warn-500/40 bg-warn-900/25 text-warn-200"
       )}
     >
       <span className="opacity-80">{label}</span>
-      <strong className="tabular-nums text-cream-50">{value}</strong>
+      <strong className="tabular-nums text-mist-50">{value}</strong>
     </span>
   );
 }

@@ -150,7 +150,7 @@ export default function AudioPlayer({
     <div
       data-clip-id={clipId}
       className={clsx(
-        "flex items-center gap-3 rounded-xl border border-cream-500/20 bg-ink-800/60",
+        "flex items-center gap-3 rounded-xl border border-mist-500/20 bg-night-800/60",
         compact ? "px-2.5 py-1.5" : "p-3"
       )}
     >
@@ -159,7 +159,7 @@ export default function AudioPlayer({
         onClick={toggle}
         aria-label={playing ? "หยุด" : label ? `ฟังเสียงต้นฉบับ: ${label}` : "ฟังเสียงต้นฉบับ"}
         className={clsx(
-          "grid shrink-0 place-items-center rounded-full bg-ember-400 text-ink-950 transition hover:bg-ember-300",
+          "grid shrink-0 place-items-center rounded-full bg-gold-400 text-night-950 transition hover:bg-gold-300",
           compact ? "h-7 w-7" : "h-10 w-10"
         )}
       >
@@ -184,7 +184,7 @@ export default function AudioPlayer({
             key={i}
             className={clsx(
               "flex-1 rounded-full transition-colors",
-              i / BARS <= progress ? "bg-ember-400" : "bg-cream-500/30"
+              i / BARS <= progress ? "bg-gold-400" : "bg-mist-500/30"
             )}
             style={{ height: `${Math.round(p * 100)}%`, minHeight: 2 }}
           />
@@ -193,7 +193,7 @@ export default function AudioPlayer({
 
       <span
         className={clsx(
-          "shrink-0 tabular-nums text-cream-300",
+          "shrink-0 tabular-nums text-mist-300",
           compact ? "text-[11px]" : "text-xs"
         )}
       >

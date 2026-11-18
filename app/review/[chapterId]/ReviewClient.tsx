@@ -184,9 +184,9 @@ export default function ReviewClient({
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <header className="mb-6">
-        <p className="text-sm text-cream-500">ครอบครัวตรวจก่อนพิมพ์</p>
-        <h1 className="font-serif text-3xl text-cream-50">{chapter.title}</h1>
-        <p className="mt-1 text-cream-300">เรื่องของ{elderName}</p>
+        <p className="text-sm text-mist-500">ครอบครัวตรวจก่อนพิมพ์</p>
+        <h1 className="font-serif text-3xl text-mist-50">{chapter.title}</h1>
+        <p className="mt-1 text-mist-300">เรื่องของ{elderName}</p>
 
         <div className="mt-4 flex flex-wrap gap-2">
           <StatPill
@@ -237,7 +237,7 @@ export default function ReviewClient({
                 className={`rounded-xl border p-4 transition ${
                   p.flags.length > 0
                     ? "border-warn-500/40 bg-warn-900/10"
-                    : "border-cream-500/10 hover:border-cream-500/25"
+                    : "border-mist-500/10 hover:border-mist-500/25"
                 }`}
               >
                 {isEditing ? (
@@ -258,7 +258,7 @@ export default function ReviewClient({
                   </div>
                 ) : (
                   <>
-                    <p className="font-serif text-lg leading-relaxed text-cream-50">
+                    <p className="font-serif text-lg leading-relaxed text-mist-50">
                       {splitByFragments(p.text, frags).map((part, i) =>
                         part.warn ? (
                           <Highlight key={i} level="warn" reason={p.flags[0]}>
@@ -305,7 +305,7 @@ export default function ReviewClient({
                       >
                         <Pencil size={14} /> แก้ข้อความ
                       </Button>
-                      <span className="text-xs text-cream-500">
+                      <span className="text-xs text-mist-500">
                         อ้างอิง {p.claimIds.length} ข้อจากเสียงจริง
                       </span>
                     </div>
@@ -318,7 +318,7 @@ export default function ReviewClient({
       </Card>
 
       {/* ── เสียงต้นฉบับ + แก้คำที่ถอดผิด ── */}
-      <h2 className="mt-9 mb-3 font-serif text-xl text-cream-50">เสียงต้นฉบับทั้งหมด</h2>
+      <h2 className="mt-9 mb-3 font-serif text-xl text-mist-50">เสียงต้นฉบับทั้งหมด</h2>
       <div className="space-y-4">
         {clips.map((clip) => (
           <ClipCard
@@ -335,10 +335,10 @@ export default function ReviewClient({
 
       {/* ── ยืนยัน ── */}
       <Card className="mt-9">
-        <h2 className="flex items-center gap-2 font-serif text-xl text-cream-50">
+        <h2 className="flex items-center gap-2 font-serif text-xl text-mist-50">
           <ShieldCheck size={20} className="text-verified-400" /> ยืนยันก่อนทำหนังสือ
         </h2>
-        <p className="mt-2 text-cream-300">
+        <p className="mt-2 text-mist-300">
           AI ไม่มีสิทธิ์พิมพ์อะไรเองทั้งสิ้น หนังสือจะสร้างได้เมื่อคนในครอบครัวกดยืนยันเท่านั้น
         </p>
 
@@ -346,11 +346,11 @@ export default function ReviewClient({
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <a
               href={`/book/${chapter.shareToken}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-ember-400 px-6 py-3.5 text-lg font-medium text-ink-950 hover:bg-ember-300"
+              className="inline-flex items-center gap-2 rounded-xl bg-gold-400 px-6 py-3.5 text-lg font-medium text-night-950 hover:bg-gold-300"
             >
               <BookOpen size={18} /> เปิดหนังสือ
             </a>
-            <span className="break-all text-sm text-cream-500">
+            <span className="break-all text-sm text-mist-500">
               {siteUrl}/book/{chapter.shareToken}
             </span>
           </div>
@@ -427,27 +427,27 @@ function ClipCard({
 
   return (
     <Card>
-      <p className="mb-3 text-cream-300">{clip.question}</p>
+      <p className="mb-3 text-mist-300">{clip.question}</p>
       <AudioPlayer
         ref={registerPlayer}
         src={clip.audioUrl}
         clipId={clip.id}
         label={clip.question}
       />
-      <p className="mt-3 text-sm leading-relaxed text-cream-300">{clip.transcript}</p>
+      <p className="mt-3 text-sm leading-relaxed text-mist-300">{clip.transcript}</p>
 
       <details className="group mt-4">
-        <summary className="cursor-pointer text-sm text-ember-300 hover:text-ember-400">
+        <summary className="cursor-pointer text-sm text-gold-300 hover:text-gold-400">
           AI ถอดคำไหนผิด? ช่วยแก้ให้เราหน่อย
         </summary>
-        <div className="mt-3 space-y-3 rounded-xl border border-cream-500/15 bg-ink-800/50 p-4">
-          <p className="text-xs text-cream-500">
+        <div className="mt-3 space-y-3 rounded-xl border border-mist-500/15 bg-night-800/50 p-4">
+          <p className="text-xs text-mist-500">
             ทุกคำที่คุณแก้ทำให้เราถอดเสียงภาษาถิ่นได้แม่นขึ้นสำหรับครอบครัวอื่น
             — เราเก็บเฉพาะคู่ข้อความ ไม่เก็บเสียงและไม่เก็บชื่อ
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-xs text-cream-500">AI ถอดว่า</span>
+              <span className="mb-1 block text-xs text-mist-500">AI ถอดว่า</span>
               <input
                 className={inputClass}
                 value={wrong}
@@ -456,7 +456,7 @@ function ClipCard({
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs text-cream-500">ที่จริงท่านพูดว่า</span>
+              <span className="mb-1 block text-xs text-mist-500">ที่จริงท่านพูดว่า</span>
               <input
                 className={inputClass}
                 value={right}
@@ -466,7 +466,7 @@ function ClipCard({
             </label>
           </div>
 
-          <label className="flex cursor-pointer items-start gap-2 text-xs text-cream-300">
+          <label className="flex cursor-pointer items-start gap-2 text-xs text-mist-300">
             <input
               type="checkbox"
               checked={optIn}
@@ -492,11 +492,11 @@ function ClipCard({
         </div>
       </details>
 
-      <div className="mt-4 border-t border-cream-500/10 pt-3">
+      <div className="mt-4 border-t border-mist-500/10 pt-3">
         <Button size="sm" variant="danger" onClick={onForget} disabled={busy}>
           ลืมเรื่องนี้ทั้งหมด
         </Button>
-        <p className="mt-2 text-xs text-cream-500">
+        <p className="mt-2 text-xs text-mist-500">
           ถ้าท่านเผลอเล่าเรื่องที่ไม่อยากให้บันทึก กดนี่แล้วหายทั้งเสียง ข้อความ และย่อหน้าในหนังสือ
         </p>
       </div>

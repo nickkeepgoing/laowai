@@ -1,41 +1,55 @@
 @import "tailwindcss";
 
 /**
- * เล่าไว้ — design token
+ * เล่าไว้ — Design System
  *
- * แนวทาง: มืด อบอุ่น สุภาพ ไม่ใช่ "แอป AI" สีน้ำเงินเย็น
- * เพราะเรื่องที่จับคือความทรงจำกับความสูญเสีย
+ * ทิศทาง: navy ลึกระดับ premium AI product + "ทอง" เป็นสีประจำแบรนด์
  *
- * สีเหลือง (warn) สงวนไว้สำหรับ "ประโยคที่ระบบจับได้ว่า AI เขียนเกินต้นฉบับ"
- * เท่านั้น ห้ามเอาไปใช้ตกแต่งอย่างอื่น เพราะมันต้องสะดุดตาจากหลังห้อง
+ * ทำไมไม่ใช้น้ำเงินล้วนแบบ AI SaaS ทั่วไป:
+ * ในงานแข่งจะมีทีมใช้โทนน้ำเงิน-ม่วงกันเกือบหมด ถ้าเราใช้ด้วยจะจำไม่ได้
+ * เราเก็บความเนี๊ยบระดับเดียวกันไว้ แต่ใช้ทองเป็นลายเซ็น
+ * ทองยังเข้ากับเนื้อหาเรื่องความทรงจำและการส่งต่อระหว่างรุ่น มากกว่าสีฟ้าเย็น
+ *
+ * ⚠️ amber (warn) สงวนไว้สำหรับ "ประโยคที่ AI เขียนเกินต้นฉบับ" เท่านั้น
+ * แยกจากทองด้วยพื้นหลังทึบ + เส้นใต้หยัก เพื่อไม่ให้สับสนกับสีแบรนด์
  */
 
 @theme {
-  /* ดินเผา/กระดาษเก่า */
-  --color-ink-950: #14100d;
-  --color-ink-900: #1c1713;
-  --color-ink-800: #2a231d;
-  --color-ink-700: #3b322a;
-  --color-ink-600: #574a3f;
+  /* ── พื้น ── */
+  --color-night-950: #05070f;
+  --color-night-900: #080c18;
+  --color-night-850: #0b1120;
+  --color-night-800: #111a2e;
+  --color-night-700: #1b2740;
+  --color-night-600: #2a3550;
 
-  --color-cream-50: #fbf7f0;
-  --color-cream-100: #f3ece0;
-  --color-cream-300: #d9cdb9;
-  --color-cream-500: #a89880;
+  /* ── ตัวอักษร ── */
+  --color-mist-50: #f7f9fc;
+  --color-mist-100: #e8edf6;
+  --color-mist-300: #b9c4d8;
+  --color-mist-500: #7d8aa3;
+  --color-mist-700: #4a5568;
 
-  /* accent — ทองอบอุ่น ใช้กับ CTA และตัวเลขสำคัญ */
-  --color-ember-300: #f0c178;
-  --color-ember-400: #e5a74b;
-  --color-ember-500: #d18f2e;
+  /* ── น้ำเงินเรืองแสง ใช้กับ aurora และลิงก์ ── */
+  --color-beam-300: #8fb8ff;
+  --color-beam-400: #5b8dfb;
+  --color-beam-500: #3566ef;
+  --color-beam-600: #2449c4;
 
-  /* ✅ ตรวจผ่าน */
-  --color-verified-400: #7fc6a4;
-  --color-verified-600: #2f7d5a;
+  /* ── ทอง = สีประจำแบรนด์ ใช้ให้น้อยแต่ใช้ให้จำได้ ── */
+  --color-gold-200: #f8e3ad;
+  --color-gold-300: #f0cd7c;
+  --color-gold-400: #e3b254;
+  --color-gold-500: #c9953a;
 
-  /* ⚠️ สงวนไว้สำหรับไฮไลต์ประโยคที่ต้องตรวจเท่านั้น */
+  /* ── ตรวจผ่าน ── */
+  --color-verified-400: #5fd6a4;
+  --color-verified-600: #1f8a63;
+
+  /* ── สงวนสำหรับไฮไลต์ที่ต้องตรวจ ── */
   --color-warn-200: #fde68a;
   --color-warn-500: #d97706;
-  --color-warn-900: #6b3e05;
+  --color-warn-900: #5c3703;
 
   --font-sans: var(--font-sarabun), system-ui, sans-serif;
   --font-serif: var(--font-noto-serif-thai), Georgia, serif;
@@ -43,16 +57,18 @@
 
 html {
   color-scheme: dark;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-ink-950);
-  color: var(--color-cream-100);
+  background: var(--color-night-950);
+  color: var(--color-mist-100);
   font-family: var(--font-sans);
-  /* ภาษาไทยไม่มีช่องว่างระหว่างคำ ต้องสั่งให้เบราว์เซอร์ตัดคำตามพจนานุกรม */
+  /* ภาษาไทยไม่มีช่องว่างระหว่างคำ ต้องให้เบราว์เซอร์ตัดคำตามพจนานุกรม */
   line-break: normal;
   word-break: normal;
   overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ผู้สูงอายุเป็นคนอ่านด้วย ตัวหนังสือจึงใหญ่กว่าเว็บทั่วไปหนึ่งขั้น */
@@ -61,15 +77,128 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-ember-400);
+  outline: 2px solid var(--color-gold-400);
   outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--color-gold-400);
+  color: var(--color-night-950);
+}
+
+/**
+ * ── พื้นหลัง hero ──
+ *
+ * ประกอบ 3 ชั้น เพราะชั้นเดียวจะได้ gradient แบน ๆ ที่ดูถูก:
+ *   1. hero-field  ผืนน้ำเงินกว้างไล่จางลงล่าง  ← ให้ "ความเป็นผืนสี"
+ *   2. aurora      จุดเรืองแสงเบลอ              ← ให้ "ความลึก"
+ *   3. star-field  จุดเล็ก ๆ จาง ๆ               ← ให้ "เนื้อ" ไม่ให้ดูเป็นพลาสติก
+ */
+.hero-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 70% at 50% -10%,
+      rgba(91, 141, 251, 0.45) 0%,
+      rgba(53, 102, 239, 0.26) 32%,
+      rgba(36, 73, 196, 0.1) 55%,
+      transparent 78%
+    ),
+    linear-gradient(180deg, rgba(27, 39, 64, 0.9) 0%, rgba(5, 7, 15, 0) 70%);
+}
+
+.star-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255, 255, 255, 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 78% 12%, rgba(255, 255, 255, 0.35), transparent),
+    radial-gradient(1px 1px at 33% 42%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 62% 33%, rgba(248, 227, 173, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 88% 46%, rgba(255, 255, 255, 0.28), transparent),
+    radial-gradient(1px 1px at 22% 62%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 52% 8%, rgba(255, 255, 255, 0.35), transparent),
+    radial-gradient(1px 1px at 92% 22%, rgba(248, 227, 173, 0.4), transparent);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
+}
+
+/* ── aurora หลัง hero — เลียนความลึกของแสงเหนือ ไม่ใช่ gradient แบน ── */
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(110px);
+}
+/**
+ * ⚠️ จุดศูนย์กลางของแสงต้องอยู่ "ในกรอบที่มองเห็น" ไม่ใช่เหนือขอบบน
+ *
+ * เคยตั้ง top:-22rem กับ height:44rem ทำให้จุดสว่างสุดไปตกที่ y=0 พอดี
+ * แล้วโดน overflow:hidden ของ section ตัดครึ่งบนทิ้ง เหลือแต่ขอบจาง ๆ
+ * ตอนนี้ดันศูนย์กลางลงมาอยู่ราว 80px ใต้ขอบบน จึงเห็นแกนของแสงจริง
+ */
+.aurora::before {
+  width: 80rem;
+  height: 40rem;
+  top: -15rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(91, 141, 251, 0.95) 0%,
+    rgba(53, 102, 239, 0.55) 30%,
+    rgba(36, 73, 196, 0.22) 52%,
+    transparent 72%
+  );
+  filter: blur(90px);
+}
+
+/* ไฮไลต์ทองซ้อนบนน้ำเงิน = ลายเซ็นของแบรนด์ที่ทีมอื่นไม่มี */
+.aurora::after {
+  width: 38rem;
+  height: 24rem;
+  top: -7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(248, 227, 173, 0.42) 0%,
+    rgba(227, 178, 84, 0.16) 45%,
+    transparent 70%
+  );
+  filter: blur(80px);
+}
+
+/* ขอบเรืองแสงบาง ๆ ใช้กับการ์ดสำคัญ */
+.ring-glow {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.07),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 24px 60px -24px rgba(53, 102, 239, 0.45);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(100deg, #f8e3ad 0%, #e3b254 45%, #f0cd7c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ───────────────────────── หน้าหนังสือสำหรับพิมพ์ ─────────────────────────
  * ทำด้วย HTML + @media print ไม่ใช่ react-pdf
- * เพราะ react-pdf ไม่รองรับ complex text shaping ของไทย
+ * react-pdf ไม่รองรับ complex text shaping ของไทย
  * สระกับวรรณยุกต์จะซ้อนผิดตำแหน่ง (สื่อ ปู่ ก๊อง) และตัดบรรทัดกลางคำ
- * เบราว์เซอร์ทำถูก 100% → Ctrl+P → Save as PDF ได้เล่มสวยกว่า
  */
 .paper {
   background: #fdfbf6;
@@ -94,7 +223,6 @@ body {
   .page-break {
     break-after: page;
   }
-  /* ห้ามให้ย่อหน้าขาดกลางหน้า — หนังสือที่ระลึกต้องอ่านต่อเนื่อง */
   .book-body p {
     break-inside: avoid;
     orphans: 3;

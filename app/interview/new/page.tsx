@@ -87,20 +87,20 @@ export default function NewInterviewPage() {
     <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <Link
         href="/"
-        className="mb-8 inline-flex items-center gap-1.5 text-sm text-cream-300 hover:text-cream-50"
+        className="mb-8 inline-flex items-center gap-1.5 text-sm text-mist-300 hover:text-mist-50"
       >
         <ArrowLeft size={15} /> กลับหน้าแรก
       </Link>
 
-      <h1 className="font-serif text-3xl text-cream-50">เริ่มเก็บเรื่องของท่าน</h1>
-      <p className="mt-2 text-cream-300">
+      <h1 className="font-serif text-3xl text-mist-50">เริ่มเก็บเรื่องของท่าน</h1>
+      <p className="mt-2 text-mist-300">
         นั่งข้างท่าน เปิดหน้านี้ แล้วทำตามทีละขั้น ใช้เวลาประมาณ 2 นาที
       </p>
 
       {/* ── ขั้น 1 ── */}
       <Card className="mt-8">
-        <h2 className="mb-5 flex items-center gap-2 text-lg text-cream-50">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-ember-400 text-sm font-bold text-ink-950">
+        <h2 className="mb-5 flex items-center gap-2 text-lg text-mist-50">
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-gold-400 text-sm font-bold text-night-950">
             1
           </span>
           ท่านคือใคร
@@ -136,15 +136,15 @@ export default function NewInterviewPage() {
                   onClick={() => setRegion(r.id)}
                   className={`rounded-xl border px-3.5 py-2 text-sm transition ${
                     region === r.id
-                      ? "border-ember-400 bg-ember-400/15 text-cream-50"
-                      : "border-cream-500/25 text-cream-300 hover:border-cream-500/50"
+                      ? "border-gold-400 bg-gold-400/15 text-mist-50"
+                      : "border-mist-500/25 text-mist-300 hover:border-mist-500/50"
                   }`}
                 >
                   {r.label}
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-xs text-cream-500">
+            <p className="mt-2 text-xs text-mist-500">
               ช่วยให้เราถอดเสียงได้แม่นขึ้น และรู้ว่าต้องเก็บข้อมูลภาษาถิ่นภาคไหนเพิ่ม
             </p>
           </div>
@@ -159,8 +159,8 @@ export default function NewInterviewPage() {
                   onClick={() => setVisitFrequency(f.id)}
                   className={`rounded-xl border px-3.5 py-2 text-sm transition ${
                     visitFrequency === f.id
-                      ? "border-ember-400 bg-ember-400/15 text-cream-50"
-                      : "border-cream-500/25 text-cream-300 hover:border-cream-500/50"
+                      ? "border-gold-400 bg-gold-400/15 text-mist-50"
+                      : "border-mist-500/25 text-mist-300 hover:border-mist-500/50"
                   }`}
                 >
                   {f.label}
@@ -179,8 +179,8 @@ export default function NewInterviewPage() {
                   onClick={() => setTopic(t.id)}
                   className={`rounded-xl border px-3.5 py-2 text-sm transition ${
                     topic === t.id
-                      ? "border-ember-400 bg-ember-400/15 text-cream-50"
-                      : "border-cream-500/25 text-cream-300 hover:border-cream-500/50"
+                      ? "border-gold-400 bg-gold-400/15 text-mist-50"
+                      : "border-mist-500/25 text-mist-300 hover:border-mist-500/50"
                   }`}
                 >
                   {t.icon} {t.title}
@@ -193,23 +193,23 @@ export default function NewInterviewPage() {
 
       {/* ── ขั้น 2 ── */}
       <Card className="mt-5">
-        <h2 className="mb-2 flex items-center gap-2 text-lg text-cream-50">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-ember-400 text-sm font-bold text-ink-950">
+        <h2 className="mb-2 flex items-center gap-2 text-lg text-mist-50">
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-gold-400 text-sm font-bold text-night-950">
             2
           </span>
           ขอความยินยอมจากท่านเอง
         </h2>
-        <p className="mb-5 text-sm text-cream-300">
+        <p className="mb-5 text-sm text-mist-300">
           อ่าน 4 ประโยคนี้ให้ท่านฟัง แล้วกดอัดคำตอบของท่าน —{" "}
-          <strong className="text-cream-50">ข้ามขั้นนี้ไม่ได้</strong>{" "}
+          <strong className="text-mist-50">ข้ามขั้นนี้ไม่ได้</strong>{" "}
           เพราะเรื่องของท่านต้องเริ่มจากปากของท่านเอง
         </p>
 
-        <ol className="mb-6 space-y-2 rounded-xl border border-cream-500/15 bg-ink-800/50 p-4">
+        <ol className="mb-6 space-y-2 rounded-xl border border-mist-500/15 bg-night-800/50 p-4">
           {CONSENT_SCRIPT.map((line, i) => (
-            <li key={i} className="flex gap-3 text-cream-100">
-              <span className="shrink-0 tabular-nums text-cream-500">{i + 1}.</span>
-              <span className={i === 3 ? "font-medium text-ember-300" : ""}>{line}</span>
+            <li key={i} className="flex gap-3 text-mist-100">
+              <span className="shrink-0 tabular-nums text-mist-500">{i + 1}.</span>
+              <span className={i === 3 ? "font-medium text-gold-300" : ""}>{line}</span>
             </li>
           ))}
         </ol>
@@ -229,10 +229,10 @@ export default function NewInterviewPage() {
             )}
 
             {rec.state === "recording" && (
-              <span className="tabular-nums text-cream-300">{fmtDuration(rec.ms)}</span>
+              <span className="tabular-nums text-mist-300">{fmtDuration(rec.ms)}</span>
             )}
 
-            <label className="cursor-pointer text-sm text-cream-300 underline decoration-cream-500/40 hover:text-cream-50">
+            <label className="cursor-pointer text-sm text-mist-300 underline decoration-mist-500/40 hover:text-mist-50">
               หรืออัปโหลดไฟล์เสียงที่อัดไว้
               <input
                 type="file"
@@ -247,7 +247,7 @@ export default function NewInterviewPage() {
             {consentUrl && (
               <AudioPlayer src={consentUrl} clipId="consent" label="คำยินยอมของท่าน" />
             )}
-            <div className="flex items-center gap-3 text-sm text-cream-300">
+            <div className="flex items-center gap-3 text-sm text-mist-300">
               <span>{rec.blob ? fmtBytes(rec.blob.size) : ""}</span>
               <Button variant="quiet" size="sm" onClick={rec.reset}>
                 <Trash2 size={14} /> อัดใหม่
@@ -274,7 +274,7 @@ export default function NewInterviewPage() {
           {busy ? "กำลังเริ่ม…" : "เริ่มสัมภาษณ์"}
         </Button>
         {!ready && (
-          <span className="text-sm text-cream-500">
+          <span className="text-sm text-mist-500">
             ต้องใส่ชื่อท่านและอัดคำยินยอมก่อน
           </span>
         )}

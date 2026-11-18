@@ -27,7 +27,7 @@ export default function Highlight({ level, children, reason }: HighlightProps) {
         "rounded px-1 py-0.5",
         level === "warn"
           ? "bg-warn-200 font-medium text-warn-900 underline decoration-warn-500 decoration-wavy decoration-2 underline-offset-4"
-          : "bg-verified-400/25 text-cream-50"
+          : "bg-verified-400/25 text-mist-50"
       )}
     >
       {children}

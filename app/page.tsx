@@ -94,79 +94,90 @@ export default function Home() {
   return (
     <main className="overflow-x-hidden">
       {/* ───────────────────────── HERO ───────────────────────── */}
-      <section className="relative mx-auto max-w-3xl px-5 pt-20 pb-24 sm:px-6">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-ember-500/15 blur-[100px]"
-        />
+      <section className="relative overflow-hidden px-5 pt-16 pb-24 sm:px-6 sm:pt-24">
+        <div className="hero-field" aria-hidden />
+        <div className="aurora" aria-hidden />
+        <div className="star-field" aria-hidden />
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="text-xs tracking-[0.3em] text-cream-500 uppercase"
-        >
-          เล่าไว้
-        </motion.p>
+        <div className="relative mx-auto max-w-3xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-4 py-1.5 text-xs text-mist-300 backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-gold-400" />
+              ทุกย่อหน้าในหนังสือ กดฟังเสียงจริงของท่านได้
+            </span>
+          </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="mt-6 font-serif text-4xl leading-[1.25] text-cream-50 sm:text-5xl sm:leading-[1.2]"
-        >
-          ปู่ย่าตายายของคุณ
-          <br />
-          มีเรื่องเล่าอีกกี่เรื่อง
-          <br />
-          <span className="text-ember-300">ที่คุณยังไม่เคยฟัง</span>
-        </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, delay: 0.1 }}
+            className="mt-8 font-serif text-[2.6rem] leading-[1.2] text-mist-50 sm:text-6xl sm:leading-[1.12]"
+          >
+            ปู่ย่าตายายของคุณ
+            <br />
+            มีเรื่องเล่าอีกกี่เรื่อง
+            <br />
+            <span className="text-gradient-gold italic">ที่คุณยังไม่เคยฟัง</span>
+          </motion.h1>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25 }}
-          className="mt-10"
-        >
-          <p className="mb-3 flex items-center gap-2 text-sm text-cream-300">
-            <Volume2 size={15} className="text-ember-400" />
-            กดฟัง — นี่คือสิ่งที่เรากำลังเก็บรักษา
-          </p>
-          <AudioPlayer src={hero.audioUrl} clipId="hero" label="ตัวอย่างเสียงผู้เล่า" />
-          {PLACEHOLDER_AUDIO && (
-            <p className="mt-2 text-xs text-cream-500">
-              ไฟล์ตัวอย่างชั่วคราวสำหรับทดสอบระบบ — จะแทนด้วยเสียงจริงที่ได้รับความยินยอมแล้ว
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-mist-300"
+          >
+            AI ช่วยตั้งคำถามให้หลานถาม ถอดเสียงที่ท่านเล่า
+            แล้วเรียบเรียงเป็นหนังสือชีวิตที่ทุกย่อหน้ากดฟังเสียงจริงของท่านได้
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.42 }}
+            className="ring-glow mx-auto mt-11 max-w-xl rounded-2xl border border-white/10 bg-night-900/70 p-4 backdrop-blur-xl"
+          >
+            <p className="mb-3 flex items-center justify-center gap-2 text-sm text-mist-300">
+              <Volume2 size={15} className="text-gold-400" />
+              กดฟัง — นี่คือสิ่งที่เรากำลังเก็บรักษา
             </p>
-          )}
-        </motion.div>
+            <AudioPlayer src={hero.audioUrl} clipId="hero" label="ตัวอย่างเสียงผู้เล่า" />
+            {PLACEHOLDER_AUDIO && (
+              <p className="mt-2.5 text-xs text-mist-500">
+                ไฟล์ตัวอย่างชั่วคราวสำหรับทดสอบระบบ — จะแทนด้วยเสียงจริงที่ได้รับความยินยอมแล้ว
+              </p>
+            )}
+          </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-8 max-w-xl text-lg leading-relaxed text-cream-300"
-        >
-          AI ช่วยตั้งคำถามให้หลานถาม ถอดเสียงที่ท่านเล่า แล้วเรียบเรียงเป็นหนังสือชีวิต
-          ที่ทุกย่อหน้ากดฟังเสียงจริงของท่านได้
-        </motion.p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.56 }}
+            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          >
+            <Link href="/interview/new">
+              <Button size="lg">
+                เริ่มเก็บเรื่องของท่าน <ArrowRight size={18} />
+              </Button>
+            </Link>
+            <Link href="/book/demo-token-7f3a9c2e">
+              <Button size="lg" variant="ghost">
+                <BookOpen size={17} /> ดูตัวอย่างหนังสือ
+              </Button>
+            </Link>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.55 }}
-          className="mt-9 flex flex-wrap items-center gap-4"
-        >
-          <Link href="/interview/new">
-            <Button size="lg">
-              เริ่มเก็บเรื่องของท่าน <ArrowRight size={18} />
-            </Button>
-          </Link>
-          <span className="text-sm text-cream-500">ใช้เวลาเริ่มต้น 2 นาที</span>
-        </motion.div>
+          <p className="mt-5 text-sm text-mist-500">
+            ใช้เวลาเริ่มต้น 2 นาที · เสียง 3 นาทีใช้เน็ตประมาณ 0.7 MB
+          </p>
+        </div>
       </section>
 
       {/* ───────────────────────── ตัวเลข ───────────────────────── */}
-      <section className="border-y border-cream-500/10 bg-ink-900/50">
+      <section className="border-y border-mist-500/10 bg-night-900/50">
         <div className="mx-auto grid max-w-4xl gap-8 px-5 py-16 sm:grid-cols-3 sm:px-6">
           {[
             { n: 16_800_000, label: "ผู้สูงอายุไทย ปี 2567", sub: "เดลินิวส์ อ้างรายงานที่ วช. สนับสนุน" },
@@ -174,11 +185,11 @@ export default function Home() {
             { n: 559_684, label: "ผู้เสียชีวิตในปี 2568", sub: "สถาบันวิจัยประชากรและสังคม ม.มหิดล" },
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 0.12}>
-              <p className="font-serif text-3xl text-ember-300 sm:text-4xl">
+              <p className="font-serif text-3xl text-gold-300 sm:text-4xl">
                 <CountUp to={s.n} />
               </p>
-              <p className="mt-2 text-cream-100">{s.label}</p>
-              <p className="mt-1 text-xs text-cream-500">{s.sub}</p>
+              <p className="mt-2 text-mist-100">{s.label}</p>
+              <p className="mt-1 text-xs text-mist-500">{s.sub}</p>
             </Reveal>
           ))}
         </div>
@@ -187,18 +198,18 @@ export default function Home() {
       {/* ───────────────────────── เทียบกับทางที่คนใช้อยู่ ───────────────────────── */}
       <section className="mx-auto max-w-4xl px-5 py-20 sm:px-6">
         <Reveal>
-          <h2 className="font-serif text-3xl text-cream-50">
+          <h2 className="font-serif text-3xl text-mist-50">
             ทุกบ้านเคยลองอัดคลิปเก็บไว้
           </h2>
-          <p className="mt-3 max-w-2xl text-cream-300">
+          <p className="mt-3 max-w-2xl text-mist-300">
             แล้วไม่มีใครกลับมาฟัง เพราะหาไม่เจอ ฟังยาว และไม่รู้ว่าอยู่คลิปไหน
           </p>
         </Reveal>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           <Reveal>
-            <Card className="h-full border-cream-500/10">
-              <p className="mb-4 text-sm tracking-wide text-cream-500 uppercase">
+            <Card className="h-full border-mist-500/10">
+              <p className="mb-4 text-sm tracking-wide text-mist-500 uppercase">
                 อัดคลิปเก็บไว้ในมือถือ
               </p>
               <ul className="space-y-3">
@@ -208,7 +219,7 @@ export default function Home() {
                   "ไม่รู้จะเริ่มถามอะไร เลยได้แต่เรื่องเดิม",
                   "มือถือหาย = หายไปทั้งหมด",
                 ].map((t) => (
-                  <li key={t} className="flex gap-2.5 text-cream-300">
+                  <li key={t} className="flex gap-2.5 text-mist-300">
                     <X size={17} className="mt-0.5 shrink-0 text-red-400/70" />
                     {t}
                   </li>
@@ -218,8 +229,8 @@ export default function Home() {
           </Reveal>
 
           <Reveal delay={0.12}>
-            <Card className="h-full border-ember-400/30 bg-ember-500/5">
-              <p className="mb-4 text-sm tracking-wide text-ember-300 uppercase">เล่าไว้</p>
+            <Card className="h-full border-gold-400/30 bg-gold-500/5">
+              <p className="mb-4 text-sm tracking-wide text-gold-300 uppercase">เล่าไว้</p>
               <ul className="space-y-3">
                 {[
                   "อัดทีละคำถาม 1–3 นาที ไม่ต้องเปิดแอปทิ้งไว้",
@@ -227,7 +238,7 @@ export default function Home() {
                   "AI เสนอคำถามต่อจากสิ่งที่ท่านเพิ่งเล่า",
                   "ได้หนังสือจริงที่ทุกย่อหน้ากดฟังเสียงได้",
                 ].map((t) => (
-                  <li key={t} className="flex gap-2.5 text-cream-100">
+                  <li key={t} className="flex gap-2.5 text-mist-100">
                     <Check size={17} className="mt-0.5 shrink-0 text-verified-400" />
                     {t}
                   </li>
@@ -238,7 +249,7 @@ export default function Home() {
         </div>
 
         <Reveal delay={0.2}>
-          <p className="mt-6 text-sm text-cream-500">
+          <p className="mt-6 text-sm text-mist-500">
             เสียง 3 นาทีใช้เน็ตประมาณ 0.7 MB และอัปโหลดหลังกดหยุดเท่านั้น —
             เน็ตหลุดก็เก็บไว้ในเครื่องก่อน ไม่เสียเรื่องที่ท่านเล่า
           </p>
@@ -246,22 +257,22 @@ export default function Home() {
       </section>
 
       {/* ───────────────────────── ไม่ทำ deadbot ───────────────────────── */}
-      <section className="border-y border-cream-500/10 bg-ink-900/50">
+      <section className="border-y border-mist-500/10 bg-night-900/50">
         <div className="mx-auto max-w-3xl px-5 py-20 sm:px-6">
           <Reveal>
-            <ShieldOff size={28} className="text-ember-400" />
-            <h2 className="mt-5 font-serif text-3xl text-cream-50">
+            <ShieldOff size={28} className="text-gold-400" />
+            <h2 className="mt-5 font-serif text-3xl text-mist-50">
               เราไม่สร้าง AI ที่เลียนแบบคนที่จากไป
             </h2>
-            <p className="mt-5 text-lg leading-relaxed text-cream-300">
+            <p className="mt-5 text-lg leading-relaxed text-mist-300">
               มีบริการที่ทำ “deadbot” ให้คุยกับคนที่เสียไปแล้วได้
               นักวิจัยมหาวิทยาลัยเคมบริดจ์ (2024) เตือนว่าอาจทำร้ายจิตใจผู้ใช้
             </p>
-            <p className="mt-4 text-lg leading-relaxed text-cream-100">
-              เราเลือกทางตรงข้าม — เก็บ<strong className="text-ember-300">เสียงจริง</strong>
+            <p className="mt-4 text-lg leading-relaxed text-mist-100">
+              เราเลือกทางตรงข้าม — เก็บ<strong className="text-gold-300">เสียงจริง</strong>
               ของท่านไว้ ไม่โคลนเสียง ไม่สร้างบุคลิกปลอม
               และใช้ AI เป็นผู้ช่วยฟังที่พาคนในครอบครัวกลับมาคุยกัน
-              <strong className="text-ember-300">ขณะที่ยังมีโอกาส</strong>
+              <strong className="text-gold-300">ขณะที่ยังมีโอกาส</strong>
             </p>
           </Reveal>
         </div>
@@ -270,11 +281,11 @@ export default function Home() {
       {/* ───────────── ทำไมเราไม่เชื่อ AI ของเราเอง ───────────── */}
       <section className="mx-auto max-w-3xl px-5 py-20 sm:px-6">
         <Reveal>
-          <h2 className="font-serif text-3xl text-cream-50">
+          <h2 className="font-serif text-3xl text-mist-50">
             ทำไมเราไม่เชื่อ AI ของเราเอง
           </h2>
-          <p className="mt-3 text-cream-300">
-            นี่คือคำที่ AI ถอดผิดจาก<strong className="text-cream-100">บทสนทนาจริงในงานนี้</strong> —
+          <p className="mt-3 text-mist-300">
+            นี่คือคำที่ AI ถอดผิดจาก<strong className="text-mist-100">บทสนทนาจริงในงานนี้</strong> —
             เสียงคนหนุ่มพูดภาษากลางชัด ๆ ในห้องเงียบ
           </p>
         </Reveal>
@@ -282,11 +293,11 @@ export default function Home() {
         <div className="mt-8 space-y-3">
           {ASR_ERRORS.map((e, i) => (
             <Reveal key={e.right} delay={i * 0.08}>
-              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-cream-500/15 bg-ink-900/60 px-4 py-3">
-                <span className="text-cream-500 line-through decoration-red-400/60">
+              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-mist-500/15 bg-night-900/60 px-4 py-3">
+                <span className="text-mist-500 line-through decoration-red-400/60">
                   {e.wrong}
                 </span>
-                <ArrowRight size={14} className="text-cream-500" />
+                <ArrowRight size={14} className="text-mist-500" />
                 <span className="font-medium text-verified-400">{e.right}</span>
               </div>
             </Reveal>
@@ -294,25 +305,25 @@ export default function Home() {
         </div>
 
         <Reveal delay={0.3}>
-          <p className="mt-7 text-lg leading-relaxed text-cream-100">
+          <p className="mt-7 text-lg leading-relaxed text-mist-100">
             ถ้าภาษากลางยังผิดขนาดนี้ เสียงคุณยายอายุ 80 พูดภาษาถิ่นจะผิดแค่ไหน
           </p>
-          <p className="mt-3 text-cream-300">
+          <p className="mt-3 text-mist-300">
             เพราะฉะนั้นเราไม่ออกแบบระบบที่สมมติว่า AI ถูก
-            เราออกแบบระบบที่สมมติว่า<strong className="text-cream-100">AI ผิดได้ทุกเมื่อ</strong>
+            เราออกแบบระบบที่สมมติว่า<strong className="text-mist-100">AI ผิดได้ทุกเมื่อ</strong>
             แล้วทำให้ครอบครัวจับผิดมันได้ง่ายที่สุด
           </p>
         </Reveal>
       </section>
 
       {/* ───────────────────────── ทุกย่อหน้าพิสูจน์ได้ ───────────────────────── */}
-      <section className="border-y border-cream-500/10 bg-ink-900/50">
+      <section className="border-y border-mist-500/10 bg-night-900/50">
         <div className="mx-auto max-w-3xl px-5 py-20 sm:px-6">
           <Reveal>
-            <h2 className="font-serif text-3xl text-cream-50">ทุกย่อหน้าพิสูจน์ได้</h2>
-            <p className="mt-3 text-cream-300">
+            <h2 className="font-serif text-3xl text-mist-50">ทุกย่อหน้าพิสูจน์ได้</h2>
+            <p className="mt-3 text-mist-300">
               ทุกย่อหน้าต้องอ้างถ้อยคำที่มีอยู่จริงในเสียง และเรา
-              <strong className="text-cream-100">ตรวจด้วยโค้ด ไม่ใช่ให้ AI ตรวจ AI</strong>
+              <strong className="text-mist-100">ตรวจด้วยโค้ด ไม่ใช่ให้ AI ตรวจ AI</strong>
             </p>
           </Reveal>
 
@@ -322,7 +333,7 @@ export default function Home() {
                 <p className="mb-3 text-xs tracking-wide text-warn-200 uppercase">
                   ตัวอย่างจริงจากหน้าตรวจ
                 </p>
-                <p className="font-serif text-lg leading-relaxed text-cream-50">
+                <p className="font-serif text-lg leading-relaxed text-mist-50">
                   ยายตื่นตีห้าทุกวันไปช่วยแม่หาบขนมไปขาย เป็นหน้าที่ประจำตั้งแต่ยังเล็ก และ
                   <Highlight level="warn" reason={flagged.flags[0]}>
                     เป็นช่วงเวลาที่ยายได้อยู่กับแม่มากที่สุดในหนึ่งวัน
@@ -353,8 +364,8 @@ export default function Home() {
             ].map((c, i) => (
               <Reveal key={c.t} delay={0.1 + i * 0.1}>
                 <Card className="h-full">
-                  <h3 className="text-cream-50">{c.t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-cream-300">{c.d}</p>
+                  <h3 className="text-mist-50">{c.t}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-mist-300">{c.d}</p>
                 </Card>
               </Reveal>
             ))}
@@ -366,13 +377,13 @@ export default function Home() {
       <section className="mx-auto max-w-4xl px-5 py-20 sm:px-6">
         <div className="grid items-center gap-10 sm:grid-cols-[1.4fr_1fr]">
           <Reveal>
-            <h2 className="font-serif text-3xl text-cream-50">
+            <h2 className="font-serif text-3xl text-mist-50">
               จบลงที่หนังสือที่ถือได้จริง
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-cream-300">
+            <p className="mt-4 text-lg leading-relaxed text-mist-300">
               หนังสือชีวิตขนาด A5 พิมพ์ได้จริง ทุกย่อหน้ามี QR ให้สแกนฟังเสียงของท่าน
               ตรงประโยคนั้น และต่อยอดเป็นหนังสืออนุสรณ์ที่ทำไว้ล่วงหน้า
-              <strong className="text-cream-100">ขณะที่ท่านยังเล่าได้</strong>
+              <strong className="text-mist-100">ขณะที่ท่านยังเล่าได้</strong>
               ไม่ใช่รวบรวมอย่างเร่งรีบหลังการจากไป
             </p>
             <Link href="/interview/new" className="mt-7 inline-block">
@@ -401,8 +412,8 @@ export default function Home() {
       </section>
 
       {/* ───────────────────────── ปิด ───────────────────────── */}
-      <footer className="border-t border-cream-500/10 px-5 py-14 text-center sm:px-6">
-        <p className="font-serif text-2xl text-cream-50">
+      <footer className="border-t border-mist-500/10 px-5 py-14 text-center sm:px-6">
+        <p className="font-serif text-2xl text-mist-50">
           วันที่อยากฟัง อาจไม่ใช่วันที่ยังได้ฟัง
         </p>
         <Link href="/interview/new" className="mt-7 inline-block">
@@ -410,7 +421,7 @@ export default function Home() {
             เริ่มวันนี้ <ArrowRight size={18} />
           </Button>
         </Link>
-        <p className="mt-10 text-xs text-cream-500">
+        <p className="mt-10 text-xs text-mist-500">
           เล่าไว้ · ทีม STAR PLATINUM · Thailand AI Extreme Hack 2026
         </p>
       </footer>
