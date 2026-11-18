@@ -31,12 +31,17 @@ import {
   Volume2,
   X,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import AudioPlayer from "@/components/AudioPlayer";
 import Highlight from "@/components/Highlight";
 import QRBox from "@/components/QRBox";
 import VoiceOrbMount from "@/components/VoiceOrbMount";
+import { BookQrScene } from "@/components/illustrations";
 import { Card } from "@/components/ui";
 import { demoChapter, demoClips } from "@/lib/demo";
+
+/** three.js ชิ้นที่สอง โหลดเฉพาะตอน scroll ถึง เพื่อไม่ถ่วงหน้าแรก */
+const MemoryWave = dynamic(() => import("@/components/MemoryWave"), { ssr: false });
 
 /** ⚠️ เปลี่ยนเป็น false เมื่อทับ public/demo/clip-1.wav ด้วยเสียงจริงที่ได้รับความยินยอมแล้ว */
 const PLACEHOLDER_AUDIO = true;
@@ -184,15 +189,46 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* 3D: ทรงกลมอนุภาค = เสียงหนึ่งเสียงที่ถูกเก็บไว้ */}
+          {/* ภาพจริง + 3D ซ้อนกัน: คนจริงให้ความรู้สึก ส่วนอนุภาคสื่อถึงเสียงที่ถูกเก็บไว้ */}
           <div className="relative hidden lg:block">
-            <VoiceOrbMount className="h-[30rem] w-full" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-6 text-center">
-              <p className="font-serif text-xl text-earth-700">เสียงหนึ่งเสียง</p>
-              <p className="mt-1 text-sm text-earth-500">
-                ที่ไม่มีใครสร้างขึ้นมาใหม่ได้อีกแล้ว
-              </p>
-            </div>
+            <VoiceOrbMount className="absolute -top-12 -right-6 h-[26rem] w-[26rem] opacity-80" />
+
+            <motion.figure
+              initial={{ opacity: 0, scale: 0.96, y: 18 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="relative"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/img/grandma-boy.jpg"
+                alt="คุณยายกับหลานชายยืนคุยกันหน้าบ้านในแสงเย็น"
+                width={1000}
+                height={1500}
+                className="h-[30rem] w-full rounded-[2rem] object-cover shadow-[0_30px_70px_-30px_rgba(87,70,52,0.7)]"
+              />
+
+              {/* ป้ายลอย — สื่อว่าเสียงกำลังถูกเก็บอยู่จริง */}
+              <figcaption className="absolute -bottom-6 -left-6 flex items-center gap-3 rounded-2xl border border-paper-300 bg-paper-50/95 px-4 py-3 shadow-[0_16px_40px_-18px_rgba(87,70,52,0.5)] backdrop-blur">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold-400 text-earth-900">
+                  <Mic size={18} />
+                </span>
+                <span>
+                  <span className="block text-sm font-medium text-earth-900">
+                    กำลังเก็บเรื่องของยาย
+                  </span>
+                  <span className="mt-1 flex items-center gap-1" aria-hidden>
+                    {[10, 18, 26, 14, 22, 12, 20, 16].map((h, i) => (
+                      <span
+                        key={i}
+                        className="w-1 rounded-full bg-gold-500"
+                        style={{ height: h }}
+                      />
+                    ))}
+                  </span>
+                </span>
+              </figcaption>
+            </motion.figure>
           </div>
         </div>
       </section>
@@ -282,7 +318,20 @@ export default function Home() {
             </Reveal>
 
             <Reveal delay={0.15}>
-              <ElderScreenMock />
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/img/grandma-smile.jpg"
+                  alt="ภาพคุณยายยิ้มในชุดพื้นบ้าน"
+                  width={1000}
+                  height={1500}
+                  className="h-[26rem] w-full rounded-[2rem] object-cover object-top shadow-[0_26px_60px_-28px_rgba(87,70,52,0.65)]"
+                />
+                {/* หน้าจอตอนสัมภาษณ์ซ้อนมุมขวาล่าง — เห็นทั้งคนและของจริงพร้อมกัน */}
+                <div className="absolute -right-4 -bottom-10 w-60 sm:w-72">
+                  <ElderScreenMock />
+                </div>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -459,6 +508,366 @@ export default function Home() {
             และใช้ AI เป็นผู้ช่วยฟังที่พาคนในครอบครัวกลับมาคุยกันขณะที่ยังมีโอกาส
           </p>
         </Reveal>
+      </section>
+
+      {/* ══════════════ แถบภาพ ══════════════ */}
+      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-6">
+        <Reveal>
+          <h2 className="text-center font-serif text-3xl text-earth-900 sm:text-4xl">
+            ทุกบ้านมีเรื่องที่ยังไม่ได้เล่า
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-center text-lg text-earth-700">
+            และเกือบทุกบ้านรู้ตัวตอนที่สายไปแล้ว
+          </p>
+        </Reveal>
+
+        <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {[
+            { src: "/img/grandma-hug.jpg", alt: "คุณยายกอดหลานตัวเล็ก", cap: "ความผูกพันที่ไม่มีใครจดไว้" },
+            { src: "/img/grandma-outdoor.jpg", alt: "ผู้สูงอายุนั่งอยู่หน้าบ้าน", cap: "เรื่องที่รอคนถาม" },
+            { src: "/img/grandma-baking.jpg", alt: "คุณยายทำขนมกับหลานในครัว", cap: "สูตรที่ไม่เคยถูกจด" },
+            { src: "/img/grandma-breakfast.jpg", alt: "คุณยายนั่งคุยกับหลานที่โต๊ะอาหาร", cap: "บทสนทนาที่หายไปทุกวัน" },
+          ].map((p, i) => (
+            <Reveal key={p.src} delay={i * 0.1}>
+              <figure className="group relative overflow-hidden rounded-3xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={p.src}
+                  alt={p.alt}
+                  width={1200}
+                  height={1600}
+                  loading="lazy"
+                  className="h-64 w-full object-cover transition duration-700 group-hover:scale-105 sm:h-72"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-earth-900/80 via-earth-900/10 to-transparent" />
+                <figcaption className="absolute inset-x-0 bottom-0 p-4 text-paper-50">
+                  {p.cap}
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal delay={0.4}>
+          <p className="mt-6 text-center text-sm text-earth-400">
+            ภาพประกอบจาก Unsplash ใช้ภายใต้ Unsplash License ·
+            ทีมจะแทนด้วยภาพของครอบครัวที่ร่วมทดสอบจริงเมื่อได้รับความยินยอมแล้ว
+          </p>
+        </Reveal>
+      </section>
+
+      {/* ══════════════ คลื่นเสียง 3D คั่น ══════════════ */}
+      <section className="relative overflow-hidden border-y border-paper-300 bg-paper-100">
+        <MemoryWave className="pointer-events-none h-56 w-full" />
+        <div className="pointer-events-none absolute inset-0 grid place-items-center px-5 text-center">
+          <p className="font-serif text-2xl text-earth-800 sm:text-3xl">
+            เสียงของคนรุ่นหนึ่ง ส่งต่อให้อีกรุ่นหนึ่ง
+          </p>
+        </div>
+      </section>
+
+      {/* ══════════════ เทียบกับทางเลือกอื่น ══════════════ */}
+      <section className="mx-auto max-w-5xl px-5 py-20 sm:px-6">
+        <Reveal>
+          <h2 className="font-serif text-4xl text-earth-900">
+            ทำไมไม่ใช้วิธีที่มีอยู่แล้ว
+          </h2>
+          <p className="mt-4 max-w-2xl text-lg text-earth-700">
+            ทุกวิธีด้านล่างมีคนใช้จริง และทุกวิธีมีช่องว่างที่ทำให้เรื่องของท่านหายไปอยู่ดี
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.12}>
+          <div className="mt-10 overflow-x-auto">
+            <table className="w-full min-w-[46rem] border-separate border-spacing-0 text-left">
+              <thead>
+                <tr>
+                  {["วิธี", "ช่องว่างที่ยังไม่มีใครแก้", "เล่าไว้แก้ยังไง"].map((h, i) => (
+                    <th
+                      key={h}
+                      className={`bg-earth-900 px-5 py-4 text-paper-50 ${
+                        i === 0 ? "rounded-tl-2xl" : ""
+                      } ${i === 2 ? "rounded-tr-2xl" : ""}`}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  [
+                    "อัดคลิปเก็บในมือถือ",
+                    "คลิปยาว ไม่มีใครกลับมาฟัง หาเรื่องที่ต้องการไม่เจอ",
+                    "จัดเป็นบทตามช่วงชีวิต ค้นได้ อ่านได้ และยังฟังเสียงเดิมได้",
+                  ],
+                  [
+                    "Storyworth (สหรัฐฯ)",
+                    "ให้ผู้สูงอายุพิมพ์ตอบเอง เป็นภาษาอังกฤษ และไม่มีเสียง",
+                    "ใช้เสียงเป็นหลัก ภาระอยู่ที่ลูกหลาน ท่านแค่เล่า",
+                  ],
+                  [
+                    "ChatGPT + อัดเอง",
+                    "ไม่มีชุดคำถาม AI แต่งเติมได้โดยไม่มีใครรู้ ตรวจที่มาไม่ได้",
+                    "ทุกย่อหน้าอ้างถ้อยคำต้นฉบับ ตรวจด้วยโค้ด และคนต้องยืนยัน",
+                  ],
+                  [
+                    "บริการ deadbot",
+                    "จำลองผู้เสียชีวิตให้คุยต่อ เสี่ยงต่อสุขภาวะทางใจ",
+                    "เก็บเสียงจริง ไม่โคลนเสียง ไม่สร้างบุคลิกปลอม",
+                  ],
+                  [
+                    "หนังสืองานศพแบบเดิม",
+                    "ทำหลังท่านจากไป ญาติต้องเดาเรื่องเอง และไม่มีเสียงท่าน",
+                    "ทำล่วงหน้าขณะท่านยังเล่าได้ และมี QR ให้ฟังเสียงจริง",
+                  ],
+                ].map(([a, b, c], i, arr) => (
+                  <tr key={a} className={i % 2 ? "bg-paper-200/50" : "bg-paper-50"}>
+                    <td
+                      className={`border-b border-paper-300 px-5 py-4 align-top font-medium text-earth-900 ${
+                        i === arr.length - 1 ? "rounded-bl-2xl" : ""
+                      }`}
+                    >
+                      {a}
+                    </td>
+                    <td className="border-b border-paper-300 px-5 py-4 align-top text-earth-700">
+                      {b}
+                    </td>
+                    <td
+                      className={`border-b border-paper-300 px-5 py-4 align-top text-earth-800 ${
+                        i === arr.length - 1 ? "rounded-br-2xl" : ""
+                      }`}
+                    >
+                      <span className="flex gap-2">
+                        <Check size={18} className="mt-1 shrink-0 text-verified-600" />
+                        {c}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ══════════════ โมเดลธุรกิจ ══════════════ */}
+      <section className="border-y border-paper-300 bg-paper-200/60">
+        <div className="mx-auto max-w-5xl px-5 py-20 sm:px-6">
+          <Reveal>
+            <h2 className="font-serif text-4xl text-earth-900">ใช้ฟรี จ่ายเมื่ออยากได้เล่ม</h2>
+            <p className="mt-4 max-w-2xl text-lg text-earth-700">
+              ของฟรีทำให้ครอบครัวกล้าเริ่ม และการเริ่มคือสิ่งที่ยากที่สุดในปัญหานี้
+            </p>
+          </Reveal>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {[
+              {
+                name: "ดิจิทัล",
+                price: "ฟรี",
+                note: "ตลอดไป",
+                feats: [
+                  "สัมภาษณ์ได้ไม่จำกัด",
+                  "ถอดเสียงและเรียบเรียงด้วย AI",
+                  "อ่านและฟังบนเว็บได้ทุกเครื่อง",
+                  "ปุ่มลืมและสิทธิ์ลบข้อมูลเต็มรูปแบบ",
+                ],
+                highlight: false,
+              },
+              {
+                name: "หนังสือเล่มจริง",
+                price: "จ่ายต่อเล่ม",
+                note: "ราคาตามต้นทุนพิมพ์จริง",
+                feats: [
+                  "ทุกอย่างในแบบดิจิทัล",
+                  "หนังสือ A5 พิมพ์จริง ส่งถึงบ้าน",
+                  "QR ทุกย่อหน้า ฟังเสียงท่านได้",
+                  "เหมาะเป็นของขวัญวันแม่ วันพ่อ สงกรานต์",
+                ],
+                highlight: true,
+              },
+              {
+                name: "ผ่านพาร์ทเนอร์",
+                price: "ติดต่อเรา",
+                note: "ธุรกิจงานศพ · ศูนย์ดูแลผู้สูงอายุ · อบต.",
+                feats: [
+                  "หนังสืออนุสรณ์ที่ทำไว้ล่วงหน้า",
+                  "มีทีมช่วยสัมภาษณ์ให้",
+                  "เหมาะกับครอบครัวที่ไม่ถนัดทำเอง",
+                  "แบ่งรายได้กับพาร์ทเนอร์",
+                ],
+                highlight: false,
+              },
+            ].map((p, i) => (
+              <Reveal key={p.name} delay={i * 0.1}>
+                <div
+                  className={
+                    p.highlight
+                      ? "ring-glow relative h-full rounded-3xl border-2 border-gold-400 bg-paper-50 p-7"
+                      : "card-soft h-full rounded-3xl p-7"
+                  }
+                >
+                  {p.highlight && (
+                    <span className="absolute -top-3 left-7 rounded-full bg-gold-400 px-3 py-1 text-sm font-medium text-earth-900">
+                      คนเลือกมากที่สุด
+                    </span>
+                  )}
+                  <h3 className="font-serif text-2xl text-earth-900">{p.name}</h3>
+                  <p className="mt-3 font-serif text-3xl text-earth-900">{p.price}</p>
+                  <p className="mt-1 text-sm text-earth-500">{p.note}</p>
+                  <ul className="mt-6 space-y-3">
+                    {p.feats.map((f) => (
+                      <li key={f} className="flex gap-2.5 text-earth-700">
+                        <Check size={18} className="mt-1 shrink-0 text-verified-600" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal delay={0.3}>
+            <p className="mt-8 text-sm text-earth-500">
+              ราคาจะกำหนดหลังได้ต้นทุนพิมพ์จริงจากโรงพิมพ์
+              และหลังทดสอบความเต็มใจจ่ายกับครอบครัวจริง — เราไม่ตั้งตัวเลขที่ยังพิสูจน์ไม่ได้
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ══════════════ หนังสือ + QR พร้อมภาพประกอบ ══════════════ */}
+      <section className="mx-auto max-w-5xl px-5 py-20 sm:px-6">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <Reveal>
+            <BookQrScene className="w-full rounded-3xl shadow-[0_20px_50px_-24px_rgba(87,70,52,0.4)]" />
+          </Reveal>
+          <Reveal delay={0.12}>
+            <h2 className="font-serif text-4xl leading-tight text-earth-900">
+              สแกนแล้วได้ยินเสียงท่านทันที
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-earth-700">
+              หนังสือเล่มอื่นเล่าได้แค่ว่าท่านพูดอะไร
+              เล่มนี้ให้คุณ<strong className="text-earth-900">ได้ยินว่าท่านพูดยังไง</strong>
+              — น้ำเสียง จังหวะ เสียงหัวเราะ และสำเนียงบ้านเกิดของท่าน
+            </p>
+            <p className="mt-4 text-lg leading-relaxed text-earth-700">
+              หลานที่ยังไม่เกิดในวันนี้ จะได้ยินเสียงของท่านในอีกยี่สิบปีข้างหน้า
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ══════════════ อ้างอิงงานวิจัย ══════════════ */}
+      <section className="border-y border-paper-300 bg-paper-200/50">
+        <div className="mx-auto max-w-5xl px-5 py-16 sm:px-6">
+          <Reveal>
+            <p className="text-center text-sm tracking-[0.2em] text-earth-500 uppercase">
+              ตั้งอยู่บนข้อมูลและงานวิจัย
+            </p>
+          </Reveal>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { t: "สถาบันวิจัยประชากรและสังคม", s: "ม.มหิดล — สถานการณ์ประชากรไทย 2569" },
+              { t: "Thai PBS Policy Watch", s: "ผู้สูงอายุที่อยู่ลำพังในประเทศไทย" },
+              { t: "University of Cambridge", s: "งานวิจัย 2024 เรื่องความเสี่ยงของ deadbot" },
+              { t: "Typhoon ASR", s: "arXiv — ถอดเสียงภาษาอีสาน CER 8.85%" },
+            ].map((r, i) => (
+              <Reveal key={r.t} delay={i * 0.08}>
+                <div className="card-soft h-full rounded-2xl px-5 py-4">
+                  <p className="font-medium text-earth-900">{r.t}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-earth-500">{r.s}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════ ทำไมเราถึงทำ ══════════════ */}
+      <section className="mx-auto max-w-3xl px-5 py-20 sm:px-6">
+        <Reveal>
+          <div className="card-soft rounded-3xl p-8 sm:p-10">
+            <Heart size={26} className="text-gold-500" />
+            <h2 className="mt-5 font-serif text-3xl leading-snug text-earth-900">
+              เราไม่ได้คิดเรื่องนี้จากในห้องเรียน
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-earth-700">
+              ในทีม 4 คน มี 2 คนที่เจอปัญหานี้กับตัวเอง —
+              คนหนึ่งเสียคุณยายไปก่อนได้ถามเรื่องของท่าน
+              อีกคนอยากรู้เรื่องของปู่ย่าตายายแต่ไม่เคยมีเวลานั่งฟังจริงจัง
+            </p>
+            <p className="mt-4 text-lg leading-relaxed text-earth-700">
+              เราทำสิ่งนี้เพราะอยากให้มีคนอื่นไม่ต้องเสียใจแบบเดียวกัน
+            </p>
+            <p className="mt-6 text-earth-500">
+              ทีม STAR PLATINUM · มาจาก 3 โรงเรียน 3 จังหวัด
+              จึงเข้าใจว่าแต่ละบ้านพูดกันคนละสำเนียง
+            </p>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ══════════════ Roadmap ══════════════ */}
+      <section className="border-t border-paper-300 bg-paper-200/60">
+        <div className="mx-auto max-w-4xl px-5 py-20 sm:px-6">
+          <Reveal>
+            <h2 className="font-serif text-4xl text-earth-900">แล้วจากนี้ไปไหนต่อ</h2>
+          </Reveal>
+
+          <ol className="mt-12 space-y-0">
+            {[
+              {
+                when: "ตอนนี้",
+                t: "ใช้ได้จริงแล้ว",
+                d: "สัมภาษณ์ ถอดเสียง ตรวจสอบ และสร้างหนังสือพร้อม QR ได้ครบเส้นทาง",
+                done: true,
+              },
+              {
+                when: "เดือนถัดไป",
+                t: "ทดสอบกับ 10–20 ครอบครัวจริง",
+                d: "วัดสัดส่วนประโยคที่ต้องแก้ และความเต็มใจจ่ายของครอบครัว",
+                done: false,
+              },
+              {
+                when: "ไตรมาสถัดไป",
+                t: "ภาษาถิ่นแม่นขึ้นจากข้อมูลผู้ใช้",
+                d: "ทุกคำที่ครอบครัวแก้กลายเป็นชุดข้อมูลภาษาถิ่นที่คู่แข่งไม่มี",
+                done: false,
+              },
+              {
+                when: "ปีถัดไป",
+                t: "Pilot กับพาร์ทเนอร์",
+                d: "ธุรกิจงานศพ ศูนย์ดูแลผู้สูงอายุ และองค์กรปกครองส่วนท้องถิ่น",
+                done: false,
+              },
+            ].map((s, i, arr) => (
+              <Reveal key={s.t} delay={i * 0.1}>
+                <li className="relative flex gap-6 pb-10">
+                  {i < arr.length - 1 && (
+                    <span className="absolute top-10 left-[1.1rem] h-full w-px bg-paper-400" />
+                  )}
+                  <span
+                    className={
+                      s.done
+                        ? "z-10 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-verified-600 text-paper-50"
+                        : "z-10 grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-paper-400 bg-paper-50 text-earth-500"
+                    }
+                  >
+                    {s.done ? <Check size={17} /> : i + 1}
+                  </span>
+                  <div className="pt-1">
+                    <p className="text-sm tracking-wide text-earth-500 uppercase">{s.when}</p>
+                    <h3 className="mt-1 font-serif text-2xl text-earth-900">{s.t}</h3>
+                    <p className="mt-2 leading-relaxed text-earth-700">{s.d}</p>
+                  </div>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+        </div>
       </section>
 
       {/* ══════════════ FAQ ══════════════ */}
