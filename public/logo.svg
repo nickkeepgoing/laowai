@@ -1,0 +1,25 @@
+<svg width="96" height="96" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>เล่าไว้ — LaoWai</title>
+  <defs>
+    <linearGradient id="lw-g" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f0cd7c"/>
+      <stop offset="55%" stop-color="#e3b254"/>
+      <stop offset="100%" stop-color="#c9953a"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="24" cy="24" r="23" fill="#fdf8ef"/>
+  <circle cx="24" cy="24" r="22" stroke="url(#lw-g)" stroke-width="2.2"/>
+  <circle cx="24" cy="24" r="18.5" stroke="url(#lw-g)" stroke-width="0.8" opacity="0.5"/>
+
+  <g stroke-linecap="round">
+    <path d="M14 24.5v-3" stroke="#211a12" stroke-width="2.6" opacity="0.45"/>
+    <path d="M19 27v-8" stroke="#211a12" stroke-width="2.6" opacity="0.7"/>
+    <path d="M24 30.5v-15" stroke="url(#lw-g)" stroke-width="3"/>
+    <path d="M29 27v-8" stroke="#211a12" stroke-width="2.6" opacity="0.7"/>
+    <path d="M34 24.5v-3" stroke="#211a12" stroke-width="2.6" opacity="0.45"/>
+  </g>
+
+  <path d="M13 34.5c4.2-2.2 7.6-2.2 11 0 3.4 2.2 6.8 2.2 11 0"
+        stroke="url(#lw-g)" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>
