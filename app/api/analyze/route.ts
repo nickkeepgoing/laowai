@@ -17,7 +17,7 @@ import { NextResponse } from "next/server";
 import { analyzeAudio } from "@/lib/gemini";
 import { putAudio, saveClip } from "@/lib/store";
 import { keepVerified } from "@/lib/verify";
-import { runtimeMode } from "@/lib/env";
+import { runtimeMode, TimeoutError, withTimeout } from "@/lib/env";
 
 export const maxDuration = 60; // เสียง 3 นาทีใช้เวลาประมวลผลสักพัก
 
@@ -47,7 +47,12 @@ export async function POST(req: Request) {
     }
 
     const audioUrl = await putAudio(audio, `clip-${Date.now()}.webm`);
-    const result = await analyzeAudio(audio, question, durationMs);
+    // ตัดจบเองที่ 45 วินาที ก่อนที่ Vercel จะตัดแล้วตอบเป็น HTML แทน JSON
+    const result = await withTimeout(
+      analyzeAudio(audio, question, durationMs),
+      45_000,
+      "การถอดเสียง"
+    );
 
     /**
      * ⚠️ ทำให้ claim id ไม่ซ้ำกันข้ามคลิป
@@ -79,6 +84,12 @@ export async function POST(req: Request) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : "เกิดข้อผิดพลาดที่ไม่รู้จัก";
     console.error("[/api/analyze]", msg);
+    if (e instanceof TimeoutError) {
+      return NextResponse.json(
+        { error: msg + " — คลิปนี้ยาวเกินไปสำหรับการประมวลผลครั้งเดียว ลองอัดสั้นลงเหลือ 1–2 นาทีแล้วส่งใหม่ เสียงเดิมยังอยู่ในเครื่อง" },
+        { status: 504 }
+      );
+    }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

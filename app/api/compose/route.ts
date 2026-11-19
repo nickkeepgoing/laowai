@@ -14,7 +14,7 @@ import { NextResponse } from "next/server";
 import { composeChapter } from "@/lib/gemini";
 import { listClips, saveChapter } from "@/lib/store";
 import { indexClaims, verifyChapter, verifyParagraph } from "@/lib/verify";
-import { runtimeMode } from "@/lib/env";
+import { runtimeMode, TimeoutError, withTimeout } from "@/lib/env";
 
 export const maxDuration = 60;
 
@@ -42,7 +42,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const drafted = await composeChapter(String(title), String(elderName ?? "ท่าน"), claims);
+    const drafted = await withTimeout(
+      composeChapter(String(title), String(elderName ?? "ท่าน"), claims),
+      45_000,
+      "การเรียบเรียงบท"
+    );
 
     // ด่านสุดท้าย: ย่อหน้าที่อ้าง claim ที่ตรวจไม่ผ่าน หรือไม่อ้างอะไรเลย → ตัดทิ้ง
     const byId = indexClaims(claims);
@@ -67,6 +71,12 @@ export async function POST(req: Request) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : "เกิดข้อผิดพลาดที่ไม่รู้จัก";
     console.error("[/api/compose]", msg);
+    if (e instanceof TimeoutError) {
+      return NextResponse.json(
+        { error: msg + " — บทนี้มีข้อมูลมาก ลองลบคลิปที่ไม่ต้องการออกบ้างแล้วกดเรียบเรียงใหม่" },
+        { status: 504 }
+      );
+    }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

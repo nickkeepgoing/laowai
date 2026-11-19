@@ -31,6 +31,44 @@ export const hasSupabase = () => SUPABASE_URL.length > 0 && SUPABASE_ANON_KEY.le
 /** ชื่อ bucket ใน Supabase Storage */
 export const AUDIO_BUCKET = "clips";
 
+/**
+ * กันงานค้างจนแพลตฟอร์มตัดเอง
+ *
+ * ⚠️ ทำไมต้องมี: Vercel มีเพดานเวลาของ serverless function
+ * ถ้าเราปล่อยให้ค้างจนครบเพดาน Vercel จะตอบกลับเป็น "หน้า error ของตัวเอง"
+ * ซึ่งเป็นข้อความธรรมดา ไม่ใช่ JSON แล้วหน้าเว็บจะพังตอน parse
+ * ผู้ใช้เห็นข้อความที่ไม่บอกอะไรเลย และเข้าใจผิดว่าเน็ตตัวเองมีปัญหา
+ *
+ * เราจึงตัดจบเองก่อนถึงเพดาน เพื่อให้ยังตอบเป็น JSON ที่บอกทางแก้ได้
+ */
+export async function withTimeout<T>(
+  work: Promise<T>,
+  ms: number,
+  label: string
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      work,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new TimeoutError(`${label}ใช้เวลานานเกิน ${Math.round(ms / 1000)} วินาที`)),
+          ms
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+export class TimeoutError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TimeoutError";
+  }
+}
+
 /** สรุปสถานะไว้โชว์ใน response ของ API เพื่อให้ debug บนเวทีได้เร็ว */
 export const runtimeMode = () => ({
   gemini: hasGemini() ? "live" : "mock",
