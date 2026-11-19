@@ -204,7 +204,7 @@ export default function ReviewClient({
       {flaggedCount > 0 && (
         <div className="mb-5">
           <Notice tone="warn">
-            <strong className="text-warn-200">
+            <strong className="text-warn-900">
               มี {flaggedCount} ย่อหน้าที่ระบบจับได้ว่า AI เขียนเกินจากเสียงต้นฉบับ
             </strong>{" "}
             — ส่วนที่ขีดเส้นหยักคือคำที่ไม่มีอยู่ในเสียงจริง กดฟังเทียบแล้วแก้หรือลบได้
@@ -275,7 +275,7 @@ export default function ReviewClient({
                         {p.flags.map((f, i) => (
                           <li
                             key={i}
-                            className="flex items-start gap-2 text-sm text-warn-200"
+                            className="flex items-start gap-2 text-sm text-warn-900"
                           >
                             <AlertTriangle size={14} className="mt-0.5 shrink-0" />
                             {f}

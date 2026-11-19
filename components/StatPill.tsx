@@ -20,14 +20,17 @@ export default function StatPill({ label, value, tone = "neutral" }: StatPillPro
   return (
     <span
       className={clsx(
+        // ⚠️ สีชุดนี้ถูกเขียนไว้ตอนเว็บยังเป็นธีมมืด (night/mist)
+        // พอเปลี่ยนมาเป็นกระดาษสว่าง ตัวอักษรอ่อนบนพื้นอ่อนจึงจางจนอ่านไม่ออก
+        // ตอนนี้ใช้ตัวอักษรเข้มบนพื้นอ่อน ให้คอนทราสต์พอสำหรับผู้สูงอายุ
         "inline-flex items-baseline gap-2 rounded-full border px-3 py-1 text-sm",
-        tone === "neutral" && "border-mist-500/25 bg-night-800/60 text-mist-300",
-        tone === "good" && "border-verified-400/40 bg-verified-600/15 text-verified-400",
-        tone === "warn" && "border-warn-500/40 bg-warn-900/25 text-warn-200"
+        tone === "neutral" && "border-paper-400 bg-paper-200 text-earth-700",
+        tone === "good" && "border-verified-600/35 bg-verified-400/25 text-verified-600",
+        tone === "warn" && "border-warn-500/55 bg-warn-200/70 text-warn-900"
       )}
     >
-      <span className="opacity-80">{label}</span>
-      <strong className="tabular-nums text-mist-50">{value}</strong>
+      <span>{label}</span>
+      <strong className="tabular-nums text-earth-900">{value}</strong>
     </span>
   );
 }

@@ -396,7 +396,7 @@ export default function InterviewClient({
           </ul>
 
           {dropped > 0 && (
-            <p className="mt-4 flex items-start gap-2 text-sm text-warn-200">
+            <p className="mt-4 flex items-start gap-2 text-sm text-warn-900">
               <AlertTriangle size={15} className="mt-0.5 shrink-0" />
               ทิ้งไป {dropped} ข้อ เพราะ AI เขียนถ้อยคำที่ไม่มีอยู่ในเสียงจริง
               ระบบตรวจด้วยโค้ดแล้วคัดออกเอง

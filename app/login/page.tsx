@@ -42,7 +42,7 @@ export default async function LoginPage({
           </p>
 
           {!hasSupabase() && (
-            <p className="mt-6 rounded-xl border border-warn-500/40 bg-warn-900/25 px-4 py-3 text-sm text-warn-200">
+            <p className="mt-6 rounded-xl border border-warn-500/50 bg-warn-200/70 px-4 py-3 text-sm text-warn-900">
               ยังไม่ได้ตั้งค่า Supabase — ใช้งานโหมดสาธิตได้โดยไม่ต้องเข้าสู่ระบบ
             </p>
           )}
