@@ -55,17 +55,45 @@ export type AnalyzeResult = {
  * ทั้งหมดต้องจบภายในเพดาน 45 วินาทีที่ route ตั้งไว้
  */
 
-/** โมเดลสำรองเรียงตามลำดับที่จะลอง — ตัวแรกคือตัวหลัก */
-const MODEL_CHAIN = [GEMINI_MODEL, "gemini-2.5-flash-lite", "gemini-2.0-flash"].filter(
-  (m, i, a) => a.indexOf(m) === i
-);
+export type Candidate = { model: string; thinking: boolean };
 
-/** 503/429/500 ของฝั่งผู้ให้บริการ = ลองใหม่แล้วมีโอกาสผ่าน */
-function isTransient(e: unknown): boolean {
+/**
+ * ลำดับโมเดลที่จะลอง — ทดสอบยิงจริงด้วย config ของเราแล้วทุกตัว (19 พ.ย. 2569)
+ *
+ * ⚠️ โมเดลตระกูล lite ไม่รองรับ thinkingConfig จะตอบ 400 INVALID_ARGUMENT
+ *    จึงต้องกำกับไว้เป็นรายตัว ไม่ใช่ส่ง config ชุดเดียวกันให้ทุกตัว
+ *
+ * ผลที่วัดได้:
+ *   gemini-2.5-flash + thinking   1.4 วิ   ← ตัวหลัก เร็วและคุณภาพดีสุด
+ *   gemini-flash-lite-latest      0.75 วิ  ← สำรอง เป็น alias จึงไม่มีวันตกรุ่น
+ *   gemini-3.5-flash-lite         1.1 วิ   ← สำรองชั้นสอง
+ *   gemini-3.5-flash              83 วิ    ✕ ช้าเกินกว่าจะใช้สำรอง
+ *   gemini-2.0-flash              404      ✕ Google ปลดระวางแล้ว
+ */
+const MODEL_CHAIN: Candidate[] = [
+  { model: GEMINI_MODEL, thinking: true },
+  { model: "gemini-flash-lite-latest", thinking: false },
+  { model: "gemini-3.5-flash-lite", thinking: false },
+].filter((c, i, a) => a.findIndex((x) => x.model === c.model) === i);
+
+/** ฝั่งผู้ให้บริการไม่ว่างชั่วคราว = ลองโมเดลเดิมซ้ำแล้วมีโอกาสผ่าน */
+function isBusy(e: unknown): boolean {
   const s = e instanceof Error ? e.message : String(e);
   return /\b(429|500|502|503|504)\b|UNAVAILABLE|RESOURCE_EXHAUSTED|high demand|overloaded|deadline/i.test(
     s
   );
+}
+
+/**
+ * โมเดลนี้ใช้ไม่ได้ (ถูกปลดระวาง หรือไม่รองรับ config ของเรา) = ข้ามไปตัวถัดไป
+ *
+ * บทเรียน: ครั้งก่อนผมใส่ gemini-2.5-flash-lite เป็นตัวสำรอง ซึ่ง Google
+ * ปลดระวางไปแล้ว พอมันตอบ 404 โค้ดถือว่าเป็น error ร้ายแรงเลยหยุดทั้งห่วงโซ่
+ * ตัวสำรองที่เสียจึงทำให้ทั้งระบบพัง ซึ่งแย่กว่าไม่มีตัวสำรองเสียอีก
+ */
+function isDeadModel(e: unknown): boolean {
+  const s = e instanceof Error ? e.message : String(e);
+  return /\b404\b|NOT_FOUND|no longer available|INVALID_ARGUMENT|invalid argument/i.test(s);
 }
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -74,22 +102,32 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * เรียกโมเดลโดยลองซ้ำและสลับโมเดลให้อัตโนมัติ
  * คืน error ตัวสุดท้ายถ้าหมดทุกทางแล้วยังไม่ผ่าน
  */
-async function callModel<T>(run: (model: string) => Promise<T>): Promise<T> {
+async function callModel<T>(run: (c: Candidate) => Promise<T>): Promise<T> {
   let last: unknown;
-  for (const model of MODEL_CHAIN) {
+
+  for (const cand of MODEL_CHAIN) {
     // ตัวหลักลอง 2 ครั้ง (ถอย 1.2 วินาที) ตัวสำรองลองตัวละครั้ง
-    const tries = model === MODEL_CHAIN[0] ? 2 : 1;
+    const tries = cand === MODEL_CHAIN[0] ? 2 : 1;
+
     for (let i = 0; i < tries; i++) {
       try {
-        return await run(model);
+        return await run(cand);
       } catch (e) {
         last = e;
-        if (!isTransient(e)) throw e; // ผิดจริง เช่น prompt พัง — ลองซ้ำไปก็เท่านั้น
-        console.warn(`[gemini] ${model} ไม่ว่าง (ครั้งที่ ${i + 1}) — ลองต่อ`);
+
+        if (isDeadModel(e)) {
+          // โมเดลนี้ใช้ไม่ได้เลย ลองซ้ำก็ไม่ช่วย — ข้ามไปตัวถัดไปทันที
+          console.warn(`[gemini] ${cand.model} ใช้ไม่ได้ — ข้ามไปตัวถัดไป`);
+          break;
+        }
+        if (!isBusy(e)) throw e; // ผิดจริง เช่น prompt พัง — หยุดทันที อย่าเผาเวลา
+
+        console.warn(`[gemini] ${cand.model} ไม่ว่าง (ครั้งที่ ${i + 1}) — ลองต่อ`);
         if (i + 1 < tries) await wait(1200);
       }
     }
   }
+
   throw new Error(
     "ตอนนี้ผู้ให้บริการ AI มีผู้ใช้งานหนาแน่น ลองกดส่งอีกครั้งในอีกสักครู่ — เสียงที่อัดไว้ยังอยู่ในเครื่อง ไม่ได้หายไปไหน" +
       (last instanceof Error ? ` (${last.message.slice(0, 80)})` : "")
@@ -106,9 +144,9 @@ export async function analyzeAudio(
   if (!hasGemini()) return mockAnalyze();
 
   const base64 = Buffer.from(await audio.arrayBuffer()).toString("base64");
-  const res = await callModel((model) =>
+  const res = await callModel((c) =>
     ai().models.generateContent({
-    model,
+    model: c.model,
     contents: [
       {
         role: "user",
@@ -122,7 +160,8 @@ export async function analyzeAudio(
       temperature: 0.2, // ต่ำ เพราะเราต้องการความซื่อตรงต่อต้นฉบับ ไม่ใช่ความสร้างสรรค์
       // ปิด thinking: งานถอดเสียงไม่ต้องคิด และ 2.5-flash เผา thinking token
       // จนช้าถึง 4 นาทีตอนเจอเสียงที่ฟังไม่ออก (วัดจริงแล้ว)
-      thinkingConfig: { thinkingBudget: 0 },
+      // ⚠️ ส่งเฉพาะโมเดลที่รองรับ — ตระกูล lite จะตอบ 400 ถ้าส่งไปด้วย
+      ...(c.thinking ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
       responseMimeType: "application/json",
       responseSchema: ANALYZE_SCHEMA,
     },
@@ -160,9 +199,9 @@ export async function composeChapter(
 ): Promise<Paragraph[]> {
   if (!hasGemini()) return mockCompose(claims);
 
-  const res = await callModel((model) =>
+  const res = await callModel((c) =>
     ai().models.generateContent({
-    model,
+    model: c.model,
     contents: COMPOSE_PROMPT(title, elderName, claims),
     config: {
       temperature: 0.4,
