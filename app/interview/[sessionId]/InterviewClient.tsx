@@ -19,7 +19,9 @@ import {
   CheckCircle2,
   CloudUpload,
   Loader2,
+  ArrowUp,
   Mic,
+  Sparkles,
   Square,
   Trash2,
 } from "lucide-react";
@@ -37,6 +39,7 @@ import {
   useRecorder,
 } from "@/lib/recorder";
 import type { Chapter, Clip, Session, Topic } from "@/lib/types";
+import clsx from "clsx";
 import { ApiError, postJson } from "@/lib/api";
 
 type Mode = { gemini: string; storage: string };
@@ -58,6 +61,36 @@ export default function InterviewClient({
   const [clips, setClips] = useState<Clip[]>([]);
   const [dropped, setDropped] = useState(0);
   const [analyzing, setAnalyzing] = useState(false);
+
+  /**
+   * พาสายตาผู้ใช้ไปยังสิ่งที่เพิ่งเปลี่ยน
+   *
+   * ⚠️ ปัญหาที่เจอจากการใช้จริง: การ์ดคำถามอยู่บนสุด แต่คำถามที่ AI เสนอ
+   * อยู่ล่างสุด พอผู้ใช้กดเลือก ระบบเปลี่ยนคำถามบนสุดให้เรียบร้อย
+   * แต่ผู้ใช้ยังมองอยู่ล่างสุด จึงไม่เห็นอะไรเกิดขึ้นเลย
+   * แล้วสรุปเอาเองว่าระบบพัง ทั้งที่มันทำงานถูกต้อง
+   *
+   * งานที่ "เสร็จแล้วแต่ผู้ใช้ไม่รู้" มีค่าเท่ากับงานที่ไม่ได้ทำ
+   */
+  const questionRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const [flash, setFlash] = useState(false);
+
+  /** เลื่อนไปที่การ์ดคำถาม แล้วกะพริบให้สะดุดตา */
+  const focusQuestion = useCallback(() => {
+    questionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setFlash(true);
+    window.setTimeout(() => setFlash(false), 1800);
+  }, []);
+
+  /** กดเลือกคำถามที่ AI เสนอ — ต้องเห็นผลทันที ไม่ใช่เงียบหาย */
+  const pickQuestion = useCallback(
+    (q: string) => {
+      setCustomQ(q);
+      focusQuestion();
+    },
+    [focusQuestion]
+  );
   const [composing, setComposing] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [queued, setQueued] = useState(0);
@@ -99,6 +132,11 @@ export default function InterviewClient({
         // เลื่อนไปคำถามถัดไปให้เอง เพื่อให้หลานไม่ต้องคิดว่าจะกดอะไรต่อ
         setCustomQ(null);
         setQIndex((i) => Math.min(i + 1, topic.questions.length - 1));
+        // ถอดเสียงเสร็จแล้วผลอยู่ล่างสุด ถ้าไม่พาไปดู ผู้ใช้จะไม่รู้ว่าเสร็จ
+        window.setTimeout(
+          () => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+          120
+        );
         return true;
       } catch (e) {
         // เน็ตหลุดกลางบ้านต่างจังหวัด — เรื่องที่ท่านเล่าต้องไม่หาย
@@ -191,11 +229,25 @@ export default function InterviewClient({
       )}
 
       {/* ── คำถาม ── */}
-      <Card>
-        <p className="mb-1.5 text-sm text-earth-500">
-          คำถามที่ {qIndex + 1} จาก {topic.questions.length} — อ่านให้ท่านฟังแล้วกดอัด
-        </p>
-        <p className="font-serif text-2xl leading-relaxed text-earth-900">{question}</p>
+      <div ref={questionRef} className="scroll-mt-28">
+        <Card
+          className={
+            flash
+              ? "ring-2 ring-gold-400 transition-shadow duration-300"
+              : "transition-shadow duration-300"
+          }
+        >
+          {customQ ? (
+            <p className="mb-1.5 inline-flex items-center gap-1.5 rounded-full bg-gold-200/70 px-3 py-1 text-sm font-medium text-earth-800">
+              <Sparkles size={14} />
+              คำถามต่อที่ AI เสนอ — อ่านให้ท่านฟังแล้วกดอัด
+            </p>
+          ) : (
+            <p className="mb-1.5 text-sm text-earth-500">
+              คำถามที่ {qIndex + 1} จาก {topic.questions.length} — อ่านให้ท่านฟังแล้วกดอัด
+            </p>
+          )}
+          <p className="font-serif text-2xl leading-relaxed text-earth-900">{question}</p>
 
         <div className="mt-5 flex flex-wrap gap-2">
           {topic.questions.map((q, i) => (
@@ -213,8 +265,9 @@ export default function InterviewClient({
               aria-label={`ไปคำถามที่ ${i + 1}`}
             />
           ))}
-        </div>
-      </Card>
+          </div>
+        </Card>
+      </div>
 
       {/* ── อัด ── */}
       <Card className="mt-5">
@@ -309,6 +362,7 @@ export default function InterviewClient({
 
       {/* ── ผลจาก AI ── */}
       {lastClip && (
+        <div ref={resultRef} className="scroll-mt-24">
         <Card className="mt-5">
           <h2 className="mb-3 text-sm text-earth-500">
             สิ่งที่ AI ได้ยินจากคำตอบล่าสุด
@@ -351,24 +405,49 @@ export default function InterviewClient({
 
           {lastClip.nextQuestions.length > 0 && (
             <>
-              <h3 className="mt-6 mb-2 text-sm text-earth-500">
-                AI เสนอคำถามต่อ — กดเลือกข้อที่อยากถาม
+              <h3 className="mt-6 mb-2 flex items-center gap-1.5 text-sm font-medium text-earth-700">
+                <Sparkles size={15} className="text-gold-500" />
+                AI เสนอคำถามต่อจากที่ท่านเพิ่งเล่า — กดเลือกข้อที่อยากถาม
               </h3>
               <div className="flex flex-col gap-2">
-                {lastClip.nextQuestions.map((q, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setCustomQ(q)}
-                    className="rounded-xl border border-paper-300 bg-paper-200 px-4 py-3 text-left text-earth-800 transition hover:border-gold-400/60 hover:bg-paper-200"
-                  >
-                    {q}
-                  </button>
-                ))}
+                {lastClip.nextQuestions.map((q, i) => {
+                  const picked = customQ === q;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => pickQuestion(q)}
+                      aria-pressed={picked}
+                      className={clsx(
+                        "flex items-start gap-2.5 rounded-xl border px-4 py-3 text-left transition",
+                        picked
+                          ? "border-gold-400 bg-gold-200/60 text-earth-900"
+                          : "border-paper-300 bg-paper-200 text-earth-800 hover:border-gold-400/60"
+                      )}
+                    >
+                      {/* เครื่องหมายถูกคือหลักฐานว่าการกดของผู้ใช้ไปถึงระบบแล้ว */}
+                      {picked && (
+                        <CheckCircle2 size={17} className="mt-0.5 shrink-0 text-verified-600" />
+                      )}
+                      <span className="flex-1">{q}</span>
+                    </button>
+                  );
+                })}
               </div>
+              {customQ && (
+                <button
+                  type="button"
+                  onClick={focusQuestion}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-ink-800 px-4 py-2 text-sm font-medium text-paper-50 transition hover:bg-ink-700"
+                >
+                  <ArrowUp size={14} />
+                  ขึ้นไปอ่านคำถามนี้ให้ท่านฟัง แล้วกดอัด
+                </button>
+              )}
             </>
           )}
         </Card>
+        </div>
       )}
 
       {/* ── เรียบเรียง ── */}
