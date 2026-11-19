@@ -23,6 +23,7 @@ import AudioPlayer from "@/components/AudioPlayer";
 import { fmtBytes, fmtDuration, useRecorder } from "@/lib/recorder";
 import { topics } from "@/lib/demo";
 import type { Region, VisitFrequency } from "@/lib/types";
+import { postJson } from "@/lib/api";
 
 const REGIONS: { id: Region; label: string }[] = [
   { id: "central", label: "ภาคกลาง" },
@@ -73,9 +74,10 @@ export default function NewInterviewPage() {
       fd.set("visitFrequency", visitFrequency);
       fd.set("consentAudio", rec.blob, "consent.webm");
 
-      const res = await fetch("/api/session", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "เริ่ม session ไม่สำเร็จ");
+      const json = await postJson<{ session: { id: string } }>("/api/session", {
+        method: "POST",
+        body: fd,
+      });
       router.push(`/interview/${json.session.id}?topic=${topic}`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");

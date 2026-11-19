@@ -36,7 +36,8 @@ import {
   queueRemove,
   useRecorder,
 } from "@/lib/recorder";
-import type { Clip, Session, Topic } from "@/lib/types";
+import type { Chapter, Clip, Session, Topic } from "@/lib/types";
+import { ApiError, postJson } from "@/lib/api";
 
 type Mode = { gemini: string; storage: string };
 
@@ -87,11 +88,12 @@ export default function InterviewClient({
         fd.set("sessionId", session.id);
         fd.set("durationMs", String(durationMs));
 
-        const res = await fetch("/api/analyze", { method: "POST", body: fd });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error ?? "วิเคราะห์เสียงไม่สำเร็จ");
+        const json = await postJson<{ clip: Clip; droppedClaims?: number }>("/api/analyze", {
+          method: "POST",
+          body: fd,
+        });
 
-        setClips((c) => [...c, json.clip as Clip]);
+        setClips((c) => [...c, json.clip]);
         setDropped((d) => d + (json.droppedClaims ?? 0));
         rec.reset();
         // เลื่อนไปคำถามถัดไปให้เอง เพื่อให้หลานไม่ต้องคิดว่าจะกดอะไรต่อ
@@ -109,9 +111,13 @@ export default function InterviewClient({
           createdAt: Date.now(),
         });
         await refreshQueue();
+        // เก็บคลิปไว้เสมอไม่ว่าพังเพราะอะไร แต่บอกให้ถูกว่าต้องรออะไร
+        const reached = e instanceof ApiError && e.reachedServer;
         setErr(
           (e instanceof Error ? e.message : "ส่งไม่สำเร็จ") +
-            " — เก็บคลิปไว้ในเครื่องแล้ว กดส่งคิวอีกครั้งได้เมื่อเน็ตกลับมา"
+            (reached
+              ? " — เก็บคลิปไว้ในเครื่องแล้ว กดส่งคิวใหม่ได้เลย"
+              : " — เก็บคลิปไว้ในเครื่องแล้ว กดส่งคิวอีกครั้งได้เมื่อเน็ตกลับมา")
         );
         return false;
       } finally {
@@ -135,7 +141,7 @@ export default function InterviewClient({
     setComposing(true);
     setErr(null);
     try {
-      const res = await fetch("/api/compose", {
+      const json = await postJson<{ chapter: Chapter }>("/api/compose", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -144,8 +150,6 @@ export default function InterviewClient({
           elderName: session.elderName,
         }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "เรียบเรียงไม่สำเร็จ");
       router.push(`/review/${json.chapter.id}`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "เรียบเรียงไม่สำเร็จ");
