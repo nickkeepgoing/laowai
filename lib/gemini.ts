@@ -43,6 +43,59 @@ export type AnalyzeResult = {
   nextQuestions: string[];
 };
 
+/* ──────────────── ลองซ้ำเมื่อฝั่ง Google ไม่ว่าง ────────────────
+ *
+ * เจอจริงตอนซ้อม demo: Gemini ตอบ 503 UNAVAILABLE
+ * "This model is currently experiencing high demand"
+ *
+ * นี่ไม่ใช่ความผิดของโค้ดเรา และหายเองในไม่กี่วินาที
+ * แต่ถ้าเกิดตอนสาธิตสดแล้วเราไม่ลองซ้ำ ผู้ใช้จะเห็นแค่ว่าระบบพัง
+ *
+ * กลยุทธ์: ลองซ้ำแบบถอยเวลาเพิ่มขึ้น และถ้ายังไม่ได้ค่อยสลับไปโมเดลสำรอง
+ * ทั้งหมดต้องจบภายในเพดาน 45 วินาทีที่ route ตั้งไว้
+ */
+
+/** โมเดลสำรองเรียงตามลำดับที่จะลอง — ตัวแรกคือตัวหลัก */
+const MODEL_CHAIN = [GEMINI_MODEL, "gemini-2.5-flash-lite", "gemini-2.0-flash"].filter(
+  (m, i, a) => a.indexOf(m) === i
+);
+
+/** 503/429/500 ของฝั่งผู้ให้บริการ = ลองใหม่แล้วมีโอกาสผ่าน */
+function isTransient(e: unknown): boolean {
+  const s = e instanceof Error ? e.message : String(e);
+  return /\b(429|500|502|503|504)\b|UNAVAILABLE|RESOURCE_EXHAUSTED|high demand|overloaded|deadline/i.test(
+    s
+  );
+}
+
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * เรียกโมเดลโดยลองซ้ำและสลับโมเดลให้อัตโนมัติ
+ * คืน error ตัวสุดท้ายถ้าหมดทุกทางแล้วยังไม่ผ่าน
+ */
+async function callModel<T>(run: (model: string) => Promise<T>): Promise<T> {
+  let last: unknown;
+  for (const model of MODEL_CHAIN) {
+    // ตัวหลักลอง 2 ครั้ง (ถอย 1.2 วินาที) ตัวสำรองลองตัวละครั้ง
+    const tries = model === MODEL_CHAIN[0] ? 2 : 1;
+    for (let i = 0; i < tries; i++) {
+      try {
+        return await run(model);
+      } catch (e) {
+        last = e;
+        if (!isTransient(e)) throw e; // ผิดจริง เช่น prompt พัง — ลองซ้ำไปก็เท่านั้น
+        console.warn(`[gemini] ${model} ไม่ว่าง (ครั้งที่ ${i + 1}) — ลองต่อ`);
+        if (i + 1 < tries) await wait(1200);
+      }
+    }
+  }
+  throw new Error(
+    "ตอนนี้ผู้ให้บริการ AI มีผู้ใช้งานหนาแน่น ลองกดส่งอีกครั้งในอีกสักครู่ — เสียงที่อัดไว้ยังอยู่ในเครื่อง ไม่ได้หายไปไหน" +
+      (last instanceof Error ? ` (${last.message.slice(0, 80)})` : "")
+  );
+}
+
 /* ────────────────────────── 1. เสียง → Claim ────────────────────────── */
 
 export async function analyzeAudio(
@@ -53,8 +106,9 @@ export async function analyzeAudio(
   if (!hasGemini()) return mockAnalyze();
 
   const base64 = Buffer.from(await audio.arrayBuffer()).toString("base64");
-  const res = await ai().models.generateContent({
-    model: GEMINI_MODEL,
+  const res = await callModel((model) =>
+    ai().models.generateContent({
+    model,
     contents: [
       {
         role: "user",
@@ -72,7 +126,8 @@ export async function analyzeAudio(
       responseMimeType: "application/json",
       responseSchema: ANALYZE_SCHEMA,
     },
-  });
+    })
+  );
 
   const raw = JSON.parse(res.text ?? "{}");
   const transcript: string = raw.transcript ?? "";
@@ -105,15 +160,17 @@ export async function composeChapter(
 ): Promise<Paragraph[]> {
   if (!hasGemini()) return mockCompose(claims);
 
-  const res = await ai().models.generateContent({
-    model: GEMINI_MODEL,
+  const res = await callModel((model) =>
+    ai().models.generateContent({
+    model,
     contents: COMPOSE_PROMPT(title, elderName, claims),
     config: {
       temperature: 0.4,
       responseMimeType: "application/json",
       responseSchema: COMPOSE_SCHEMA,
     },
-  });
+    })
+  );
 
   const raw = JSON.parse(res.text ?? "{}");
   const valid = new Set(claims.map((c) => c.id));
