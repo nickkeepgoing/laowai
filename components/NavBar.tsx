@@ -12,16 +12,37 @@
  */
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BookOpen, LayoutDashboard, LogOut, Menu, Mic, X } from "lucide-react";
 import clsx from "clsx";
 import Logo from "./Logo";
 
-const LINKS = [
+/**
+ * แถบนำทางมีสองชุด แยกตามว่าผู้ใช้ล็อกอินหรือยัง
+ *
+ * ⚠️ เหตุผล: ก่อนหน้านี้ใช้ชุดเดียวกันทั้งสองสถานะ คนที่ล็อกอินแล้ว
+ * จึงยังเห็น "วิธีใช้งาน ราคา คำถามที่พบบ่อย" ซึ่งเป็นลิงก์สำหรับคนที่
+ * ยังไม่ตัดสินใจ เขาอ่านและตัดสินใจไปแล้วตั้งแต่ตอนสมัคร
+ * การคงไว้ทำให้เว็บไม่รู้ว่าตัวเองเป็น "หน้าขายของ" หรือ "เครื่องมือ"
+ *
+ * คนที่ล็อกอินแล้วต้องการรู้แค่สองอย่าง: เรื่องที่เก็บไว้อยู่ไหน
+ * และจะเริ่มเก็บเรื่องใหม่ยังไง
+ */
+
+/** ก่อนล็อกอิน — ลิงก์ชวนให้เข้าใจและตัดสินใจ */
+const PUBLIC_LINKS = [
   { href: "/#how", label: "วิธีใช้งาน" },
   { href: "/#proof", label: "ตรวจสอบได้" },
   { href: "/#pricing", label: "ราคา" },
   { href: "/#faq", label: "คำถามที่พบบ่อย" },
+];
+
+/** หลังล็อกอิน — ลิงก์ใช้งานจริง ทุกอันเป็นหน้าของตัวเอง จึงไฮไลต์ได้ */
+const APP_LINKS = [
+  { href: "/library", label: "คลังความทรงจำ" },
+  { href: "/interview/new", label: "เริ่มสัมภาษณ์" },
+  { href: "/book/demo-token-7f3a9c2e", label: "ตัวอย่างหนังสือ" },
 ];
 
 export default function NavBar({
@@ -35,6 +56,12 @@ export default function NavBar({
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const links = signedIn ? APP_LINKS : PUBLIC_LINKS;
+  /** ลิงก์แบบ hash บนหน้าแรกไม่มีสถานะ "กำลังอยู่" จึงไฮไลต์เฉพาะลิงก์ของแอป */
+  const isActive = (href: string) =>
+    signedIn && (href === "/library" ? pathname === "/library" : pathname.startsWith(href));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -59,15 +86,24 @@ export default function NavBar({
 
         {/* ลิงก์กลาง — ซ่อนบนจอเล็กเพื่อไม่ให้แถบแน่นเกิน */}
         <div className="hidden items-center gap-1 lg:flex">
-          {LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="rounded-full px-3.5 py-1.5 text-sm text-earth-700 transition hover:bg-paper-200 hover:text-earth-900"
-            >
-              {l.label}
-            </Link>
-          ))}
+          {links.map((l) => {
+            const active = isActive(l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={active ? "page" : undefined}
+                className={clsx(
+                  "rounded-full px-3.5 py-1.5 text-sm transition",
+                  active
+                    ? "bg-gold-200/70 font-medium text-earth-900"
+                    : "text-earth-700 hover:bg-paper-200 hover:text-earth-900"
+                )}
+              >
+                {l.label}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
@@ -145,23 +181,34 @@ export default function NavBar({
       {/* เมนูบนจอเล็ก — ปุ่มใหญ่ตามแนวทาง accessibility ของเรา */}
       {open && (
         <div className="pointer-events-auto mx-auto mt-2 max-w-6xl overflow-hidden rounded-3xl border border-paper-300 bg-paper-50/97 p-2 shadow-[0_18px_40px_-18px_rgba(87,70,52,0.5)] backdrop-blur-xl lg:hidden">
-          {LINKS.map((l) => (
+          {links.map((l) => {
+            const active = isActive(l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                aria-current={active ? "page" : undefined}
+                className={clsx(
+                  "flex min-h-13 items-center rounded-2xl px-5 transition",
+                  active
+                    ? "bg-gold-200/70 font-medium text-earth-900"
+                    : "text-earth-800 hover:bg-paper-200"
+                )}
+              >
+                {l.label}
+              </Link>
+            );
+          })}
+          {!signedIn && (
             <Link
-              key={l.href}
-              href={l.href}
+              href="/book/demo-token-7f3a9c2e"
               onClick={() => setOpen(false)}
-              className="flex min-h-13 items-center rounded-2xl px-5 text-earth-800 transition hover:bg-paper-200"
+              className="flex min-h-13 items-center gap-2 rounded-2xl px-5 text-earth-800 transition hover:bg-paper-200"
             >
-              {l.label}
+              <BookOpen size={18} /> ตัวอย่างหนังสือ
             </Link>
-          ))}
-          <Link
-            href="/book/demo-token-7f3a9c2e"
-            onClick={() => setOpen(false)}
-            className="flex min-h-13 items-center gap-2 rounded-2xl px-5 text-earth-800 transition hover:bg-paper-200"
-          >
-            <BookOpen size={18} /> ตัวอย่างหนังสือ
-          </Link>
+          )}
           {!signedIn && (
             <Link
               href="/login"
