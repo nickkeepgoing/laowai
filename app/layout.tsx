@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans_Thai, Trirong } from "next/font/google";
 import SiteHeader from "@/components/SiteHeader";
+import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
 /**
@@ -53,7 +54,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         {/* หน้าหนังสือซ่อน header เองด้วยคลาส no-print ตอนพิมพ์ */}
         <SiteHeader />
-        {children}
+        {/* วางที่ root ไม่ใช่เฉพาะกลุ่มหลังล็อกอิน เพราะ /clip กับ /book ก็ควรแจ้งผลได้
+            children ยังเป็น server component เหมือนเดิม Provider ไม่ได้ทำให้กลายเป็น client */}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

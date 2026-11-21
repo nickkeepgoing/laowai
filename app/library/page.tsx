@@ -11,15 +11,19 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import { Suspense } from "react";
 import { Card, Progress } from "@/components/ui";
+import { Page, PageHeader, Section } from "@/components/layout";
+import { ElderListSkeleton, StatsSkeleton } from "@/components/skeletons";
 import { currentUser } from "@/lib/supabase/server";
 import {
   countCorrections,
   listChaptersOfUser,
-  listClips,
+  listClipsOfSessions,
   listSessionsOfUser,
 } from "@/lib/store";
 import { topics } from "@/lib/demo";
+import type { Session } from "@/lib/types";
 
 export const metadata = { title: "หน้าหลัก — เล่าไว้" };
 
@@ -38,21 +42,15 @@ export default async function DashboardPage() {
   const user = await currentUser();
   if (!user) redirect("/login?next=/library");
 
-  const [sessions, chapters, pairs] = await Promise.all([
-    listSessionsOfUser(user.id),
-    listChaptersOfUser(user.id),
-    countCorrections(),
-  ]);
-
-  // ดึงคลิปของทุก session เพื่อคำนวณ "นาทีเสียงที่เก็บไว้" ซึ่งเป็นตัวเลขที่ครอบครัวรู้สึกได้
-  const clipsBySession = await Promise.all(
-    sessions.map(async (s) => ({ sessionId: s.id, clips: await listClips(s.id) }))
-  );
-  const allClips = clipsBySession.flatMap((x) => x.clips);
-  const totalMinutes = Math.round(
-    allClips.reduce((sum, c) => sum + (c.durationMs ?? 0), 0) / 60000
-  );
-  const verifiedClaims = allClips.flatMap((c) => c.claims).length;
+  /*
+   * ⚠️ การตรวจสิทธิ์และ redirect ต้องอยู่ตรงนี้ ห้ามย้ายเข้าไปใน Suspense
+   * redirect ที่เกิดใน component ที่ถูก suspend จะทำงานไม่ตรงที่คาด
+   *
+   * ดึงแค่ sessions ตรงนี้ เพราะต้องใช้ตัดสินว่าจะแสดงหน้าว่างหรือหน้าเต็ม
+   * ส่วนที่เหลือ (บท คลิป คู่คำถิ่น) ยกไปไว้ใน LibraryBody แล้วปล่อยให้ stream
+   * คำทักทายกับปุ่ม "เล่าเรื่องใหม่" จึงขึ้นทันทีโดยไม่ต้องรอฐานข้อมูล
+   */
+  const sessions = await listSessionsOfUser(user.id);
 
   const firstName =
     ((user.user_metadata?.full_name as string | undefined) ?? user.email ?? "คุณ")
@@ -65,22 +63,17 @@ export default async function DashboardPage() {
   /* ───────── ยังไม่มีข้อมูล: สอนให้เริ่ม ไม่ใช่โชว์หน้าว่าง ───────── */
   if (sessions.length === 0) {
     return (
-      <main className="relative mx-auto max-w-4xl px-5 py-12 sm:px-6">
+      <Page width="app" className="py-12">
         <div className="hero-field opacity-70" aria-hidden />
 
         <div className="relative">
-          <p className="text-earth-500">
-            {greet} คุณ{firstName}
-          </p>
-          <h1 className="mt-2 font-serif text-4xl leading-tight text-earth-900">
-            มาเก็บเรื่องแรกของท่านกัน
-          </h1>
-          <p className="mt-3 max-w-xl text-lg leading-relaxed text-earth-700">
-            ไม่ต้องเตรียมอะไรเลย แค่นั่งข้างท่าน เปิดหน้านี้ แล้วอ่านคำถามให้ท่านฟัง
-            ที่เหลือเราจัดการให้
-          </p>
+          <PageHeader
+            eyebrow={`${greet} คุณ${firstName}`}
+            title="มาเก็บเรื่องแรกของท่านกัน"
+            subtitle="ไม่ต้องเตรียมอะไรเลย แค่นั่งข้างท่าน เปิดหน้านี้ แล้วอ่านคำถามให้ท่านฟัง ที่เหลือเราจัดการให้"
+          />
 
-          <div className="mt-10 grid gap-5 sm:grid-cols-3">
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
             {[
               {
                 n: 1,
@@ -127,32 +120,69 @@ export default async function DashboardPage() {
             </Link>
           </div>
         </div>
-      </main>
+      </Page>
     );
   }
 
   /* ───────── มีข้อมูลแล้ว: dashboard เต็ม ───────── */
   return (
-    <main className="relative mx-auto max-w-5xl px-5 py-10 sm:px-6">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-earth-500">
-            {greet} คุณ{firstName}
-          </p>
-          <h1 className="mt-1 font-serif text-3xl text-earth-900 sm:text-4xl">
-            คลังความทรงจำของครอบครัว
-          </h1>
-        </div>
-        <Link
-          href="/interview/new"
-          className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-ink-800 px-6 font-medium text-paper-50 transition hover:bg-ink-700"
-        >
-          <Plus size={18} /> เล่าเรื่องใหม่
-        </Link>
-      </header>
+    <Page width="app">
+      <PageHeader
+        eyebrow={`${greet} คุณ${firstName}`}
+        title="คลังความทรงจำของครอบครัว"
+        actions={
+          <Link
+            href="/interview/new"
+            className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-ink-800 px-6 font-medium text-paper-50 transition hover:bg-ink-700"
+          >
+            <Plus size={18} /> เล่าเรื่องใหม่
+          </Link>
+        }
+      />
 
-      {/* ตัวเลขที่ครอบครัวรู้สึกได้ ไม่ใช่ metric ของนักพัฒนา */}
-      <section className="mt-8 grid gap-4 sm:grid-cols-4">
+      {/* ส่วนที่ต้องรอฐานข้อมูลอยู่หลังม่านนี้ หัวหน้าด้านบนขึ้นไปก่อนแล้ว */}
+      <Suspense
+        fallback={
+          <>
+            <StatsSkeleton />
+            <Section title="ผู้เล่าในคลัง">
+              <ElderListSkeleton />
+            </Section>
+          </>
+        }
+      >
+        <LibraryBody userId={user.id} sessions={sessions} />
+      </Suspense>
+    </Page>
+  );
+}
+
+/**
+ * ส่วนที่ต้องยิงฐานข้อมูลหนัก แยกออกมาเพื่อให้ Suspense สตรีมได้
+ * ดึงคลิปของทุก session ด้วยคำสั่งเดียว ไม่ใช่ยิงทีละ session แบบเดิม
+ */
+async function LibraryBody({ userId, sessions }: { userId: string; sessions: Session[] }) {
+  const [chapters, pairs, allClips] = await Promise.all([
+    listChaptersOfUser(userId),
+    countCorrections(),
+    listClipsOfSessions(sessions.map((s) => s.id)),
+  ]);
+
+  const clipsBySession = sessions.map((s) => ({
+    sessionId: s.id,
+    clips: allClips.filter((c) => c.sessionId === s.id),
+  }));
+  const totalMinutes = Math.round(
+    allClips.reduce((sum, c) => sum + (c.durationMs ?? 0), 0) / 60000
+  );
+  const verifiedClaims = allClips.flatMap((c) => c.claims).length;
+
+  return (
+    <>
+      {/* ตัวเลขที่ครอบครัวรู้สึกได้ ไม่ใช่ metric ของนักพัฒนา
+          บนมือถือเรียง 2 คอลัมน์ ของเดิมเรียงเต็มความกว้างซ้อนกัน 4 ใบ
+          ทำให้ต้องเลื่อนผ่านไปไกลมากกว่าจะถึงรายชื่อผู้เล่าซึ่งเป็นเนื้อหาหลัก */}
+      <section className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
         <Stat icon={Clock} value={totalMinutes} unit="นาที" label="เสียงที่เก็บไว้แล้ว" />
         <Stat icon={BookOpen} value={chapters.length} unit="บท" label="เรียบเรียงแล้ว" />
         <Stat
@@ -194,7 +224,7 @@ export default async function DashboardPage() {
       {/* ผู้เล่าแต่ละคน + ความคืบหน้าตามหัวข้อชีวิต */}
       <section className="mt-10">
         <h2 className="mb-4 font-serif text-2xl text-earth-900">ผู้เล่าในคลัง</h2>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {sessions.map((s) => {
             const mine = chapters.filter((c) => c.sessionId === s.id);
             const done = new Set(mine.map((c) => c.title));
@@ -296,7 +326,7 @@ export default async function DashboardPage() {
         คุณเห็นเฉพาะเรื่องที่ผูกกับบัญชีนี้ · ลิงก์หนังสือที่แชร์ออกไปใช้รหัสที่เดาไม่ได้
         และเพิกถอนได้ทุกเมื่อ
       </p>
-    </main>
+    </>
   );
 }
 

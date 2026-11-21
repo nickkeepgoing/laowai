@@ -63,6 +63,9 @@ export default function NavBar({
   const isActive = (href: string) =>
     signedIn && (href === "/library" ? pathname === "/library" : pathname.startsWith(href));
 
+  // เปลี่ยนหน้าแล้วต้องปิดเมนูเสมอ ของเดิมค้างทับหน้าใหม่
+  useEffect(() => setOpen(false), [pathname]);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -108,20 +111,25 @@ export default function NavBar({
 
         <div className="flex items-center gap-2">
           {signedIn ? (
-            <>
+            /*
+             * ล็อกอินแล้วบนมือถือ แถบล่างรับหน้าที่นำทางทั้งหมด
+             * แถบบนจึงเหลือแค่โลโก้ ไม่มีอะไรซ้ำกับแถบล่าง
+             * ชุดนี้จึงโผล่เฉพาะ lg ขึ้นไปที่ไม่มีแถบล่าง
+             */
+            <div className="hidden items-center gap-2 lg:flex">
               <Link
                 href="/library"
-                className="hidden min-h-9 items-center gap-1.5 rounded-full px-3 text-sm text-earth-700 transition hover:bg-paper-200 sm:inline-flex"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm text-earth-700 transition hover:bg-paper-200"
               >
                 <LayoutDashboard size={15} />
                 หน้าหลัก
               </Link>
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-ink-800 px-4 text-sm font-medium text-paper-50 transition hover:bg-ink-700"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-ink-800 px-4 text-sm font-medium text-paper-50 transition hover:bg-ink-700"
               >
                 <Mic size={15} />
-                <span className="hidden sm:inline">เริ่มสัมภาษณ์</span>
+                เริ่มสัมภาษณ์
               </Link>
               <span className="flex items-center gap-1">
                 {avatar ? (
@@ -129,10 +137,10 @@ export default function NavBar({
                   <img
                     src={avatar}
                     alt=""
-                    className="h-8 w-8 rounded-full border border-paper-300 object-cover"
+                    className="h-9 w-9 rounded-full border border-paper-300 object-cover"
                   />
                 ) : (
-                  <span className="grid h-8 w-8 place-items-center rounded-full border border-paper-300 bg-gold-200 text-sm font-medium text-earth-800">
+                  <span className="grid h-9 w-9 place-items-center rounded-full border border-paper-300 bg-gold-200 font-medium text-earth-800">
                     {name.slice(0, 1).toUpperCase() || "?"}
                   </span>
                 )}
@@ -141,45 +149,49 @@ export default function NavBar({
                     type="submit"
                     title="ออกจากระบบ"
                     aria-label="ออกจากระบบ"
-                    className="grid h-8 w-8 place-items-center rounded-full text-earth-500 transition hover:bg-paper-200 hover:text-earth-900"
+                    className="grid h-11 w-11 place-items-center rounded-full text-earth-500 transition hover:bg-paper-200 hover:text-earth-900"
                   >
-                    <LogOut size={14} />
+                    <LogOut size={17} />
                   </button>
                 </form>
               </span>
-            </>
+            </div>
           ) : (
+            /* ยังไม่ล็อกอิน ไม่มีแถบล่าง จึงต้องมีทางเข้าครบบนแถบบน */
             <>
               <Link
                 href="/login"
-                className="hidden min-h-9 items-center rounded-full px-3 text-sm text-earth-700 transition hover:bg-paper-200 sm:inline-flex"
+                className="hidden min-h-11 items-center rounded-full px-3 text-sm text-earth-700 transition hover:bg-paper-200 sm:inline-flex"
               >
                 เข้าสู่ระบบ
               </Link>
               <Link
                 href="/interview/new"
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-ink-800 px-4 text-sm font-medium text-paper-50 transition hover:bg-ink-700"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-ink-800 px-4 text-sm font-medium text-paper-50 transition hover:bg-ink-700"
               >
                 <Mic size={15} />
                 เริ่มเลย
               </Link>
+
+              <button
+                type="button"
+                onClick={() => setOpen((o) => !o)}
+                aria-label={open ? "ปิดเมนู" : "เปิดเมนู"}
+                aria-expanded={open}
+                className="grid h-11 w-11 place-items-center rounded-full text-earth-700 transition hover:bg-paper-200 lg:hidden"
+              >
+                {open ? <X size={20} /> : <Menu size={20} />}
+              </button>
             </>
           )}
-
-          <button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            aria-label={open ? "ปิดเมนู" : "เปิดเมนู"}
-            aria-expanded={open}
-            className="grid h-9 w-9 place-items-center rounded-full text-earth-700 transition hover:bg-paper-200 lg:hidden"
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
         </div>
       </nav>
 
-      {/* เมนูบนจอเล็ก — ปุ่มใหญ่ตามแนวทาง accessibility ของเรา */}
-      {open && (
+      {/*
+       * เมนูบนจอเล็ก — เหลือไว้เฉพาะคนที่ยังไม่ล็อกอิน
+       * คนที่ล็อกอินแล้วใช้แถบแท็บด้านล่างแทน จึงไม่ต้องมีเมนูซ้อนอีกชั้น
+       */}
+      {open && !signedIn && (
         <div className="pointer-events-auto mx-auto mt-2 max-w-6xl overflow-hidden rounded-3xl border border-paper-300 bg-paper-50/97 p-2 shadow-[0_18px_40px_-18px_rgba(87,70,52,0.5)] backdrop-blur-xl lg:hidden">
           {links.map((l) => {
             const active = isActive(l.href);

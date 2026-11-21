@@ -167,8 +167,32 @@ h1 {
 .elder-scale {
   font-size: 1.12em;
 }
-.elder-scale :where(button, a[role="button"]) {
+/* รวม a[href] และ label ด้วย เพราะปุ่มจริงในแอปนี้หลายอันเป็นลิงก์
+   min-height ไม่มีผลกับ inline ที่ไม่ใช่ replaced element ลิงก์ในข้อความจึงไม่โดนกระทบ */
+.elder-scale :where(button, a[role="button"], a[href], label, summary) {
   min-height: 52px;
+}
+
+/* ───────────────── โครงแอป (เฉพาะหลังล็อกอิน) ─────────────────
+ *
+ * ใช้รูปแบบ :has() เดียวกับที่ book.css และ deck.css ใช้ซ่อนแถบบนอยู่แล้ว
+ * ข้อดีคือหน้าไหนไม่มีแถบแท็บ padding ก็หายไปเองโดยไม่ต้องสั่ง
+ */
+body:has(.bottom-tabs) {
+  /* เผื่อความสูงแถบ + ขอบล่างของเครื่องที่มีรอยบาก */
+  padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  /* เดสก์ท็อปไม่มีแถบล่าง ใช้แถบลอยด้านบนแทน */
+  body:has(.bottom-tabs) {
+    padding-bottom: 0;
+  }
+}
+
+/* ล็อกการเลื่อนตอนเปิด dialog โดยไม่ต้องใช้ JS
+   วิธีนี้ไม่มีบั๊กตำแหน่ง scroll เด้งกลับแบบที่เขียนเองมักเจอ */
+body:has(dialog[open]) {
+  overflow: hidden;
 }
 
 :focus-visible {

@@ -144,6 +144,23 @@ export default function AudioPlayer({
     a.currentTime = ((e.clientX - r.left) / r.width) * dur;
   };
 
+  /** ⚠️ ต้องมี เพราะ role="slider" + tabIndex สัญญากับผู้ใช้ว่าใช้คีย์บอร์ดได้ */
+  const onSliderKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const a = el.current;
+    if (!a || !dur) return;
+    const step = 5;
+    const jump: Record<string, number | undefined> = {
+      ArrowRight: Math.min(dur, a.currentTime + step),
+      ArrowLeft: Math.max(0, a.currentTime - step),
+      Home: 0,
+      End: dur,
+    };
+    const next = jump[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    a.currentTime = next;
+  };
+
   const progress = dur ? t / dur : 0;
 
   return (
@@ -160,14 +177,15 @@ export default function AudioPlayer({
         aria-label={playing ? "หยุด" : label ? `ฟังเสียงต้นฉบับ: ${label}` : "ฟังเสียงต้นฉบับ"}
         className={clsx(
           "grid shrink-0 place-items-center rounded-full bg-ink-800 text-paper-50 transition hover:bg-ink-700",
-          compact ? "h-7 w-7" : "h-10 w-10"
+          compact ? "h-11 w-11" : "h-12 w-12"
         )}
       >
-        {playing ? <Pause size={compact ? 13 : 17} /> : <Play size={compact ? 13 : 17} />}
+        {playing ? <Pause size={compact ? 16 : 19} /> : <Play size={compact ? 16 : 19} />}
       </button>
 
       <div
         onClick={scrub}
+        onKeyDown={onSliderKey}
         role="slider"
         aria-label="ตำแหน่งการเล่น"
         aria-valuenow={Math.round(progress * 100)}
@@ -176,7 +194,7 @@ export default function AudioPlayer({
         tabIndex={0}
         className={clsx(
           "flex flex-1 cursor-pointer items-center gap-[2px]",
-          compact ? "h-6" : "h-10"
+          compact ? "h-9" : "h-10"
         )}
       >
         {(peaks ?? Array.from({ length: BARS }, () => 0.3)).map((p, i) => (

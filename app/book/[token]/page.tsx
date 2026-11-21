@@ -37,8 +37,8 @@ export default async function BookPage({
   if (!chapter) {
     return (
       <main className="mx-auto max-w-xl px-4 py-20 text-center">
-        <h1 className="font-serif text-2xl text-mist-50">ไม่พบหนังสือเล่มนี้</h1>
-        <p className="mt-3 text-mist-300">ลิงก์อาจถูกเพิกถอนแล้ว</p>
+        <h1 className="font-serif text-2xl text-earth-900">ไม่พบหนังสือเล่มนี้</h1>
+        <p className="mt-3 text-earth-700">ลิงก์อาจถูกเพิกถอนแล้ว</p>
       </main>
     );
   }
@@ -46,14 +46,14 @@ export default async function BookPage({
   if (!chapter.approved) {
     return (
       <main className="mx-auto max-w-xl px-4 py-20 text-center">
-        <h1 className="font-serif text-2xl text-mist-50">บทนี้ยังไม่ได้รับการยืนยัน</h1>
-        <p className="mt-3 text-mist-300">
+        <h1 className="font-serif text-2xl text-earth-900">บทนี้ยังไม่ได้รับการยืนยัน</h1>
+        <p className="mt-3 text-earth-700">
           ครอบครัวต้องตรวจและยืนยันเนื้อหาก่อน ระบบจึงจะสร้างหนังสือได้ —
           นี่เป็นขั้นบังคับ ไม่ใช่ตัวเลือก
         </p>
         <Link
           href={`/review/${chapter.id}`}
-          className="mt-6 inline-block rounded-xl bg-gold-400 px-5 py-2.5 font-medium text-night-950"
+          className="mt-6 inline-flex min-h-14 items-center rounded-2xl bg-ink-800 px-6 font-medium text-paper-50 transition hover:bg-ink-700"
         >
           ไปหน้าตรวจ
         </Link>

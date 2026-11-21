@@ -25,7 +25,8 @@ export function Button({
       {...rest}
       className={clsx(
         "inline-flex items-center justify-center gap-2 rounded-2xl font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40",
-        size === "sm" && "min-h-10 px-4 py-2 text-sm",
+        // 44px คือเกณฑ์ขั้นต่ำที่หัวไฟล์นี้เขียนไว้เอง ของเดิม sm เป็น 40px จึงผิดกฎตัวเอง
+        size === "sm" && "min-h-11 px-4 py-2 text-sm",
         size === "md" && "min-h-12 px-5 py-2.5",
         size === "lg" && "min-h-14 px-7 py-3.5 text-lg",
         variant === "primary" &&
@@ -66,13 +67,19 @@ export const inputClass =
  * ไม่ใช่ของประดับ — มันคือหลักฐานให้ผู้สูงอายุและหลานเห็นว่า "ไมค์ได้ยินอยู่"
  * ตอนทดสอบกับคนจริง คนมักกังวลว่าอัดติดไหมถ้าไม่มีอะไรขยับบนจอ
  */
+const WAVE_BARS = 40;
+/** ความไม่เท่ากันแบบคงที่ คำนวณครั้งเดียว ไม่ใช่ทุก render */
+const WAVE_JITTER = Array.from({ length: WAVE_BARS }, (_, i) =>
+  ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1
+);
+
 export function LiveWaveform({ level, active }: { level: number; active: boolean }) {
-  const bars = 40;
+  const bars = WAVE_BARS;
   return (
     <div className="flex h-20 items-center justify-center gap-[3px]" aria-hidden>
       {Array.from({ length: bars }).map((_, i) => {
         const shape = Math.sin((i / (bars - 1)) * Math.PI) * 0.6 + 0.4;
-        const h = active ? Math.max(8, level * shape * 100 + Math.random() * 8) : 8;
+        const h = active ? Math.max(8, level * shape * 100 + WAVE_JITTER[i] * 8) : 8;
         return (
           <span
             key={i}

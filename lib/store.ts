@@ -265,6 +265,25 @@ export async function listClips(sessionId: string): Promise<Clip[]> {
   return (data ?? []).map(toClip);
 }
 
+/**
+ * ดึงคลิปของหลาย session ในคำสั่งเดียว
+ *
+ * ของเดิมหน้าคลังเรียก listClips ทีละ session ผ่าน Promise.all
+ * ซึ่งเป็น N+1 ครอบครัวที่มีผู้เล่า 5 คนก็ยิง 5 query
+ * ทั้งที่ถามรวดเดียวได้ และหน้านั้นเป็นหน้าที่ว่างนานที่สุดในแอปอยู่แล้ว
+ */
+export async function listClipsOfSessions(sessionIds: string[]): Promise<Clip[]> {
+  if (sessionIds.length === 0) return [];
+  const client = await sb();
+  if (!client) return mem.clips.filter((c) => sessionIds.includes(c.sessionId));
+  const { data } = await client
+    .from("clips")
+    .select()
+    .in("session_id", sessionIds)
+    .order("created_at");
+  return (data ?? []).map(toClip);
+}
+
 export async function deleteClip(clipId: string): Promise<void> {
   const client = await sb();
   if (!client) {

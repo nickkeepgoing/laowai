@@ -48,14 +48,14 @@ export default async function LoginPage({
           )}
 
           {error && (
-            <p className="mt-6 rounded-xl border border-red-400/40 bg-red-950/40 px-4 py-3 text-sm text-red-200">
+            <p className="mt-6 rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-red-700">
               {error}
             </p>
           )}
 
           {sent ? (
-            <div className="mt-7 rounded-2xl border border-verified-400/30 bg-verified-600/10 p-5 text-center">
-              <Mail size={24} className="mx-auto text-verified-400" />
+            <div className="mt-7 rounded-2xl border border-verified-600/35 bg-verified-400/15 p-5 text-center">
+              <Mail size={24} className="mx-auto text-verified-600" />
               <p className="mt-3 font-medium text-earth-900">ส่งลิงก์เข้าสู่ระบบแล้ว</p>
               <p className="mt-1.5 text-sm leading-relaxed text-earth-700">
                 เปิดอีเมล <strong className="text-earth-800">{sent}</strong> แล้วกดลิงก์ในนั้น
@@ -70,7 +70,7 @@ export default async function LoginPage({
                 <input type="hidden" name="next" value={target} />
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-3 rounded-xl bg-white px-5 py-3.5 font-medium text-paper-50 transition hover:bg-paper-200"
+                  className="flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl border border-paper-400 bg-paper-50 px-5 font-medium text-earth-900 transition hover:border-gold-400 hover:bg-paper-100"
                 >
                   <GoogleMark />
                   เข้าสู่ระบบด้วย Google

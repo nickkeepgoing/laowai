@@ -19,6 +19,7 @@ import {
   Loader2,
   Pencil,
   ShieldCheck,
+  Trash2,
   Volume2,
   X,
 } from "lucide-react";
@@ -26,6 +27,8 @@ import AudioPlayer, { type AudioPlayerHandle } from "@/components/AudioPlayer";
 import Highlight from "@/components/Highlight";
 import StatPill from "@/components/StatPill";
 import { Button, Card, Notice, inputClass } from "@/components/ui";
+import Sheet from "@/components/Sheet";
+import { useToast } from "@/components/toast";
 import { indexClaims, paragraphAudioAnchor } from "@/lib/verify";
 import type { Chapter, Clip, Paragraph, Region } from "@/lib/types";
 
@@ -76,7 +79,14 @@ export default function ReviewClient({
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [note, setNote] = useState<string | null>(null);
+  /**
+   * ⚠️ ของเดิมมี state ชื่อ note เก็บข้อความผลลัพธ์แล้วไม่เคยล้าง
+   * ข้อความ "บันทึกแล้ว" จึงค้างและกองทับกันจนกว่าจะเปลี่ยนหน้า
+   * กฎใหม่: ผลที่จบแล้ว -> toast · สภาพที่ยังเป็นอยู่ -> <Notice> ในหน้า
+   */
+  const { success, announce } = useToast();
+  /** คลิปที่กำลังรอการยืนยันลบ — ประกาศเป็น state ไม่ใช่ confirm() ที่บล็อกทั้งหน้า */
+  const [pendingDelete, setPendingDelete] = useState<Clip | null>(null);
   const [approved, setApproved] = useState(initialChapter.approved);
 
   const players = useRef<Record<string, AudioPlayerHandle | null>>({});
@@ -99,7 +109,7 @@ export default function ReviewClient({
     const clip = clipOfClaim[anchor.id];
     if (!clip) return;
     players.current[clip.id]?.seek(anchor.startMs);
-    setNote(`กำลังเล่นเสียงต้นฉบับของย่อหน้านี้ — "${clip.question}"`);
+    announce(`กำลังเล่นเสียงต้นฉบับของย่อหน้านี้ ${clip.question}`);
   }
 
   async function saveParagraph(id: string) {
@@ -118,7 +128,7 @@ export default function ReviewClient({
       if (!res.ok) throw new Error(json.error ?? "บันทึกไม่สำเร็จ");
       setChapter(json.chapter);
       setEditing(null);
-      setNote("บันทึกการแก้แล้ว — ไฮไลต์ของย่อหน้านี้ถูกปลดเพราะคนตรวจแล้ว");
+      success("บันทึกการแก้แล้ว — ไฮไลต์ของย่อหน้านี้ถูกปลดเพราะคนตรวจแล้ว");
     } catch (e) {
       setErr(e instanceof Error ? e.message : "บันทึกไม่สำเร็จ");
     } finally {
@@ -147,13 +157,8 @@ export default function ReviewClient({
   }
 
   async function forget(clip: Clip) {
-    if (
-      !confirm(
-        `ลบคำตอบของคำถาม "${clip.question}" ออกทั้งหมดถาวร?\n\nจะลบไฟล์เสียง ข้อมูลที่ดึงไว้ ย่อหน้าในหนังสือที่อ้างคลิปนี้ และข้อมูลการแก้คำที่ผูกกับคลิปนี้ — กู้คืนไม่ได้`
-      )
-    )
-      return;
-
+    // การยืนยันย้ายไปอยู่ใน <Sheet> แล้ว ฟังก์ชันนี้ทำงานอย่างเดียว
+    setPendingDelete(null);
     setBusy(true);
     setErr(null);
     try {
@@ -171,7 +176,7 @@ export default function ReviewClient({
       setClips((cs) => cs.filter((c) => c.id !== clip.id));
       if (json.chapter) setChapter(json.chapter);
       setPairs((n) => Math.max(0, n - (json.removedCorrections ?? 0)));
-      setNote(
+      success(
         `ลบแล้ว — ย่อหน้าในหนังสือหายไป ${json.removedParagraphs} ย่อหน้า และข้อมูลการแก้คำ ${json.removedCorrections ?? 0} รายการ`
       );
     } catch (e) {
@@ -212,11 +217,6 @@ export default function ReviewClient({
         </div>
       )}
 
-      {note && (
-        <div className="mb-5">
-          <Notice>{note}</Notice>
-        </div>
-      )}
       {err && (
         <div className="mb-5">
           <Notice tone="error">{err}</Notice>
@@ -326,7 +326,7 @@ export default function ReviewClient({
             clip={clip}
             region={region}
             registerPlayer={(h) => (players.current[clip.id] = h)}
-            onForget={() => forget(clip)}
+            onForget={() => setPendingDelete(clip)}
             onCorrection={() => setPairs((n) => n + 1)}
             busy={busy}
           />
@@ -370,6 +370,50 @@ export default function ReviewClient({
           </div>
         )}
       </Card>
+      {/*
+       * ยืนยันการลบ — แทน window.confirm() ที่แสดงได้แค่ข้อความเปล่า
+       * การลบนี้ลบพร้อมกัน 4 ชั้นและกู้คืนไม่ได้ ครอบครัวควรเห็นเป็นรายการว่าจะเสียอะไรบ้าง
+       */}
+      <Sheet
+        open={pendingDelete !== null}
+        onClose={() => setPendingDelete(null)}
+        title="ลบเรื่องนี้ทั้งหมดถาวร?"
+        description={
+          pendingDelete
+            ? `คำตอบของคำถาม "${pendingDelete.question}" จะถูกลบออกจากระบบ`
+            : undefined
+        }
+        footer={
+          <>
+            <Button
+              variant="danger"
+              size="lg"
+              disabled={busy}
+              onClick={() => pendingDelete && forget(pendingDelete)}
+            >
+              <Trash2 size={18} /> ลบถาวร
+            </Button>
+            <Button variant="ghost" size="lg" onClick={() => setPendingDelete(null)}>
+              เก็บไว้ก่อน
+            </Button>
+          </>
+        }
+      >
+        <ul className="space-y-2 text-earth-700">
+          {[
+            "ไฟล์เสียงต้นฉบับ",
+            "ข้อมูลที่ AI ดึงไว้จากคลิปนี้",
+            "ย่อหน้าในหนังสือที่อ้างคลิปนี้",
+            "ข้อมูลการแก้คำที่ผูกกับคลิปนี้",
+          ].map((x) => (
+            <li key={x} className="flex items-start gap-2.5">
+              <Trash2 size={16} className="mt-1 shrink-0 text-red-600" />
+              {x}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 font-medium text-red-700">กู้คืนไม่ได้</p>
+      </Sheet>
     </main>
   );
 }
