@@ -15,7 +15,7 @@
  */
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Mic, Square, Trash2 } from "lucide-react";
 import { Button, Card, Label, Notice, inputClass, LiveWaveform } from "@/components/ui";
@@ -56,6 +56,16 @@ export default function NewInterviewPage() {
   const [region, setRegion] = useState<Region>("central");
   const [visitFrequency, setVisitFrequency] = useState<VisitFrequency>("fewTimesAYear");
   const [topic, setTopic] = useState(topics[0]?.id ?? "childhood");
+
+  /*
+   * รับหัวข้อที่เลือกมาจากหน้าหลัก (?topic=...) แล้วเลือกให้เลย
+   * ชิปหัวข้อบนหน้าหลักจะได้เป็นทางลัดจริง ไม่ใช่ปุ่มประดับ
+   * อ่านจาก window แทน useSearchParams เพราะตัวหลังบังคับให้ห่อ Suspense ทั้งหน้า
+   */
+  useEffect(() => {
+    const want = new URLSearchParams(window.location.search).get("topic");
+    if (want && topics.some((t) => t.id === want)) setTopic(want);
+  }, []);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 

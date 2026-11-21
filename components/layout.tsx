@@ -34,15 +34,22 @@ export function Page({
   children: React.ReactNode;
 }) {
   return (
-    <main
-      className={clsx(
-        "relative mx-auto px-5 py-8 sm:px-6 sm:py-10 lg:px-8",
-        WIDTH[width],
-        className
-      )}
-    >
-      {children}
-    </main>
+    /*
+     * .app-shell คือแผงขาวลอยบนเดสก์ท็อป (ดู globals.css)
+     * และเป็นตัวบอก CSS ว่า "นี่คือหน้าในตัวแอป" เพื่อเปลี่ยนพื้นหลังเป็นแสงนุ่ม ๆ
+     * บนมือถือมันไม่มีกรอบ เพราะจอแคบอยู่แล้ว กรอบจะกินพื้นที่โดยเปล่าประโยชน์
+     */
+    <div className="app-shell">
+      <main
+        className={clsx(
+          "relative mx-auto px-5 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-12",
+          WIDTH[width],
+          className
+        )}
+      >
+        {children}
+      </main>
+    </div>
   );
 }
 

@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BookOpen, LayoutDashboard, LogOut, Menu, Mic, X } from "lucide-react";
 import clsx from "clsx";
+import { isAppRoute } from "@/lib/chrome";
 import Logo from "./Logo";
 
 /**
@@ -74,7 +75,13 @@ export default function NavBar({
   }, []);
 
   return (
-    <header className="no-print pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
+    <header
+      className={clsx(
+        "no-print pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4",
+        // ในตัวแอปบนเดสก์ท็อป แถบไอคอนซ้ายรับหน้าที่แทน จึงไม่ต้องมีแถบบนซ้อน
+        signedIn && isAppRoute(pathname) && "lg:hidden"
+      )}
+    >
       <nav
         className={clsx(
           "pointer-events-auto mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border transition-all duration-300",

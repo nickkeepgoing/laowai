@@ -19,24 +19,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BookOpen, LayoutGrid, LogOut, Mic, UserRound } from "lucide-react";
+import { LayoutGrid, Mic, UserRound } from "lucide-react";
 import clsx from "clsx";
-import Sheet from "./Sheet";
+import AccountSheet from "./AccountSheet";
+import { hidesBottomTabs } from "@/lib/chrome";
 
-/**
- * หน้าที่ต้องไม่มีแถบแท็บ และเหตุผลของแต่ละอัน
- *   /book   เครื่องอ่านล็อกความสูงจอและไม่เลื่อน แถบจะไปกินพื้นที่หน้ากระดาษ
- *   /deck   สไลด์ขนาดตายตัว 1280x720
- *   /clip   หน้าที่คนนอกสแกน QR เข้ามา เขาไม่ใช่เจ้าของบัญชี
- *   /interview/[id]  งานที่ต้องโฟกัส ถ้าเผลอแตะแท็บกลางอัดจะเสียคลิปที่กำลังทำ
- */
-function hiddenOn(pathname: string): boolean {
-  if (pathname.startsWith("/book") || pathname.startsWith("/deck")) return true;
-  if (pathname.startsWith("/clip")) return true;
-  // /interview/new ยังแสดง แต่ /interview/<id> ซึ่งเป็นหน้าอัดเสียงไม่แสดง
-  if (pathname.startsWith("/interview/") && pathname !== "/interview/new") return true;
-  return false;
-}
 
 export default function BottomTabs({
   signedIn,
@@ -53,7 +40,7 @@ export default function BottomTabs({
   // เปลี่ยนหน้าแล้วต้องปิดแผ่นเสมอ ไม่งั้นมันค้างทับหน้าใหม่
   useEffect(() => setAccountOpen(false), [pathname]);
 
-  if (!signedIn || hiddenOn(pathname)) return null;
+  if (!signedIn || hidesBottomTabs(pathname)) return null;
 
   const atLibrary = pathname === "/library";
 
@@ -118,33 +105,13 @@ export default function BottomTabs({
         </div>
       </nav>
 
-      {/* บัญชีเป็นแผ่นเลื่อนขึ้น ไม่ใช่หน้าใหม่ เพราะมีให้ทำแค่ 3 อย่าง */}
-      <Sheet
+      {/* บัญชีเป็นแผ่นเลื่อนขึ้น ใช้ตัวเดียวกับแถบซ้ายบนเดสก์ท็อป */}
+      <AccountSheet
         open={accountOpen}
         onClose={() => setAccountOpen(false)}
-        title={name ? `สวัสดี คุณ${name}` : "บัญชีของคุณ"}
-        description="เรื่องทั้งหมดผูกกับบัญชีนี้ คนอื่นเห็นได้เฉพาะหนังสือที่คุณแชร์ลิงก์ให้"
-      >
-        <div className="flex flex-col gap-2">
-          <Link
-            href="/book/demo-token-7f3a9c2e"
-            className="flex min-h-14 items-center gap-3 rounded-2xl border border-paper-300 px-5 text-earth-800 transition hover:border-gold-400 hover:bg-paper-100"
-          >
-            <BookOpen size={19} className="text-gold-500" />
-            ดูตัวอย่างหนังสือ
-          </Link>
-
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="flex min-h-14 w-full items-center gap-3 rounded-2xl border border-paper-300 px-5 text-left text-earth-800 transition hover:border-gold-400 hover:bg-paper-100"
-            >
-              <LogOut size={19} className="text-earth-500" />
-              ออกจากระบบ
-            </button>
-          </form>
-        </div>
-      </Sheet>
+        name={name}
+        avatar={avatar}
+      />
     </>
   );
 }

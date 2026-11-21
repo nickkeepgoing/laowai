@@ -25,7 +25,7 @@ export function SkeletonBlock({ className }: { className?: string }) {
 /** การ์ดเปล่าที่มีสัดส่วนเดียวกับ <Card> จริง */
 export function SkeletonCard({ className }: { className?: string }) {
   return (
-    <div className={clsx("card-soft rounded-3xl p-6", className)}>
+    <div className={clsx("app-card p-6", className)}>
       <div className="flex items-start gap-4">
         <div className="h-14 w-14 shrink-0 animate-pulse rounded-2xl bg-paper-300" />
         <div className="min-w-0 flex-1">
@@ -52,7 +52,7 @@ export function StatsSkeleton() {
   return (
     <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="card-soft rounded-3xl px-5 py-5">
+        <div key={i} className="app-card px-5 py-5">
           <div className="h-5 w-5 animate-pulse rounded bg-paper-300" />
           <SkeletonLine className="mt-3 h-7 w-20" />
           <SkeletonLine className="mt-2 h-3 w-24" />
@@ -72,15 +72,57 @@ export function ElderListSkeleton() {
   );
 }
 
+/**
+ * ส่วนที่อยู่หลัง Suspense ในหน้าหลัก
+ * ลำดับต้องตรงกับของจริง: การ์ดงาน 3 ใบ → แถบหัวข้อ → สถิติ → ผู้เล่า
+ */
+export function HomeBodySkeleton() {
+  return (
+    <>
+      <div className="mt-8 flex gap-4 overflow-hidden md:grid md:grid-cols-3 md:gap-5">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className={clsx("app-card w-[78%] shrink-0 p-6 md:w-auto", i === 1 && "md:mt-6")}
+          >
+            <div className="h-11 w-11 animate-pulse rounded-2xl bg-paper-300" />
+            <SkeletonLine className="mt-5 h-5 w-3/4" />
+            <SkeletonLine className="mt-3 w-full" />
+            <SkeletonLine className="mt-2 w-2/3" />
+          </div>
+        ))}
+      </div>
+      <div className="app-card mt-6 p-6">
+        <SkeletonLine className="h-3 w-36" />
+        <SkeletonBlock className="mt-4 h-16 rounded-2xl" />
+        <div className="mt-4 flex gap-2">
+          {[24, 28, 22, 34, 20].map((w, i) => (
+            <div key={i} className="h-11 animate-pulse rounded-full bg-paper-300" style={{ width: `${w}%`, maxWidth: 150 }} />
+          ))}
+        </div>
+      </div>
+      <div className="mt-10">
+        <StatsSkeleton />
+      </div>
+      <Section title={<SkeletonLine className="h-7 w-40" />}>
+        <ElderListSkeleton />
+      </Section>
+    </>
+  );
+}
+
 export function LibrarySkeleton() {
   return (
     <Page width="app">
-      <SkeletonLine className="h-3 w-32" />
-      <SkeletonLine className="mt-3 h-9 w-72" />
-      <StatsSkeleton />
-      <Section title={<SkeletonLine className="h-6 w-28" />}>
-        <ElderListSkeleton />
-      </Section>
+      <div className="flex items-center justify-between">
+        <div className="h-8 w-40 animate-pulse rounded-full bg-paper-300" />
+        <div className="hidden h-11 w-40 animate-pulse rounded-full bg-paper-300 md:block" />
+      </div>
+      <div className="mt-8 max-w-2xl sm:mt-12">
+        <SkeletonLine className="h-9 w-3/5" />
+        <SkeletonLine className="mt-3 h-10 w-4/5" />
+      </div>
+      <HomeBodySkeleton />
     </Page>
   );
 }

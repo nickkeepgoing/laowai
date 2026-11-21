@@ -189,6 +189,92 @@ body:has(.bottom-tabs) {
   }
 }
 
+/* ───────────────── หน้าตาของตัวแอป (ต้นแบบ Nixtio) ─────────────────
+ *
+ * พื้นหลังเป็นแสงนุ่ม ๆ หลายจุดซ้อนกันแทนสีเรียบ
+ * ทองอุ่นมุมขวาบนคือสีแบรนด์ · น้ำเงินหมึกจาง ๆ มุมซ้ายล่างให้มิติ
+ * ความเข้มทุกจุดต่ำมากเพื่อไม่ให้ไปลดคอนทราสต์ของตัวหนังสือ
+ */
+body:has(.app-shell) {
+  background:
+    radial-gradient(56rem 38rem at 105% -8%, rgba(240, 205, 124, 0.3), transparent 62%),
+    radial-gradient(40rem 30rem at -8% 2%, rgba(248, 227, 173, 0.42), transparent 58%),
+    radial-gradient(52rem 36rem at -12% 108%, rgba(39, 53, 79, 0.1), transparent 62%),
+    var(--color-paper-100);
+  background-attachment: fixed;
+}
+
+/*
+ * เดสก์ท็อป: เนื้อหาอยู่บนแผงขาวลอยขนาดใหญ่ข้างแถบไอคอน แบบหน้าแอปของ Nixtio
+ * แผงนี้แยก "ตัวแอป" ออกจากพื้นหลังชัดเจน และให้ทุกหน้าในแอปมีกรอบเดียวกัน
+ */
+@media (min-width: 1024px) {
+  body:has(.app-rail) {
+    /* ไม่มีแถบบนในตัวแอป จึงไม่ต้องเว้นด้านบนให้มัน */
+    padding-top: 0;
+    padding-left: 5.75rem;
+  }
+  body:has(.app-rail) .app-shell {
+    margin: 1.25rem 1.25rem 1.25rem 0;
+    min-height: calc(100dvh - 2.5rem);
+    border-radius: 2rem;
+    border: 1px solid rgba(217, 199, 171, 0.55);
+    background: rgba(255, 253, 249, 0.86);
+    backdrop-filter: blur(18px);
+    box-shadow:
+      0 1px 2px rgba(60, 45, 28, 0.05),
+      0 30px 70px -40px rgba(60, 45, 28, 0.35);
+  }
+}
+
+/* ป้ายเล็กหัวหมวด — ยืมจากหน้า landing แนว fintech ที่ใช้ป้าย "Key Features" */
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 149, 58, 0.35);
+  background: rgba(248, 227, 173, 0.4);
+  padding: 0.3rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-earth-800);
+}
+
+/* การ์ดขาวแบบแอป — ขอบมนกว่า card-soft และลอยขึ้นเล็กน้อยตอนชี้ */
+.app-card {
+  border-radius: 1.75rem;
+  border: 1px solid rgba(217, 199, 171, 0.5);
+  background: #fffefb;
+  box-shadow:
+    0 1px 2px rgba(60, 45, 28, 0.04),
+    0 14px 34px -22px rgba(60, 45, 28, 0.32);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+a.app-card:hover,
+button.app-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(201, 149, 58, 0.55);
+  box-shadow:
+    0 1px 2px rgba(60, 45, 28, 0.05),
+    0 22px 44px -24px rgba(60, 45, 28, 0.4);
+}
+
+/* แถวเลื่อนแนวนอนบนมือถือ — แบบแถบเรื่องราวของ IG ซ่อนแถบเลื่อนแต่ยังเลื่อนด้วยนิ้วได้ */
+.snap-row {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.snap-row::-webkit-scrollbar {
+  display: none;
+}
+.snap-row > * {
+  scroll-snap-align: start;
+}
+
 /* ล็อกการเลื่อนตอนเปิด dialog โดยไม่ต้องใช้ JS
    วิธีนี้ไม่มีบั๊กตำแหน่ง scroll เด้งกลับแบบที่เขียนเองมักเจอ */
 body:has(dialog[open]) {
