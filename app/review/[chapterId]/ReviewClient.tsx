@@ -28,6 +28,7 @@ import Highlight from "@/components/Highlight";
 import StatPill from "@/components/StatPill";
 import { Button, Card, Notice, inputClass } from "@/components/ui";
 import Sheet from "@/components/Sheet";
+import { Page } from "@/components/layout";
 import { useToast } from "@/components/toast";
 import { indexClaims, paragraphAudioAnchor } from "@/lib/verify";
 import type { Chapter, Clip, Paragraph, Region } from "@/lib/types";
@@ -187,7 +188,7 @@ export default function ReviewClient({
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <Page width="read">
       <header className="mb-6">
         <p className="text-sm text-earth-500">ครอบครัวตรวจก่อนพิมพ์</p>
         <h1 className="font-serif text-3xl text-earth-900">{chapter.title}</h1>
@@ -414,7 +415,7 @@ export default function ReviewClient({
         </ul>
         <p className="mt-4 font-medium text-red-700">กู้คืนไม่ได้</p>
       </Sheet>
-    </main>
+    </Page>
   );
 }
 

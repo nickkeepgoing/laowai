@@ -41,6 +41,7 @@ import {
 import type { Chapter, Clip, Session, Topic } from "@/lib/types";
 import clsx from "clsx";
 import { ApiError, postJson } from "@/lib/api";
+import { Page } from "@/components/layout";
 
 type Mode = { gemini: string; storage: string };
 
@@ -201,7 +202,7 @@ export default function InterviewClient({
   const verifiedCount = clips.flatMap((c) => c.claims).length;
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <Page width="read">
       <header className="mb-7 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-sm text-earth-500">
@@ -229,7 +230,7 @@ export default function InterviewClient({
       )}
 
       {/* ── คำถาม ── */}
-      <div ref={questionRef} className="scroll-mt-28">
+      <div ref={questionRef} className="elder-scale scroll-mt-28">
         <Card
           className={
             flash
@@ -274,7 +275,7 @@ export default function InterviewClient({
         {rec.state === "recording" && (
           <>
             <LiveWaveform level={rec.level} active />
-            <div className="mb-4 flex items-center justify-center gap-4 text-sm">
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
               <span className="tabular-nums text-earth-900">{fmtDuration(rec.ms)}</span>
               <span className="text-earth-500">·</span>
               {/* ตัวเลขนี้คือคำตอบของคำถาม mentor เรื่องเน็ตกับแบต */}
@@ -469,6 +470,6 @@ export default function InterviewClient({
           </span>
         </div>
       )}
-    </main>
+    </Page>
   );
 }

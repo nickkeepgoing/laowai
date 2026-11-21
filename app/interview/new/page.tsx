@@ -22,6 +22,7 @@ import { Button, Card, Label, Notice, inputClass, LiveWaveform } from "@/compone
 import AudioPlayer from "@/components/AudioPlayer";
 import { fmtBytes, fmtDuration, useRecorder } from "@/lib/recorder";
 import { topics } from "@/lib/demo";
+import { Page } from "@/components/layout";
 import type { Region, VisitFrequency } from "@/lib/types";
 import { postJson } from "@/lib/api";
 
@@ -86,7 +87,7 @@ export default function NewInterviewPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+    <Page width="form">
       <Link
         href="/"
         className="mb-8 inline-flex items-center gap-1.5 text-sm text-earth-700 hover:text-earth-900"
@@ -130,13 +131,13 @@ export default function NewInterviewPage() {
 
           <div>
             <Label>ท่านพูดสำเนียงภาคไหน</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {REGIONS.map((r) => (
                 <button
                   key={r.id}
                   type="button"
                   onClick={() => setRegion(r.id)}
-                  className={`rounded-xl border px-3.5 py-2 text-sm transition ${
+                  className={`inline-flex min-h-12 items-center rounded-xl border px-4 transition ${
                     region === r.id
                       ? "border-gold-400 bg-gold-400/15 text-earth-900"
                       : "border-paper-300 text-earth-700 hover:border-paper-300"
@@ -153,13 +154,13 @@ export default function NewInterviewPage() {
 
           <div>
             <Label>ปกติได้กลับไปเจอท่านบ่อยแค่ไหน</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {FREQ.map((f) => (
                 <button
                   key={f.id}
                   type="button"
                   onClick={() => setVisitFrequency(f.id)}
-                  className={`rounded-xl border px-3.5 py-2 text-sm transition ${
+                  className={`inline-flex min-h-12 items-center rounded-xl border px-4 transition ${
                     visitFrequency === f.id
                       ? "border-gold-400 bg-gold-400/15 text-earth-900"
                       : "border-paper-300 text-earth-700 hover:border-paper-300"
@@ -173,13 +174,13 @@ export default function NewInterviewPage() {
 
           <div>
             <Label>อยากเริ่มจากหัวข้อไหน</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {topics.map((t) => (
                 <button
                   key={t.id}
                   type="button"
                   onClick={() => setTopic(t.id)}
-                  className={`rounded-xl border px-3.5 py-2 text-sm transition ${
+                  className={`inline-flex min-h-12 items-center rounded-xl border px-4 transition ${
                     topic === t.id
                       ? "border-gold-400 bg-gold-400/15 text-earth-900"
                       : "border-paper-300 text-earth-700 hover:border-paper-300"
@@ -281,6 +282,6 @@ export default function NewInterviewPage() {
           </span>
         )}
       </div>
-    </main>
+    </Page>
   );
 }
