@@ -184,7 +184,7 @@ export default function NewInterviewPage() {
 
           <div>
             <Label>อยากเริ่มจากหัวข้อไหน</Label>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {topics.map((t) => (
                 <button
                   key={t.id}
